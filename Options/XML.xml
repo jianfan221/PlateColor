@@ -1,0 +1,14 @@
+<Ui>
+	<Script file="API.lua"/>
+	<Script file="API-Options.lua"/>
+	<Script file="Core.lua"/>
+	<Script file="EditBox.lua"/>
+	<Script file="Export.lua"/>
+	<Script file="Tab1.lua"/>
+	<Script file="Tab2.lua"/>
+	<Script file="Tab3.lua"/>
+	<Script file="Tab4.lua"/>
+	<Script file="Tab5.lua"/>
+	<Script file="Tab6.lua"/>
+	<Script file="Tab7.lua"/>
+</Ui>

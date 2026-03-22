@@ -1,0 +1,24 @@
+# Build and packaging
+*.zip
+*.rar
+*.7z
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local configuration
+Local.lua
+*.local

@@ -1,0 +1,30 @@
+﻿## Interface: 120000,120001
+## Title: |cffff5900P|cffffb300l|cfff0ff00a|cff96ff00t|cff3cff00e|cff00ffd2C|cff00d1ffo|cff00B3FFl|cffD56AFFo|cffFF2AA5r|r
+## Notes: /PC open the settings interface
+## Author: CN-无尽之海-简繁丶
+## Category: NamePlates
+## Category-zhCN: 姓名板
+## IconTexture: 135451
+## SavedVariables: PlateColorDB
+## Version: 20260323
+
+texture\TextureTable.lua
+DB\XML.xml
+Locales\XML.xml
+Options\XML.xml
+Anchors.lua
+BarColor.lua
+BarSlayline.lua
+BarTexture.lua
+CastBar.lua
+LevelText.lua
+MarkFocus.lua
+MarkQuest.lua
+Name.lua
+NameColor.lua
+NpcColor.lua
+PlateAuras.lua
+Personal.lua
+PlateAbsorb.lua
+PlateColor.lua
+Update.lua
