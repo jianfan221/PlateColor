@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '20*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Pack and Ship
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -p 307518
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }} 

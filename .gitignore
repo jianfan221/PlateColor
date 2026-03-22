@@ -18,7 +18,3 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
-
-# Local configuration
-Local.lua
-*.local

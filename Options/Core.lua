@@ -141,6 +141,9 @@ end
 CreateLinkButton("Interface\\AddOns\\PlateColor\\texture\\Links\\curseforge.png", 
 	"https://legacy.curseforge.com/wow/addons/platecolor")
 
+CreateLinkButton("Interface\\AddOns\\PlateColor\\texture\\Links\\github.png", 
+	"https://github.com/jianfan221/PlateColor")
+
 if GetLocale() == "zhCN" then
 
     CreateLinkButton("Interface\\AddOns\\PlateColor\\texture\\Links\\nga.tga", 
