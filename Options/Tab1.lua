@@ -38,7 +38,6 @@ local npWidht = ns.AddSetSlider(ConFrame1,1,L["姓名版宽度"],L["姓名版宽
 local npHeight = ns.AddSetSlider(ConFrame1,1,L["姓名版高度"],L["姓名版高度"],5,30,1,"%d","hpHeight",ns.SetPoints)
 
 local TiText1 = ns.AddSetTiText(ConFrame1,1,L["名字"])
-local alwaysShowNames = ns.AddSetClickB(ConFrame1,1,L["始终显示所有名字"],L["始终显示所有名字鼠标提示"],"alwaysShowNames",ns.SetSelectedScale)
 local whiteName = ns.AddSetClickB(ConFrame1,1,L["白色名字"],L["白色名字"],"whiteName",ns.SetNameColor)
 local nameOUTLINE = ns.AddSetClickB(ConFrame1,1,L["名字描边"],L["名字描边"],"nameOUTLINE",ns.SetPoints)
 local Nametable = {{L["中上"],1},{L["左上"],2},{L["左中"],3},{L["左下"],4},{L["中下"],5}}

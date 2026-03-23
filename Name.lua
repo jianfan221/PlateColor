@@ -5,10 +5,6 @@ function ns.PlateOnlyName(unitFrame)
 	if not unitFrame then return end
 	if not unitFrame.unit then return end
 
-	if PlateColorDB.alwaysShowNames then
-		unitFrame.name:SetShown(true)
-	end
-
 	if not unitFrame.NpcFuntext then
 		unitFrame.NpcFuntext = unitFrame:CreateFontString(nil, "ARTWORK")
 		unitFrame.NpcFuntext:SetPoint("TOP",unitFrame.name,"BOTTOM",0,0)

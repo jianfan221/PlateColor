@@ -36,8 +36,6 @@ ns.enUS = {
 
 ["名字"] = "Name",
 ["白色名字"] = "White Name",
-["始终显示所有名字"] = "Always Show All Names",
-["始终显示所有名字鼠标提示"] = "If unchecked use ESC → Options → Nameplate → NPC Name dropdown",
 ["名字描边"] = "Name Outline",
 ["名字位置"] = "Name Position",
 ["名字垂直偏移"] = "Name Vertical Offset",

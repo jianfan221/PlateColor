@@ -32,7 +32,7 @@ ns.PlateColorDB = {
 	onlyName = true,                        --友方玩家名字模式
 	onlyNameClassColor = true,              --友方玩家名字模式职业染色
 	onlyNameNpc = true,                     --友方NPC名字模式
-	alwaysShowNames = true,                 --始终显示所有名字
+
 	helpNameScale = 15,                     --友方名字大小
 	showGuildName = false,		--显示公会名称
 	
