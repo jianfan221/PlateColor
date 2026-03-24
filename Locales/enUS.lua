@@ -188,7 +188,7 @@ ns.enUS = {
 
 ["点击更改颜色"] = "Click to change color",
 
-["我是猪,帮我设置暴雪姓名板"] = "I am a pig, help me set Blizzard nameplates",
+["帮我设置暴雪姓名板"] = "Help me set Blizzard nameplates",
 ["点击自动设置ESC-选项-姓名板里的相关选项"] = "Click to auto set ESC-Options-Nameplate related options",
 ["恢复插件默认设置"] = "Restore Addon Default Settings",
 

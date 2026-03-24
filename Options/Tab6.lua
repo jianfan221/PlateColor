@@ -14,7 +14,7 @@ ns.Y[6] = 0	--设置起始位置
 
 
 local titext1 = ns.AddSetTiText(ConFrame6,6,L["配置"])
-local realltextRe = ns.AddfuncButton(ConFrame6,6,L["我是猪,帮我设置暴雪姓名板"],L["点击自动设置ESC-选项-姓名板里的相关选项"])
+local realltextRe = ns.AddfuncButton(ConFrame6,6,L["帮我设置暴雪姓名板"],L["点击自动设置ESC-选项-姓名板里的相关选项"])
 realltextRe:HookScript("OnClick", function()
 	if InCombatLockdown() then
 		print("|cffff0000[PlateColor]|r " .. L["战斗中无法设置暴雪姓名板选项"])
