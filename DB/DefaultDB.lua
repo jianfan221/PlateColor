@@ -57,6 +57,7 @@ ns.PlateColorDB = {
 	myHPSetup = true,			--启用个人资源设置
 	myHPShowMode = 2,			--额外资源显示模式(0=暴雪原版,1=新版资源条,2=精简模式)
 	myHPValue = true,			--个人资源数值显示
+	myHPStaggerUseValue = false,    --武僧酒池显示数值（默认百分比）
 	myHPEdit = true,			--编辑模式自动居中
 	myHPwidth = 200,			--个人资源宽度
 	myHPheight = 15,			--个人资源高度

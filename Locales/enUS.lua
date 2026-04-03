@@ -99,6 +99,7 @@ ns.enUS = {
 ["个人资源高度"] = "Personal Resource Height",
 ["个人资源材质"] = "Personal Resource Texture",
 ["新版资源条自定义颜色"] = "New Resource Bar Custom Color",
+["武僧坦克酒池使用数值"] = "Monk Tank Stagger Use Value",
 ["底部"] = "Bottom",
 ["顶部"] = "Top",
 

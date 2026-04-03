@@ -77,9 +77,13 @@ function ns.SetPersonalTexture()
 		AB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
 			if self.powerName and self.powerName == "STAGGER" then
-				local stagger = (UnitStagger and UnitStagger("player")) or 0
-				local maxHealth = UnitHealthMax("player") or 1
-				self.Text:SetText(string.format("%d", maxHealth > 0 and (stagger / maxHealth * 100) or 0))
+				if PlateColorDB.myHPStaggerUseValue then
+					self.Text:SetText(ns.value(self:GetValue()))
+				else
+					local stagger = (UnitStagger and UnitStagger("player")) or 0
+					local maxHealth = UnitHealthMax("player") or 1
+					self.Text:SetText(string.format("%d", maxHealth > 0 and (stagger / maxHealth * 100) or 0))
+				end
 			elseif self.powerName then
 				self.Text:SetText(string.format("%d",self:GetValue()))
 			end
@@ -90,7 +94,11 @@ function ns.SetPersonalTexture()
 	if AB.powerName and AB.powerName == "STAGGER" then
 		local stagger = (UnitStagger and UnitStagger("player")) or 0
 		local maxHealth = UnitHealthMax("player") or 1
-		AB.Text:SetText(string.format("%d", maxHealth > 0 and (stagger / maxHealth * 100) or 0))
+		if PlateColorDB.myHPStaggerUseValue then
+			AB.Text:SetText(ns.value(stagger))
+		else
+			AB.Text:SetText(string.format("%d", maxHealth > 0 and (stagger / maxHealth * 100) or 0))
+		end
 	elseif AB.powerName then
 		AB.Text:SetText(string.format("%d",AB:GetValue()))
 	end
