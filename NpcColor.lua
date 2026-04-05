@@ -4,7 +4,7 @@
 local function IsKickNpc(unitFrame)
 	local mapid = C_Map.GetBestMapForUnit("player")
 	if not ns.MM(mapid) and mapid == 2532 then--梦境裂隙BOSS区域,91小怪一定是可打断怪
-		local npclevel = unitFrame.unit and UnitLevel(unitFrame.unit) or 0
+		local npclevel = unitFrame.unit and UnitEffectiveLevel(unitFrame.unit) or 0
 		return  npclevel == 91
 	end
 end
@@ -18,13 +18,17 @@ function ns.NpcLevelColor(unitFrame)
 	if not unitFrame.unit then return end
 	if not UnitCanAttack("player",unitFrame.unit) then return end
 	local inInstance, instanceType = IsInInstance()
-	local playerlevel = UnitLevel("player")
-	local npclevel = inInstance and instanceType == "party" and UnitLevel(unitFrame.unit) or 0
-	local npcBoss =  UnitLevel(unitFrame.unit) == -1 or npclevel == playerlevel+2
-	local PowerMANA = UnitPowerType(unitFrame.unit) == 0
-	if npclevel == playerlevel+1 and PlateColorDB.NpcLv1 then
+	local playerlevel = UnitEffectiveLevel("player")
+	local npclevel = inInstance and instanceType == "party" and UnitEffectiveLevel(unitFrame.unit) or 0
+
+	local IsLeader = UnitIsLieutenant(unitFrame.unit) or npclevel == playerlevel+1
+	local IsBoss =  UnitEffectiveLevel(unitFrame.unit) == -1 or npclevel == playerlevel+2
+	local IsPALADIN = UnitClassBase(unitFrame.unit) == "PALADIN"
+	--local PowerMANA = UnitPowerType(unitFrame.unit) == 0
+	
+	if IsLeader and PlateColorDB.NpcLv1 then
 		return PlateColorDB.NpcLv1Color
-	elseif npcBoss and PlateColorDB.NpcLv2 then
+	elseif IsBoss and PlateColorDB.NpcLv2 then
 		return PlateColorDB.NpcLv2Color
 	elseif IsKickNpc(unitFrame) and PlateColorDB.Npckick then--特定NPC一定是可打断怪
 		return PlateColorDB.NpckickColor
@@ -34,7 +38,7 @@ function ns.NpcLevelColor(unitFrame)
 		local colorObj = C_CurveUtil.EvaluateColorFromBoolean(unitFrame.NpckickColor,trueColor,falseColor)
 		colortable.r, colortable.g, colortable.b = colorObj:GetRGB()
 		return colortable
-	elseif PowerMANA and PlateColorDB.NpcSukick then
+	elseif IsPALADIN and PlateColorDB.NpcSukick then
 		return PlateColorDB.NpcSukickColor
 	else
 		return false

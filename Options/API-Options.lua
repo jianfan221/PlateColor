@@ -98,12 +98,8 @@ end
 function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
 	local parent = parent or UIParent	--父框体
 	local x, y = x or 0, y or 0	--锚点坐标
-	local r, g, b = 0, 1, 0
 	local tip = tip or L["点击更改颜色"]
 	local width,height = width or 75,height or 15
-	r = PlateColorDB[DB]["r"]
-	g = PlateColorDB[DB]["g"]
-	b = PlateColorDB[DB]["b"]
 
 	local btn = CreateFrame("Button", nil, parent, "GameMenuButtonTemplate");
     btn:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y);
@@ -114,7 +110,7 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
 	btn.color = parent:CreateTexture(nil, "ARTWORK")
     btn.color:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
     btn.color:SetSize(width,height)
-    btn.color:SetColorTexture(r, g, b)
+    btn.color:SetColorTexture(PlateColorDB[DB]["r"], PlateColorDB[DB]["g"], PlateColorDB[DB]["b"])
 	
     local onUpdate = function(restore)
         local r, g, b = ColorPickerFrame:GetColorRGB()
@@ -130,10 +126,9 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
     end
     local onCancel = function()
         local r, g, b = ColorPickerFrame:GetPreviousValues()
+		ColorPickerFrame.Content.ColorPicker:SetColorRGB(r, g, b)
         btn.color:SetColorTexture(r, g, b)
-		PlateColorDB[DB]["r"] = r
-		PlateColorDB[DB]["g"] = g
-		PlateColorDB[DB]["b"] = b
+
 		if setfun then--设置姓名版对应功能
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
@@ -142,14 +137,10 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
     end
 
     btn:SetScript("OnClick", function(self, button, down)
-       local oldr,oldg,oldb
-	   oldr = ns.PlateColorDB[DB]["r"]
-	   oldg = ns.PlateColorDB[DB]["g"]
-	   oldb = ns.PlateColorDB[DB]["b"]
        ColorPickerFrame.swatchFunc = onUpdate
-       ColorPickerFrame.previousValues = {r = oldr, g = oldg, b = oldb}
+       ColorPickerFrame.previousValues = {r = PlateColorDB[DB]["r"], g = PlateColorDB[DB]["g"], b = PlateColorDB[DB]["b"]}
        ColorPickerFrame.cancelFunc = onCancel
-       ColorPickerFrame.Content.ColorPicker:SetColorRGB(oldr, oldg, oldb)
+       ColorPickerFrame.Content.ColorPicker:SetColorRGB(ns.PlateColorDB[DB]["r"], ns.PlateColorDB[DB]["g"], ns.PlateColorDB[DB]["b"])
        ColorPickerFrame:Show()
     end)
     btn:SetScript("OnEnter", function(self)
