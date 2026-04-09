@@ -8,13 +8,13 @@ function ns.PlateOnlyName(unitFrame)
 	if not unitFrame.NpcFuntext then
 		unitFrame.NpcFuntext = unitFrame:CreateFontString(nil, "ARTWORK")
 		unitFrame.NpcFuntext:SetPoint("TOP",unitFrame.name,"BOTTOM",0,0)
+		unitFrame.NpcFuntext:SetVertexColor(1,1,1)
+		unitFrame.NpcFuntext:SetAlpha(0.9)
 	end
 	if ns.MM(UnitGUID(unitFrame.unit)) then
 		unitFrame.NpcFuntext:Hide()
 		return
 	end
-	unitFrame.NpcFuntext:SetVertexColor(1,1,1)
-	unitFrame.NpcFuntext:SetAlpha(0.9)
 	local text = ""
 	if PlateColorDB.showGuildName and unitFrame:IsPlayer() then
 		unitFrame.NpcFuntext:SetFont(ns.fonts, PlateColorDB.helpNameScale * 0.9, "OUTLINE")
