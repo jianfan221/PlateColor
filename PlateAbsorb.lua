@@ -9,11 +9,17 @@ function ns.AddAbsorbText(event,unit)
 	if not PlateColorDB.absorbText then return end
 	if not unitFrame.unit then return end
 	if not unitFrame.ArrowLeft then return end
+	
 	if not unitFrame.abs then
 		unitFrame.abs = unitFrame.healthBar:CreateFontString(nil, "OVERLAY")
 		unitFrame.abs:SetFont(ns.fonts, 21, "OUTLINE")
-		unitFrame.abs:SetPoint("RIGHT", unitFrame.ArrowLeft, "LEFT",-3,-1)
 	end
+	local anchor = unitFrame.ArrowLeft
+	if unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
+		anchor = unitFrame.AurasFrame.BuffListFrame
+	end
+	unitFrame.abs:ClearAllPoints()
+	unitFrame.abs:SetPoint("RIGHT", anchor, "LEFT",-3,-1)
 	
 	unitFrame.abs:SetText("")
 	local number = UnitGetTotalAbsorbs(unitFrame.unit)
