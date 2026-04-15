@@ -4,7 +4,7 @@
 
 ---
 
-## 🛡️ [ English ]
+
 
 **PlateColor** is built for players who want a clean interface without complex configuration. Its design focuses on **simplicity**, **low overhead**, and **practical improvements** that make nameplates easier to read in real combat.
 
@@ -25,7 +25,7 @@ Built by a long-time **Mythic+ player**. Features are added based on practical n
 
 ---
 
-## 🛡️ [ 中文介绍 ]
+
 
 **PlateColor** 是一款专为《魔兽世界》开发的轻量化姓名板插件。它适合追求清晰视觉体验、希望快速获取战斗信息，却又不想被复杂设置困扰的玩家。
 
@@ -45,15 +45,3 @@ Built by a long-time **Mythic+ player**. Features are added based on practical n
 
 ### 👤 关于作者
 由一位**资深大秘境玩家**制作。所有功能均源自实战需求，并根据版本环境持续进行针对性的添加与优化。
-
----
-
-## 📸 Screenshots
-*(Tip: Add your images here to showcase your beautiful nameplates!)*
-
----
-
-## 📥 Installation
-1. Download the latest release.
-2. Extract to your `World of Warcraft/_retail_/Interface/AddOns/` directory.
-3. Enjoy!
