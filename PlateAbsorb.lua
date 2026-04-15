@@ -19,7 +19,7 @@ function ns.AddAbsorbText(event,unit)
 		anchor = unitFrame.AurasFrame.BuffListFrame
 	end
 	unitFrame.abs:ClearAllPoints()
-	unitFrame.abs:SetPoint("RIGHT", anchor, "LEFT",-3,-1)
+	unitFrame.abs:SetPoint("RIGHT", anchor, "LEFT",-6,-1)
 	
 	unitFrame.abs:SetText("")
 	local number = UnitGetTotalAbsorbs(unitFrame.unit)

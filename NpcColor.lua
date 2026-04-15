@@ -85,3 +85,18 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	NpcCastColor(unitFrame.castBar)
 	ns.UpdateSetColor(unitFrame)
 end)
+
+--[[
+--记录可打断怪的特征
+ns.event("UNIT_SPELLCAST_INTERRUPTED", function(event, unitTarget, castGUID, spellID, interruptedBy, castBarID)
+	if unitTarget and unitTarget ~= "player" and interruptedBy and castBarID then
+		local mapid = C_Map.GetBestMapForUnit("player")
+		local class = UnitClassBase(unitTarget)
+		local _,ctype = UnitCreatureType(unitTarget)
+		local level = UnitEffectiveLevel(unitTarget)
+		local sex = UnitSex(unitTarget)
+		local npcID = mapid..class..ctype..level..sex
+		PlateColorDB.NpcKickData[npcID] = true
+	end
+end)
+]]
