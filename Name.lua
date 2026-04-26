@@ -9,6 +9,7 @@ function ns.PlateOnlyName(unitFrame)
 		unitFrame.NpcFuntext = unitFrame:CreateFontString(nil, "ARTWORK")
 		unitFrame.NpcFuntext:SetPoint("TOP",unitFrame.name,"BOTTOM",0,0)
 		unitFrame.NpcFuntext:SetVertexColor(1,1,1)
+		unitFrame.NpcFuntext:SetSmoothScaling(false)
 		unitFrame.NpcFuntext:SetAlpha(0.9)
 	end
 	if ns.MM(UnitGUID(unitFrame.unit)) then
@@ -61,22 +62,17 @@ hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
 		end
 	end
 end)
-
-hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitSet", function(self)
+local function TrySetOnlyName(self)
+	if not PlateColorDB.onlyNameNpc then return end
 	if not self.unit then return end
 	if self:IsForbidden() then
 		SystemFont_NamePlate:SetFont(SystemFont_NamePlate:GetFont(),1,"OUTLINE")
 		SystemFont_NamePlate_Outlined:SetFont(SystemFont_NamePlate_Outlined:GetFont(),1,"OUTLINE")
 		SystemFont_NamePlate:SetFont(SystemFont_NamePlate:GetFont(),PlateColorDB.helpNameScale,"OUTLINE")
 		SystemFont_NamePlate_Outlined:SetFont(SystemFont_NamePlate_Outlined:GetFont(),PlateColorDB.helpNameScale,"OUTLINE")
+		SystemFont_NamePlate:SetSmoothScaling(false)
+		SystemFont_NamePlate_Outlined:SetSmoothScaling(false)
 	end
-	if not PlateColorDB.onlyNameNpc then return end
-	if not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player",self.unit)) then
-		TableUtil.TrySet(self, "showOnlyName")
-	end
-end)
-hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
-	if not self.unit then return end
 	if not PlateColorDB.onlyNameNpc then return end
 	if not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player",self.unit)) then
 		TableUtil.TrySet(self, "showOnlyName")
@@ -84,7 +80,20 @@ hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
 			self.HealthBarsContainer.healthBar:Hide()
 		end
 	end
+end
+ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
+	local unitFrame = namePlate.UnitFrame
+	TrySetOnlyName(unitFrame)
 end)
+hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitSet", function(self)
+	TrySetOnlyName(self)
+end)
+hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
+	if not self.unit then return end
+	TrySetOnlyName(self)
+end)
+
 hooksecurefunc(NamePlateUnitFrameMixin, "UpdateNameClassColor", function(self)
 	if not self.unit then return end
 	if not PlateColorDB.onlyNameNpc then return end

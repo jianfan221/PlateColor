@@ -62,25 +62,37 @@ function ns.SetPoints(self)
 	self.HealthBarsContainer.healthBar.deselectedOverlay:SetVertexColor(0, 0, 0, 1)
 	
 
+	local namePlateFrame = self:GetNamePlateFrame()
+	if not self.HitTestClipFrame then
+		self.HitTestClipFrame = CreateFrame("Frame", nil, namePlateFrame)
+		self.HitTestClipFrame:SetAllPoints(namePlateFrame)
+		self.HitTestClipFrame:SetClipsChildren(true)
+		self.HitTestClipFrame:EnableMouse(false)
+	end
 	if not self.HitTestFrameShow then
-		self.HitTestFrameShow = self:CreateTexture(nil, "OVERLAY")
+		self.HitTestFrameShow = self.HitTestClipFrame:CreateTexture(nil, "OVERLAY")
 		self.HitTestFrameShow:SetTexture("Interface\\Addons\\PlateColor\\texture\\HitTexture.png")
 		self.HitTestFrameShow:SetAlpha(0.8)
 	end
+	local extraXOffset = 10
+	local extraYOffset = NamePlateSetupOptions.healthBarHeight / 2
+	self.HitTestFrameShow:ClearAllPoints()
+	self.HitTestFrameShow:SetPoint(
+		"TOPLEFT",
+		self.HealthBarsContainer.healthBar,
+		"TOPLEFT",
+		-PlateColorDB.HitWidth - extraXOffset,
+		PlateColorDB.HitHeight + extraYOffset
+	)
+	self.HitTestFrameShow:SetPoint(
+		"BOTTOMRIGHT",
+		self.HealthBarsContainer.healthBar,
+		"BOTTOMRIGHT",
+		PlateColorDB.HitWidth + extraXOffset,
+		-PlateColorDB.HitBottom - extraYOffset
+	)
 	self.HitTestFrameShow:SetShown(PlateColorDB.HitTestShow and (not self:IsFriend() or not PlateColorDB.HitHelp))
-	local setupOptions = NamePlateSetupOptions--暴雪的一些默认设置项
-	if setupOptions.unitNameInsideHealthBar then
-		local extraXOffset = 10;
-		local extraYOffset = setupOptions.healthBarHeight / 2;
-		self.HitTestFrameShow:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar, "TOPLEFT", -PlateColorDB.HitWidth-extraXOffset, PlateColorDB.HitHeight+extraYOffset);
-		self.HitTestFrameShow:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", PlateColorDB.HitWidth+extraXOffset, -PlateColorDB.HitBottom-extraYOffset);
-	else
-		local extraXOffset = 10;
-		local nameOffset = 4;
-		local extraYOffset = setupOptions.healthBarHeight / 2;
-		self.HitTestFrameShow:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar, "TOPLEFT", -PlateColorDB.HitWidth-extraXOffset - nameOffset, PlateColorDB.HitHeight+extraYOffset);
-		self.HitTestFrameShow:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", PlateColorDB.HitWidth+extraXOffset, -PlateColorDB.HitBottom-extraYOffset);
-	end
+
 	if not InCombatLockdown() then
 		if PlateColorDB.HitHelp then
 			C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, 10000, 10000, 10000, 10000)--左右上下
@@ -101,10 +113,11 @@ function ns.SetPoints(self)
 	if self:IsPlayer() then
 		self.name:SetFont(self.name:GetFont(), PlateColorDB.helpNameScale,"OUTLINE");
 	elseif self.unit and not UnitCanAttack("player",self.unit) then
-		self.name:SetFont(self.name:GetFont(), PlateColorDB.helpNameScale*0.9, "SLUG");
+		self.name:SetFont(self.name:GetFont(), PlateColorDB.helpNameScale*0.9, "");
 	else
-		self.name:SetFont(self.name:GetFont(), PlateColorDB.nameScale, PlateColorDB.nameOUTLINE and "OUTLINE,SLUG" or "SLUG");
+		self.name:SetFont(self.name:GetFont(), PlateColorDB.nameScale, PlateColorDB.nameOUTLINE and "OUTLINE" or "");
 	end
+	self.name:SetSmoothScaling(false)
 	--名字位置
 	if not self.healthBar:IsShown() then
 		if self.NpcFuntext and self.NpcFuntext:IsShown() then
@@ -157,8 +170,10 @@ function ns.SetPoints(self)
 	PixelUtil.SetPoint(self.castBar.Icon,"BOTTOMRIGHT", self.castBar, "BOTTOMLEFT", -2, 0);	--施法图标位置
 	PixelUtil.SetPoint(self.castBar.BorderShield,"BOTTOMRIGHT", self.castBar, "BOTTOMLEFT", -2, 0);--不可打断的盾牌
 	
-	self.castBar.Text:SetFont(self.castBar.Text:GetFont(),castTextScales, "OUTLINE,SLUG");--施法文本尺寸
-	self.castBar.CastTargetNameText:SetFont(self.castBar.CastTargetNameText:GetFont(),castTargetScales, "OUTLINE,SLUG");--施法目标尺寸
+	self.castBar.Text:SetFont(self.castBar.Text:GetFont(),castTextScales, "OUTLINE");--施法文本尺寸
+	self.castBar.Text:SetSmoothScaling(false)
+	self.castBar.CastTargetNameText:SetFont(self.castBar.CastTargetNameText:GetFont(),castTargetScales, "OUTLINE");--施法目标尺寸
+	self.castBar.CastTargetNameText:SetSmoothScaling(false)
 	
 	if PlateColorDB.castPoint == 1 then --左
 		PixelUtil.SetPoint(self.castBar.Text,"LEFT", self.castBar, "LEFT", 0, 0);--施法文本位置
@@ -185,6 +200,7 @@ function ns.SetPoints(self)
 		self.castBar.PCCastTimeText:SetPoint("RIGHT", self.castBar, "RIGHT", 0, 0)
 	end
 	self.castBar.PCCastTimeText:SetFont(SystemFont_Outline_Small:GetFont(), castTextScales*1.1, "OUTLINE")	--施法时间文字大小
+	self.castBar.PCCastTimeText:SetSmoothScaling(false)
 	----调节尺寸部分结束
 	
 	--隐藏和清除自带的生命值显示
@@ -197,6 +213,7 @@ function ns.SetPoints(self)
 	if not self.healthBar.PCText then
 		self.healthBar.PCText = self.healthBar:CreateFontString(nil, "OVERLAY")
 		self.healthBar.PCText:SetVertexColor(1,1,1)
+		self.healthBar.PCText:SetSmoothScaling(false)
 	end
 	self.healthBar.PCText:SetFont(ns.fonts,PlateColorDB.HpTextScale1,"OUTLINE");
 	self.healthBar.PCText:ClearAllPoints();

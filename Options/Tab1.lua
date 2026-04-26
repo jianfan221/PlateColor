@@ -63,9 +63,9 @@ end)
 
 local HitTest = ns.AddSetTiText(ConFrame1,1,L["点击范围"])
 local HitTestShow = ns.AddSetClickB(ConFrame1,1,L["显示点击范围"],L["显示点击范围"],"HitTestShow",ns.SetPoints)
-local HitWidth = ns.AddSetSlider(ConFrame1,1,L["点击范围宽度"],L["点击范围宽度"],-10,20,1,"%d","HitWidth",ns.SetPoints)
-local HitHeight = ns.AddSetSlider(ConFrame1,1,L["点击范围顶部"],L["点击范围顶部"],-6,12,1,"%d","HitHeight",ns.SetPoints)
-local HitBottom = ns.AddSetSlider(ConFrame1,1,L["点击范围底部"],L["点击范围底部"],-6,12,1,"%d","HitBottom",ns.SetPoints)
+local HitWidth = ns.AddSetSlider(ConFrame1,1,L["点击范围宽度"],L["点击范围宽度"],-10,25,1,"%d","HitWidth",ns.SetPoints)
+local HitHeight = ns.AddSetSlider(ConFrame1,1,L["点击范围顶部"],L["点击范围顶部"],-6,20,1,"%d","HitHeight",ns.SetPoints)
+local HitBottom = ns.AddSetSlider(ConFrame1,1,L["点击范围底部"],L["点击范围底部"],-6,20,1,"%d","HitBottom",ns.SetPoints)
 local HitHelp = ns.AddSetClickB(ConFrame1,1,L["友方点击穿透"],L["友方点击穿透"],"HitHelp",ns.SetPoints)
 
 local TiText1 = ns.AddSetTiText(ConFrame1,1,L["血条"])

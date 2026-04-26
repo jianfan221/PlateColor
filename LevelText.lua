@@ -7,6 +7,7 @@ function ns.CteatLevelText(unitFrame)
 	if not unitFrame.LevelText then
 		unitFrame.LevelText = unitFrame.healthBar:CreateFontString(nil, "ARTWORK")
 		unitFrame.LevelText:SetFont(ns.fonts, 16, "OUTLINE")
+		unitFrame.LevelText:SetSmoothScaling(false)
 	end
 	if not unitFrame.unit then return end
 	local NpLevel = UnitLevel(unitFrame.unit)

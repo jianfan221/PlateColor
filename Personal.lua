@@ -35,6 +35,7 @@ function ns.SetPersonalTexture()
 		HB.Text = HB:CreateFontString(nil, "OVERLAY")
 		HB.Text:SetPoint("CENTER", HB, "CENTER", 0, -1)
 		HB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.25, "OUTLINE")
+		HB.Text:SetSmoothScaling(false)
 		HB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
 			local HPPer = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
@@ -51,6 +52,7 @@ function ns.SetPersonalTexture()
 		PB.Text = PB:CreateFontString(nil, "OVERLAY")
 		PB.Text:SetPoint("CENTER", PB, "CENTER", 0, -1)
 		PB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.25, "OUTLINE")
+		PB.Text:SetSmoothScaling(false)
 		PB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
 			if UnitPowerType("player") ~= 0 then
@@ -74,6 +76,7 @@ function ns.SetPersonalTexture()
 		AB.Text = AB:CreateFontString(nil, "OVERLAY")
 		AB.Text:SetPoint("CENTER", AB, "CENTER", 0, -1)
 		AB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.3, "OUTLINE")
+		AB.Text:SetSmoothScaling(false)
 		AB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
 			if self.powerName and self.powerName == "STAGGER" then

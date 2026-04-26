@@ -4,7 +4,7 @@ ns.PlateColorDB = {
 	myVersion = 0,
 	HitTestShow = false,		--显示点击范围
 	HitWidth = 5,				--点击范围宽度
-	HitHeight = 8,				--点击范围顶部
+	HitHeight = 12,				--点击范围顶部
 	HitBottom = 0,				--点击范围底部
 	HitHelp = true,				--点击范围友方穿透
 	
