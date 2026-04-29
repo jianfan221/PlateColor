@@ -38,11 +38,7 @@ function ns.SetOnlyNames(unitFrame)
 	ns.SetSelectedScale()
 	ns.SetPoints(unitFrame)
 end
-
-hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
-	if unitFrame:IsForbidden() then return end
-	if not string.match(unitFrame.unit,"nameplate") then return end
-	ns.PlateOnlyName(unitFrame)
+local function ShowhealthBar(unitFrame)
 	if not PlateColorDB.onlyNameNpc then return end
 	if UnitCanAttack("player",unitFrame.unit) and not unitFrame.HealthBarsContainer.healthBar:IsShown() then
 		if unitFrame.showOnlyName then
@@ -61,7 +57,16 @@ hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
 			end
 		end
 	end
+end
+
+hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
+	if unitFrame:IsForbidden() then return end
+	if not string.match(unitFrame.unit,"nameplate") then return end
+	ns.PlateOnlyName(unitFrame)
+	ShowhealthBar(unitFrame)
 end)
+
+
 local function TrySetOnlyName(self)
 	if not self.unit then return end
 	if self:IsForbidden() then
@@ -82,6 +87,7 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
 	local unitFrame = namePlate.UnitFrame
 	TrySetOnlyName(unitFrame)
+	ShowhealthBar(unitFrame)
 end)
 hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitSet", function(self)
 	TrySetOnlyName(self)

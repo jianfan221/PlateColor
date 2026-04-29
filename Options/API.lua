@@ -179,7 +179,7 @@ local PercentData = {
 			abbreviationIsGlobal = false
 		},
 		{
-			breakpoint = 0.00001,--0.12%
+			breakpoint = 0.0000000000000000000001,--0.12%
 			abbreviation = "%",
 			significandDivisor = 0.01,
 			fractionDivisor = 100,
