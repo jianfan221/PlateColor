@@ -277,10 +277,33 @@ hooksecurefunc(NamePlateHealthBarMixin,"UpdateTextStringWithValues", function(se
 	end
 end)
 
---强制在标记存在时也显示精英/稀有分类图标
-hooksecurefunc(NamePlateClassificationFrameMixin, "SetRaidTargetIndex", function(self)
-	if not self then return end
+--[[自定义分类图标显示逻辑：绕过 Blizzard 的 raidTargetIndex 隐藏检查
+local function PC_GetClassificationAtlas(unitToken)
+	if not unitToken then return nil end
+	local classification = UnitClassification(unitToken)
+	if classification == "elite" or classification == "worldboss" then
+		return "nameplates-icon-elite-gold"
+	elseif classification == "rare" then
+		return "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"
+	elseif classification == "rareelite" then
+		return "nameplates-icon-elite-silver"
+	end
+	return nil
+end
+
+--接管显示：Blizzard 因 raidTargetIndex 清掉了 atlas，我们重新设置
+hooksecurefunc(NamePlateClassificationFrameMixin, "UpdateShownState", function(self)
 	if self:IsForbidden() then return end
-	self.raidTargetIndex = nil
-	self:UpdateClassificationIndicator()
-end)
+	if not self.unitToken then return end
+	if self:IsShowOnlyName() then return end
+	if self:IsWidgetsOnlyMode() then return end
+
+	if self.raidTargetIndex and not self.classificationAtlasElement then
+		local atlas = PC_GetClassificationAtlas(self.unitToken)
+		if atlas then
+			self.classificationAtlasElement = atlas
+			self.classificationIndicator:SetAtlas(atlas)
+			self:Show()
+		end
+	end
+end)]]
