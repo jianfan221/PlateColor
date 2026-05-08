@@ -4,7 +4,7 @@ local DB = ns.PlateColorDB
 
 ns.event("PLAYER_ENTERING_WORLD", function()
 --分页7滚动框架
-local ConFramescrollFrame7 = CreateFrame("ScrollFrame", nil, ns.tabframe7, "UIPanelScrollFrameTemplate")
+local ConFramescrollFrame7 = CreateFrame("ScrollFrame", nil, ns.tabframe7, "ScrollFrameTemplate")
 ConFramescrollFrame7:SetPoint("TOPLEFT", ns.tabframe7, "TOPLEFT", 4, -5)
 ConFramescrollFrame7:SetPoint("BOTTOMRIGHT", ns.tabframe7, "BOTTOMRIGHT", -30, 5)
 --分页7滚动内容

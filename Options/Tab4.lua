@@ -3,10 +3,14 @@ local L = ns.L
 local DB = ns.PlateColorDB
 
 ns.event("PLAYER_ENTERING_WORLD", function()
---分页4滚动内容不需要滚动框架就直接锚定在ns.tabframe4
-local ConFrame4 = CreateFrame("Frame", nil, ns.tabframe4)
+--分页4滚动框架
+local ConFramescrollFrame4 = CreateFrame("ScrollFrame", nil, ns.tabframe4, "ScrollFrameTemplate")
+ConFramescrollFrame4:SetPoint("TOPLEFT", ns.tabframe4, "TOPLEFT", 4, -5)
+ConFramescrollFrame4:SetPoint("BOTTOMRIGHT", ns.tabframe4, "BOTTOMRIGHT", -30, 5)
+--分页4滚动内容
+local ConFrame4 = CreateFrame("Frame", nil, ConFramescrollFrame4)
 ConFrame4:SetSize(670,480)
-ConFrame4:SetAllPoints(ns.tabframe4)
+ConFramescrollFrame4:SetScrollChild(ConFrame4)
 ns.Y[4] = 0	--设置起始位置
 
 local use = ns.AddSetTiText(ConFrame4,4,L["NPC颜色作用于"])

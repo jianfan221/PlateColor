@@ -3,7 +3,7 @@ local L = ns.L
 
 ns.event("PLAYER_ENTERING_WORLD", function()
 --分页6滚动框架
-local ConFramescrollFrame6 = CreateFrame("ScrollFrame", nil, ns.tabframe6, "UIPanelScrollFrameTemplate")
+local ConFramescrollFrame6 = CreateFrame("ScrollFrame", nil, ns.tabframe6, "ScrollFrameTemplate")
 ConFramescrollFrame6:SetPoint("TOPLEFT", ns.tabframe6, "TOPLEFT", 4, -5)
 ConFramescrollFrame6:SetPoint("BOTTOMRIGHT", ns.tabframe6, "BOTTOMRIGHT", -30, 5)
 --分页6滚动内容

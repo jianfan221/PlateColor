@@ -4,7 +4,7 @@ local DB = ns.PlateColorDB
 
 ns.event("PLAYER_ENTERING_WORLD", function()
 --分页2滚动框架
-local ConFramescrollFrame2 = CreateFrame("ScrollFrame", nil, ns.tabframe2, "UIPanelScrollFrameTemplate")
+local ConFramescrollFrame2 = CreateFrame("ScrollFrame", nil, ns.tabframe2, "ScrollFrameTemplate")
 ConFramescrollFrame2:SetPoint("TOPLEFT", ns.tabframe2, "TOPLEFT", 4, -5)
 ConFramescrollFrame2:SetPoint("BOTTOMRIGHT", ns.tabframe2, "BOTTOMRIGHT", -30, 5)
 --分页2滚动内容
@@ -61,8 +61,7 @@ local npOverlapH = ns.AddSetSlider(ConFrame2,2,L["水平堆叠间距"],L["垂直
 local npRange = ns.AddSetSlider(ConFrame2,2,L["姓名版可见范围"],L["姓名版可见范围"],10,60,1,"%d","npRange",ns.SetSelectedScale)
 
 local TiTextQT = ns.AddSetTiText(ConFrame2,2,L["其他"])
-local nameQuestTable = {{L["不显示"],0},{L["名字后"],1},{L["血条后"],2}}
-local nameQuest = ns.AddSetDropdM(ConFrame2,2,L["显示任务标志"],L["显示任务标志鼠标提示"],nameQuestTable,"nameQuestPos",ns.CteatNameQuest)
+local nameQuest = ns.AddSetClickB(ConFrame2,2,L["任务标志"],L["任务标志"],"questMark",ns.CteatNameQuest)
 local levelText = ns.AddSetClickB(ConFrame2,2,L["等级文本"],L["等级文本鼠标提示"],"levelText")
 local absorbText = ns.AddSetClickB(ConFrame2,2,L["吸收盾数值"],L["吸收盾数值鼠标提示"],"absorbText")
 

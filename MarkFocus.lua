@@ -114,6 +114,11 @@ function ns.PCSetFocus()
 			SetFocusHotkey(frame)
 		end
 	end
+	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+		if namePlate.UnitFrame then
+			SetFocusHotkey(namePlate.UnitFrame)
+		end
+	end
 end
 
 ns.event("PLAYER_ENTERING_WORLD", function(event)

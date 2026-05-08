@@ -19,9 +19,7 @@ function ns.CteatLevelText(unitFrame)
 	unitFrame.LevelText:ClearAllPoints()
     -- 寻找最左侧的参考物
     local anchor = unitFrame.healthBar
-    if unitFrame.RaidTargetFrame and unitFrame.RaidTargetFrame:IsShown() then
-        anchor = unitFrame.RaidTargetFrame
-    elseif unitFrame.ClassificationFrame and unitFrame.ClassificationFrame:IsShown() then
+	if unitFrame.ClassificationFrame and unitFrame.ClassificationFrame:IsShown() then
         anchor = unitFrame.ClassificationFrame
     end
 	unitFrame.LevelText:SetPoint("RIGHT",anchor,"LEFT",- 3,0)

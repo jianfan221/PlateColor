@@ -24,7 +24,6 @@ function ns.AddAbsorbText(event,unit)
 	
 	unitFrame.abs:SetText("")
 	local number = UnitGetTotalAbsorbs(unitFrame.unit)
-	--unitFrame.abs:SetText(C_StringUtil.TruncateWhenZero(number))
 	unitFrame.abs:SetText(ns.value(number))
 	if number == nil then
 		unitFrame.abs:SetAlpha(0)

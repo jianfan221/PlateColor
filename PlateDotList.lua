@@ -154,7 +154,7 @@ local function EnsureWindow()
 	local closeButton = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
 	closeButton:SetPoint("TOPRIGHT", 2, 2)
 
-	local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
+	local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "ScrollFrameTemplate")
 	scrollFrame:SetPoint("TOPLEFT", 16, -114)
 	scrollFrame:SetPoint("BOTTOMRIGHT", -30, 16)
 

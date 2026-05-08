@@ -87,6 +87,11 @@ ns.enUS = {
 ["左侧增益光环尺寸"] = "Left Buff Aura Size",
 ["右侧控制光环尺寸"] = "Right Control Aura Size",
 
+["标记"] = "Mark",
+["标记尺寸"] = "Mark Size",
+["标记水平偏移"] = "Mark Horizontal Offset",
+["标记垂直偏移"] = "Mark Vertical Offset",
+
 ["个人资源"] = "Personal Resource",
 ["启用个人资源设置"] = "Enable Personal Resource Settings",
 ["个人资源数值"] = "Personal Resource Value",
@@ -154,8 +159,7 @@ ns.enUS = {
 ["姓名版可见范围"] = "Nameplate Visibility Range",
 
 ["其他"] = "Other",
-["显示任务标志"] = "Show Quest Marker",
-["显示任务标志鼠标提示"] = "Quest marker display position",
+["任务标志"] = "Quest Marker",
 ["名字后"] = "After Name",
 ["血条后"] = "After Health Bar",
 ["等级文本"] = "Level Text",

@@ -12,7 +12,7 @@ if LibStub and LibStub("LibSharedMedia-3.0",true) then
 end
 
 --分页1滚动框架
-local ConFramescrollFrame1 = CreateFrame("ScrollFrame", nil, ns.tabframe1, "UIPanelScrollFrameTemplate")
+local ConFramescrollFrame1 = CreateFrame("ScrollFrame", nil, ns.tabframe1, "ScrollFrameTemplate")
 ConFramescrollFrame1:SetPoint("TOPLEFT", ns.tabframe1, "TOPLEFT", 4, -5)
 ConFramescrollFrame1:SetPoint("BOTTOMRIGHT", ns.tabframe1, "BOTTOMRIGHT", -30, 5)
 
@@ -119,6 +119,11 @@ local HpTextPointtable = {{L["左"],1},{L["中"],2},{L["右"],3}}
 local HpTextPoint = ns.AddSetDropdM(ConFrame1,1,L["生命值文本位置"],L["生命值文本位置"],HpTextPointtable,"HpTextPoint",ns.SetPoints)
 local HpTextVoffset = ns.AddSetSlider(ConFrame1,1,L["生命值文本垂直偏移"],L["生命值文本垂直偏移"],-50,50,1,"%d","HpTextVoffset",ns.SetPoints)
 local HpTextHoffset = ns.AddSetSlider(ConFrame1,1,L["生命值文本水平偏移"],L["生命值文本水平偏移"],-50,50,1,"%d","HpTextHoffset",ns.SetPoints)
+
+local mark = ns.AddSetTiText(ConFrame1,1,L["标记"])
+local markScale = ns.AddSetSlider(ConFrame1,1,L["标记尺寸"],L["标记尺寸"],0.5,3,0.1,"%.1f","markScale",ns.SetPoints)
+local markHoffset = ns.AddSetSlider(ConFrame1,1,L["标记水平偏移"],L["标记水平偏移"],-80,80,1,"%d","markHoffset",ns.SetPoints)
+local markVoffset = ns.AddSetSlider(ConFrame1,1,L["标记垂直偏移"],L["标记垂直偏移"],-80,80,1,"%d","markVoffset",ns.SetPoints)
 
 local auras = ns.AddSetTiText(ConFrame1,1,AURAS)
 local hideAuraTooltip = ns.AddSetClickB(ConFrame1,1,L["隐藏光环鼠标提示"],L["隐藏光环鼠标提示"],"hideAuraTooltip")

@@ -53,6 +53,10 @@ ns.PlateColorDB = {
 	auraTopScale = 1,			--上方减益光环尺寸
 	auraLScale = 1.5,			--左侧增益光环尺寸
 	auraRScale = 2,				--右侧控制光环尺寸
+
+	markScale = 1.2,				--标记尺寸
+	markHoffset = 0,			--标记水平偏移
+	markVoffset = 0,			--标记垂直偏移
 	
 	myHPSetup = true,			--启用个人资源设置
 	myHPShowMode = 2,			--额外资源显示模式(0=暴雪原版,1=新版资源条,2=精简模式)
@@ -103,7 +107,7 @@ ns.PlateColorDB = {
 	npOverlapH = 0.8,			--姓名版水平间距
 	npRange = 60,				--姓名版可见范围
 	
-	nameQuestPos = 2,		--显示任务标志(0=不显示,1=名字后,2=血条后)
+	questMark = true,			--显示任务标志
 	levelText = true,			--等级文本
 	absorbText = true,			--吸收盾文本
 	

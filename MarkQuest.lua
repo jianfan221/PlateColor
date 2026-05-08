@@ -4,7 +4,7 @@ local NameQuestTable = {}
 function ns.CteatNameQuest(unitFrame)
 	if not unitFrame then return end
 	if not unitFrame.unit then return end
-	if PlateColorDB.nameQuestPos == 0 then return end
+	if not PlateColorDB.questMark then return end
 
 	if not unitFrame.NameQuest then
 		unitFrame.NameQuest = unitFrame:CreateTexture(nil, "OVERLAY")
@@ -13,10 +13,10 @@ function ns.CteatNameQuest(unitFrame)
 	end
 	
 	unitFrame.NameQuest:ClearAllPoints()
-	if PlateColorDB.nameQuestPos == 2 and unitFrame.healthBar:IsShown() then
+	if unitFrame.healthBar:IsShown() then
 		unitFrame.NameQuest:SetPoint("LEFT",unitFrame.healthBar,"RIGHT",8,0)
 	elseif unitFrame.name then
-		unitFrame.NameQuest:SetPoint("BOTTOMLEFT",unitFrame.name,"BOTTOMRIGHT",-4,0)
+		unitFrame.NameQuest:SetPoint("LEFT",unitFrame.name,"RIGHT",8,0)
 	else
 		unitFrame.NameQuest:SetPoint("TOP",unitFrame,"TOP",0,0)
 	end

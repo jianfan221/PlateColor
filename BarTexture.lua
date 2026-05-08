@@ -116,16 +116,19 @@ function ns.UpdateTargetTexture(unitFrame)
 			local anchor
 			if unitFrame.LevelText and unitFrame.LevelText:GetText() then
 				anchor = unitFrame.LevelText
-			elseif unitFrame.RaidTargetFrame:IsShown() then
-				anchor = unitFrame.RaidTargetFrame
 			elseif unitFrame.ClassificationFrame:IsShown() then
 				anchor = unitFrame.ClassificationFrame
 			else
 				anchor = unitFrame.healthBar
 			end
-			unitFrame.ArrowLeft:SetPoint("RIGHT", anchor, "LEFT",  2 - PlateColorDB.arrowHoffset, -1)
+			unitFrame.ArrowLeft:SetPoint("RIGHT", anchor, "LEFT",  1 - PlateColorDB.arrowHoffset, -1)
 			unitFrame.ArrowLeft:SetSize(scale, scale)
 			unitFrame.ArrowLeft:SetShown((PlateColorDB.arrowPoint == 1 or PlateColorDB.arrowPoint == 3) and isTarget)
+			if unitFrame.ArrowRight:IsShown() then
+				unitFrame.ArrowLeft:SetSize(scale, scale)
+			else
+				unitFrame.ArrowLeft:SetSize(1, scale)
+			end
 		else
 			unitFrame.ArrowLeft:SetSize(scale * 0.8, scale * 0.8)
 			unitFrame.ArrowLeft:SetPoint("RIGHT", unitFrame.name, "LEFT", 3, 0)

@@ -3,10 +3,14 @@ local L = ns.L
 local DB = ns.PlateColorDB
 
 ns.event("PLAYER_ENTERING_WORLD", function()
---分页5滚动内容不需要滚动框架就直接锚定在ns.tabframe5
-local ConFrame5 = CreateFrame("Frame", "ConFrame5", ns.tabframe5)
+--分页5滚动框架
+local ConFramescrollFrame5 = CreateFrame("ScrollFrame", nil, ns.tabframe5, "ScrollFrameTemplate")
+ConFramescrollFrame5:SetPoint("TOPLEFT", ns.tabframe5, "TOPLEFT", 4, -5)
+ConFramescrollFrame5:SetPoint("BOTTOMRIGHT", ns.tabframe5, "BOTTOMRIGHT", -30, 5)
+--分页5滚动内容
+local ConFrame5 = CreateFrame("Frame", nil, ConFramescrollFrame5)
 ConFrame5:SetSize(670,480)
-ConFrame5:SetAllPoints(ns.tabframe4)
+ConFramescrollFrame5:SetScrollChild(ConFrame5)
 ns.Y[5] = 0	--设置起始位置
 
 local focustitle = ns.AddSetTiText(ConFrame5,5,L["焦点"])

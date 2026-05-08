@@ -137,6 +137,20 @@ function ns.SetPoints(self)
 	elseif PlateColorDB.namePoint == 5 then--中下
 		PixelUtil.SetPoint(self.name, "TOP", self.HealthBarsContainer, "BOTTOM", 0, PlateColorDB.nameVoffset-4);
 	end
+	--标记位置
+	if self.RaidTargetFrame then
+		self.RaidTargetFrame:SetScale(PlateColorDB.markScale)
+		self.RaidTargetFrame:ClearAllPoints();
+		if self:IsShowOnlyName() then
+			PixelUtil.SetPoint(self.RaidTargetFrame, "BOTTOM", self.name, "TOP", 0, 10);
+		else
+			PixelUtil.SetPoint(self.RaidTargetFrame, "BOTTOM", self.HealthBarsContainer, "CENTER", PlateColorDB.markHoffset, PlateColorDB.markVoffset - 2);
+		end
+	end
+	if self.ClassificationFrame then
+		self.ClassificationFrame:ClearAllPoints();
+		PixelUtil.SetPoint(self.ClassificationFrame, "RIGHT", self.HealthBarsContainer, "LEFT", 0, 0);
+	end
 
 	local hpWidht = PlateColorDB.hpWidht
 	local hpHeight = PlateColorDB.hpHeight
@@ -261,4 +275,12 @@ hooksecurefunc(NamePlateHealthBarMixin,"UpdateTextStringWithValues", function(se
 		--self.PCText:SetText(string.format("%d%%", HealthPercent))
 		self.PCText:SetText(string.format("%s", ns.percent(HealthPercent)))
 	end
+end)
+
+--强制在标记存在时也显示精英/稀有分类图标
+hooksecurefunc(NamePlateClassificationFrameMixin, "SetRaidTargetIndex", function(self)
+	if not self then return end
+	if self:IsForbidden() then return end
+	self.raidTargetIndex = nil
+	self:UpdateClassificationIndicator()
 end)
