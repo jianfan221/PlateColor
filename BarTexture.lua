@@ -124,7 +124,7 @@ function ns.UpdateTargetTexture(unitFrame)
 			unitFrame.ArrowLeft:SetPoint("RIGHT", anchor, "LEFT",  1 - PlateColorDB.arrowHoffset, -1)
 			unitFrame.ArrowLeft:SetSize(scale, scale)
 			unitFrame.ArrowLeft:SetShown((PlateColorDB.arrowPoint == 1 or PlateColorDB.arrowPoint == 3) and isTarget)
-			if unitFrame.ArrowRight:IsShown() then
+			if unitFrame.ArrowLeft:IsShown() then
 				unitFrame.ArrowLeft:SetSize(scale, scale)
 			else
 				unitFrame.ArrowLeft:SetSize(1, scale)
