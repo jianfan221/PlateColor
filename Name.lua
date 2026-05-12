@@ -59,7 +59,7 @@ local function ShowhealthBar(unitFrame)
 	end
 end
 
-hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
+ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
 	if unitFrame:IsForbidden() then return end
 	if not string.match(unitFrame.unit,"nameplate") then return end
 	ns.PlateOnlyName(unitFrame)
@@ -89,15 +89,15 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	TrySetOnlyName(unitFrame)
 	ShowhealthBar(unitFrame)
 end)
-hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitSet", function(self)
+ns.hook(NamePlateUnitFrameMixin, "OnUnitSet", function(self)
 	TrySetOnlyName(self)
 end)
-hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
+ns.hook(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
 	if not self.unit then return end
 	TrySetOnlyName(self)
 end)
 
-hooksecurefunc(NamePlateUnitFrameMixin, "UpdateNameClassColor", function(self)
+ns.hook(NamePlateUnitFrameMixin, "UpdateNameClassColor", function(self)
 	if not self.unit then return end
 	if not PlateColorDB.onlyNameNpc then return end
 	if not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player",self.unit)) then

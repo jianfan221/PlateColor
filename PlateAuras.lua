@@ -10,7 +10,7 @@ local function SetCooldownText(self)
         end
     end
 end
-hooksecurefunc(NamePlateAuraItemMixin,"OnLoad",SetCooldownText)
+ns.hook(NamePlateAuraItemMixin,"OnLoad",SetCooldownText)
 
 --驱散颜色
 local discolor = C_CurveUtil.CreateColorCurve()
@@ -21,7 +21,7 @@ discolor:AddPoint(2, CreateColor(0.5,0,  1,  1))--诅咒
 discolor:AddPoint(3, CreateColor(1,0.5,  0,  1))--疾病
 discolor:AddPoint(4, CreateColor(0,  1,  0,  1))--中毒
 discolor:AddPoint(9, CreateColor(1,  0,  0,  1))--激怒
-hooksecurefunc(NamePlateAuraItemMixin, "SetAura", function(self,aura)
+ns.hook(NamePlateAuraItemMixin, "SetAura", function(self,aura)
     if self and not self:IsForbidden() then
         self:EnableMouse(not PlateColorDB.hideAuraTooltip)
     end

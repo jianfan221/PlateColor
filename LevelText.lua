@@ -27,7 +27,7 @@ function ns.CteatLevelText(unitFrame)
 	unitFrame.LevelText:SetText(LevelText)
 end
 
-hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
+ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
 	if unitFrame:IsForbidden() or not unitFrame.unit or not string.match(unitFrame.unit,"nameplate") then 
         return 
     end

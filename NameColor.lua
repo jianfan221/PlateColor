@@ -73,7 +73,7 @@ function ns.SetNameColor(unitFrame)
     end
 end
 
-hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
+ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
 	if unitFrame:IsForbidden() then return end
 	if not string.match(unitFrame.unit,"nameplate") then return end
 	ns.SetNameColor(unitFrame)

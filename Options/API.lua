@@ -27,12 +27,14 @@ local onceEvents = {
 }
 function ns.event(event, handler, isOnce)--ns.event(event, handler, true)只执行一次的事件
     EventRegistry:RegisterFrameEventAndCallback(event, function(self, ...)
-        if (isOnce or event == "PLAYER_ENTERING_WORLD") and self then
+        if (isOnce or onceEvents[event]) and self then
             EventRegistry:UnregisterFrameEventAndCallback(event, self)
         end
         handler(event, ...)
     end)
 end
+
+ns.hook = hooksecurefunc
 
 --判断是否是秘密值
 function ns.MM(value)

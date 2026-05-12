@@ -250,15 +250,15 @@ function ns.SetPoints(self)
 	
 end
 
-hooksecurefunc(NamePlateUnitFrameMixin,"OnUnitFactionChanged", function(self)
+ns.hook(NamePlateUnitFrameMixin,"OnUnitFactionChanged", function(self)
 	ns.SetPoints(self)
 end)
-hooksecurefunc(NamePlateUnitFrameMixin,"UpdateAnchors", function(self)
+ns.hook(NamePlateUnitFrameMixin,"UpdateAnchors", function(self)
 	ns.SetPoints(self)
 end)
 
 --生命值文本
-hooksecurefunc(NamePlateHealthBarMixin,"UpdateTextStringWithValues", function(self,textString, value, valueMin, valueMax)
+ns.hook(NamePlateHealthBarMixin,"UpdateTextStringWithValues", function(self,textString, value, valueMin, valueMax)
 	if self:IsForbidden() then return end
 	if not self.PCText then return end
 	if not self:GetParent():GetParent().unit then return end
@@ -292,7 +292,7 @@ local function PC_GetClassificationAtlas(unitToken)
 end
 
 --接管显示：Blizzard 因 raidTargetIndex 清掉了 atlas，我们重新设置
-hooksecurefunc(NamePlateClassificationFrameMixin, "UpdateShownState", function(self)
+ns.hook(NamePlateClassificationFrameMixin, "UpdateShownState", function(self)
 	if self:IsForbidden() then return end
 	if not self.unitToken then return end
 	if self:IsShowOnlyName() then return end

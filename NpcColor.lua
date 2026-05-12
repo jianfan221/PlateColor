@@ -75,7 +75,7 @@ local function NpcCastColor(self,event)
 	end
 
 end
-hooksecurefunc(NamePlateCastingBarMixin,"OnEvent",NpcCastColor)
+ns.hook(NamePlateCastingBarMixin,"OnEvent",NpcCastColor)
 
 ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)

@@ -54,7 +54,7 @@ local function SetPlateCastBar(self, event)
         barTexture:SetVertexColorFromBoolean(BarType, trueColor, currentFalseColor)
     end
 end
-hooksecurefunc(NamePlateCastingBarMixin,"OnEvent",SetPlateCastBar)
+ns.hook(NamePlateCastingBarMixin,"OnEvent",SetPlateCastBar)
 ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
 	local unitFrame = namePlate.UnitFrame
@@ -62,7 +62,7 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 		SetPlateCastBar(unitFrame.castBar)
 	end
 end)
-hooksecurefunc(NamePlateCastingBarMixin,"FinishSpell",function(self)
+ns.hook(NamePlateCastingBarMixin,"FinishSpell",function(self)
 	if self:IsForbidden() then return end
 	if not self.unit then return end
 	if PlateColorDB.castTexture == "Blizzard-default" then return end--选择了原版材质就用默认的
@@ -70,7 +70,7 @@ hooksecurefunc(NamePlateCastingBarMixin,"FinishSpell",function(self)
 end)
 
 --施法时间,获取施法剩余时间API抄的Platynator\Display\CastTimeText.lua
-hooksecurefunc(NamePlateCastingBarMixin,"OnUpdate", function(self,elapsed)
+ns.hook(NamePlateCastingBarMixin,"OnUpdate", function(self,elapsed)
 	if not PlateColorDB.castTime then 
 		if self.PCCastTimeText then
 			self.PCCastTimeText:SetText("")

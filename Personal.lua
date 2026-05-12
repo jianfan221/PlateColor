@@ -291,15 +291,15 @@ end
 ns.event("PLAYER_ENTERING_WORLD", function(event)
 	ns.AllmyPowerBar()
 	if prdClassFrame and prdClassFrame.Setup then
-		hooksecurefunc(prdClassFrame, "Setup", function()
+		ns.hook(prdClassFrame, "Setup", function()
 			ns.AddNewPowerBar()
 		end)
 	end
 	if PersonalResourceDisplayFrame then
-		hooksecurefunc(PersonalResourceDisplayFrame, "UpdateAdditionalBarAnchors", function()
+		ns.hook(PersonalResourceDisplayFrame, "UpdateAdditionalBarAnchors", function()
 			ns.AddNewPowerBar()
 		end)
-		hooksecurefunc(PersonalResourceDisplayFrame, "SetupPowerBar", function()
+		ns.hook(PersonalResourceDisplayFrame, "SetupPowerBar", function()
 			ns.AddNewPowerBar()
 		end)
 	end
@@ -314,7 +314,7 @@ ns.event("TRAIT_CONFIG_UPDATED", function(event, unit)
 	ns.AddNewPowerBar()
 end)
 
-hooksecurefunc(EditModeManagerFrame, "OnSystemPositionChange", function(edit,self)
+ns.hook(EditModeManagerFrame, "OnSystemPositionChange", function(edit,self)
 	if not PlateColorDB.myHPEdit then return end
 	if not self then return end
 	if self ~= PersonalResourceDisplayFrame then return end

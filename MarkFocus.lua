@@ -100,7 +100,7 @@ local duf = {
 	EQOLUFBoss5Frame,
 }
 
-hooksecurefunc("CompactUnitFrame_UpdateName", function(frame)
+ns.hook("CompactUnitFrame_UpdateName", function(frame)
 	if InCombatLockdown() then return end
 	if frame and frame.unit and string.match(frame.unit,"nameplate")  then
 		SetFocusHotkey(frame)

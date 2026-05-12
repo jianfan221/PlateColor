@@ -38,10 +38,10 @@ local function AddAura(self, aura)
         end
     end
 end
-hooksecurefunc(NamePlateAurasMixin, "AddAura", AddAura)
-hooksecurefunc(NamePlateAurasMixin, "UpdateAura", AddAura)
+ns.hook(NamePlateAurasMixin, "AddAura", AddAura)
+ns.hook(NamePlateAurasMixin, "UpdateAura", AddAura)
 
-hooksecurefunc(NamePlateAurasMixin, "RemoveAura", function(self, auraInstanceID)
+ns.hook(NamePlateAurasMixin, "RemoveAura", function(self, auraInstanceID)
     if self:IsForbidden() then return end
     if not auraInstanceID then return end
     if self:GetParent().mydot and self:GetParent().mydot[auraInstanceID] then

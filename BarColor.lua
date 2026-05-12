@@ -97,13 +97,13 @@ function ns.UpdateHpbarColor(unitFrame)
     unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb);
 end
 
-hooksecurefunc("CompactUnitFrame_UpdateSelectionHighlight", function(frame)
+ns.hook("CompactUnitFrame_UpdateSelectionHighlight", function(frame)
 	if not frame.unit then return end
 	if string.match(frame.unit,"nameplate") then
 		ns.UpdateHpbarColor(frame)
 	end
 end)
-hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
+ns.hook("CompactUnitFrame_UpdateHealthColor", function(frame)
 --UNIT_NAME_UPDATE
 --UNIT_THREAT_LIST_UPDATE
 --UNIT_CONNECTION
@@ -112,7 +112,7 @@ hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
 		ns.UpdateHpbarColor(frame)
 	end
 end)
-hooksecurefunc(NamePlateHealthBarMixin,"UpdateTextStringWithValues", function(self)
+ns.hook(NamePlateHealthBarMixin,"UpdateTextStringWithValues", function(self)
 	if not PlateColorDB["Slayline"]  then return end
 	if ns.LinePoint == 0 then return end
 	if self:IsForbidden() then return end

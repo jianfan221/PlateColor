@@ -225,13 +225,13 @@ end)
 --		end
 --	end)
 --end)
-hooksecurefunc("CompactUnitFrame_UpdateName", function(unitFrame)
+ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
 	if unitFrame:IsForbidden() then return end
 	if not string.match(unitFrame.unit,"nameplate") then return end
 	ns.UpdateTargetTexture(unitFrame)
 end)
 
-hooksecurefunc(GameTooltip,"SetWorldCursor", function(frame)
+ns.hook(GameTooltip,"SetWorldCursor", function(frame)
 	if frame:IsForbidden() then return end
 	C_Timer.After(0,function()
 		for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
