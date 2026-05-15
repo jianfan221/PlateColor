@@ -38,73 +38,9 @@ function ns.SetOnlyNames(unitFrame)
 	ns.SetSelectedScale()
 	ns.SetPoints(unitFrame)
 end
-local function ShowhealthBar(unitFrame)
-	if not PlateColorDB.onlyNameNpc then return end
-	if UnitCanAttack("player",unitFrame.unit) and not unitFrame.HealthBarsContainer.healthBar:IsShown() then
-		if unitFrame.showOnlyName then
-			unitFrame.showOnlyName = nil
-		end
-		if unitFrame.HealthBarsContainer.healthBar.showOnlyName then
-			unitFrame.HealthBarsContainer.healthBar.showOnlyName = nil
-			unitFrame.HealthBarsContainer.healthBar:Show()
-		end
-		if unitFrame.castBar then
-			if unitFrame.castBar.showOnlyName then
-				unitFrame.castBar.showOnlyName = nil
-			end
-			if unitFrame.castBar.widgetsOnly then
-				unitFrame.castBar.widgetsOnly = nil
-			end
-		end
-	end
-end
 
 ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
 	if unitFrame:IsForbidden() then return end
 	if not string.match(unitFrame.unit,"nameplate") then return end
 	ns.PlateOnlyName(unitFrame)
-	ShowhealthBar(unitFrame)
-end)
-
-
-local function TrySetOnlyName(self)
-	if not self.unit then return end
-	if self:IsForbidden() then
-		SystemFont_NamePlate:SetFont(SystemFont_NamePlate:GetFont(),1,"OUTLINE")
-		SystemFont_NamePlate_Outlined:SetFont(SystemFont_NamePlate_Outlined:GetFont(),1,"OUTLINE")
-		SystemFont_NamePlate:SetFont(SystemFont_NamePlate:GetFont(),PlateColorDB.helpNameScale,"OUTLINE")
-		SystemFont_NamePlate_Outlined:SetFont(SystemFont_NamePlate_Outlined:GetFont(),PlateColorDB.helpNameScale,"OUTLINE")
-	end
-	if not PlateColorDB.onlyNameNpc then return end
-	if not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player",self.unit)) then
-		TableUtil.TrySet(self, "showOnlyName")
-		if not self:IsForbidden() and self.HealthBarsContainer.healthBar:IsShown() then
-			self.HealthBarsContainer.healthBar:Hide()
-		end
-	end
-end
-ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
-	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
-	local unitFrame = namePlate.UnitFrame
-	TrySetOnlyName(unitFrame)
-	ShowhealthBar(unitFrame)
-end)
-ns.hook(NamePlateUnitFrameMixin, "OnUnitSet", function(self)
-	TrySetOnlyName(self)
-end)
-ns.hook(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
-	if not self.unit then return end
-	TrySetOnlyName(self)
-end)
-
-ns.hook(NamePlateUnitFrameMixin, "UpdateNameClassColor", function(self)
-	if not self.unit then return end
-	if not PlateColorDB.onlyNameNpc then return end
-	if not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player",self.unit)) then
-		TableUtil.TrySet(self.optionTable, "colorNameBySelection")
-		TableUtil.TrySet(self.castBar, "showOnlyName")
-		TableUtil.TrySet(self.castBar, "widgetsOnly")
-		TableUtil.TrySet(self.HealthBarsContainer.healthBar, "showOnlyName")
-		TableUtil.TrySet(self.ClassificationFrame, "showOnlyName")
-	end
 end)
