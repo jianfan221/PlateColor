@@ -33,8 +33,18 @@ local function TrySetOnlyName(self)
 		if self.HealthBarsContainer.healthBar and self.HealthBarsContainer.healthBar.show then
 			self.HealthBarsContainer.healthBar:Show()
 		end
+		if self.castBar and self.castBar.show and (UnitCastingInfo(self.unit) ~= nil or UnitChannelInfo(self.unit) ~= nil) then
+			self.castBar:Show()
+		end
 	end
 end
+
+ns.event("NAME_PLATE_UNIT_ADDED", function(_, unit)
+	local frame = C_NamePlate.GetNamePlateForUnit(unit)
+	if frame then
+		TrySetOnlyName(frame.UnitFrame)
+	end
+end)
 
 ns.hook(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
 	TrySetOnlyName(self)
