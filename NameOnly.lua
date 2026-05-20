@@ -41,4 +41,7 @@ end
 
 ns.hook(NamePlateUnitFrameMixin, "UpdateShowOnlyName", function(self)
 	TrySetOnlyName(self)
+	C_Timer.After(0, function()
+		TrySetOnlyName(self)
+	end)
 end)
