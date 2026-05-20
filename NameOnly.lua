@@ -39,17 +39,6 @@ local function TrySetOnlyName(self)
 	end
 end
 
-ns.event("NAME_PLATE_UNIT_ADDED", function(_, unit)
-	local frame = C_NamePlate.GetNamePlateForUnit(unit)
-	if frame then
-		TrySetOnlyName(frame.UnitFrame)
-	end
-end)
-
-ns.hook(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self)
-	TrySetOnlyName(self)
-end)
-
-ns.hook(NamePlateUnitFrameMixin, "UpdateNameClassColor", function(self)
+ns.hook(NamePlateUnitFrameMixin, "UpdateShowOnlyName", function(self)
 	TrySetOnlyName(self)
 end)
