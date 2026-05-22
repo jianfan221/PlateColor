@@ -15,6 +15,16 @@ end
 local ConFramescrollFrame1 = CreateFrame("ScrollFrame", nil, ns.tabframe1, "ScrollFrameTemplate")
 ConFramescrollFrame1:SetPoint("TOPLEFT", ns.tabframe1, "TOPLEFT", 4, -5)
 ConFramescrollFrame1:SetPoint("BOTTOMRIGHT", ns.tabframe1, "BOTTOMRIGHT", -30, 5)
+ConFramescrollFrame1:SetScript("OnMouseWheel", function(self, value)
+	local step = 70
+	local scroll = self:GetVerticalScroll()
+	local range = self:GetVerticalScrollRange()
+	if value > 0 then
+		self:SetVerticalScroll(math.max(0, scroll - step))
+	else
+		self:SetVerticalScroll(math.min(range, scroll + step))
+	end
+end)
 
 --分页1滚动内容
 local ConFrame1 = CreateFrame("Frame", nil, ConFramescrollFrame1)

@@ -6,6 +6,16 @@ ns.event("PLAYER_ENTERING_WORLD", function()
 local ConFramescrollFrame6 = CreateFrame("ScrollFrame", nil, ns.tabframe6, "ScrollFrameTemplate")
 ConFramescrollFrame6:SetPoint("TOPLEFT", ns.tabframe6, "TOPLEFT", 4, -5)
 ConFramescrollFrame6:SetPoint("BOTTOMRIGHT", ns.tabframe6, "BOTTOMRIGHT", -30, 5)
+ConFramescrollFrame6:SetScript("OnMouseWheel", function(self, value)
+	local step = 70
+	local scroll = self:GetVerticalScroll()
+	local range = self:GetVerticalScrollRange()
+	if value > 0 then
+		self:SetVerticalScroll(math.max(0, scroll - step))
+	else
+		self:SetVerticalScroll(math.min(range, scroll + step))
+	end
+end)
 --分页6滚动内容
 local ConFrame6 = CreateFrame("Frame", nil, ConFramescrollFrame6)
 ConFrame6:SetSize(670,480)
