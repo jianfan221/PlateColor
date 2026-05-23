@@ -36,7 +36,10 @@ function ns.BorderSetting(unitFrame, frame, offset)
 		if not castbar.customMask then
 			castbar.customMask = castbar:CreateMaskTexture()
 			castbar.customMask:SetAllPoints(castbar)
-			castbar:GetStatusBarTexture():AddMaskTexture(castbar.customMask)
+			local statusBarTexture = castbar:GetStatusBarTexture()
+			if statusBarTexture then
+				statusBarTexture:AddMaskTexture(castbar.customMask)
+			end
 		end
 		castbar.customMask:SetTextureSliceMargins(margin, margin, margin, margin)
 		castbar.customMask:SetTexture(ns.HPBorderMask[PlateColorDB.hpBorderTexture], "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")

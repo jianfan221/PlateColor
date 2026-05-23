@@ -25,11 +25,11 @@ local function TrySetOnlyName(self)
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self.castBar }, "widgetsOnly")
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self.HealthBarsContainer.healthBar }, "showOnlyName")
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self.ClassificationFrame }, "showOnlyName")
-		if self.healthBar and self.healthBar.show then
+		if self.healthBar then
 			self.healthBar:Hide()
 			self.healthBar:Show()
 		end
-		if self.castBar and self.castBar.show and (UnitCastingInfo(self.unit) ~= nil or UnitChannelInfo(self.unit) ~= nil) then
+		if self.castBar and (UnitCastingInfo(self.unit) ~= nil or UnitChannelInfo(self.unit) ~= nil) then
 			self.castBar:Show()
 		end
 	elseif not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player", self.unit)) then
@@ -44,4 +44,7 @@ end
 
 ns.hook(NamePlateUnitFrameMixin, "UpdateShowOnlyName", function(self)
 	TrySetOnlyName(self)
+	C_Timer.After(0.1, function()
+		TrySetOnlyName(self)
+	end)
 end)
