@@ -25,11 +25,13 @@ creattrue = true
 local TiText = PCGUI:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 TiText:SetPoint("TOPLEFT",PCGUI,"TOPLEFT", 0, -10)
 TiText:SetText(addontext)
-TiText:SetFont(ns.fonts, 50, "OUTLINE")
+TiText:SetFontObject("PC_FontOutline")
+TiText:SetFontHeight(50)
 --标题文本2
 local TiText2 = PCGUI:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 TiText2:SetPoint("BOTTOMLEFT",TiText,"BOTTOMRIGHT", 5, 8)
-TiText2:SetFont(ns.fonts, 20, "OUTLINE")
+TiText2:SetFontObject("PC_FontOutline")
+TiText2:SetFontHeight(20)
 TiText2:SetText(SHOW_TARGET_CASTBAR_IN_V_KEY)
 TiText2:SetVertexColor(1.0, 1.0, 1.0)
 
