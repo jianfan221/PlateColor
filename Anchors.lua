@@ -229,7 +229,8 @@ function ns.SetPoints(self)
 		self.healthBar.PCText:SetVertexColor(1,1,1)
 		self.healthBar.PCText:SetSmoothScaling(false)
 	end
-	self.healthBar.PCText:SetFont(ns.fonts,PlateColorDB.HpTextScale1,"OUTLINE");
+	self.healthBar.PCText:SetFontObject("PC_FontOutline");
+	self.healthBar.PCText:SetFontHeight(PlateColorDB.HpTextScale1);
 	self.healthBar.PCText:ClearAllPoints();
 	if PlateColorDB.HpTextPoint == 1 then
 		self.healthBar.PCText:SetPoint("LEFT", self.healthBar, "LEFT", PlateColorDB.HpTextHoffset+0, PlateColorDB.HpTextVoffset+0)
