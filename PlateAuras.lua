@@ -6,7 +6,8 @@ local function SetCooldownText(self)
     end)
     if success and region then
         if type(region.SetFont) == "function" then
-            region:SetFont(STANDARD_TEXT_FONT, self:GetHeight()/1.5 * PlateColorDB.auraText1, "OUTLINE")
+            region:SetFontObject("PC_FontOutline")
+            region:SetFontHeight(self:GetHeight()/1.5 * PlateColorDB.auraText1)
         end
     end
 end
