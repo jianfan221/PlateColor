@@ -34,7 +34,8 @@ function ns.SetPersonalTexture()
 	if not HB.Text then
 		HB.Text = HB:CreateFontString(nil, "OVERLAY")
 		HB.Text:SetPoint("CENTER", HB, "CENTER", 0, -1)
-		HB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.25, "OUTLINE")
+		HB.Text:SetFontObject("PC_FontOutline")
+		HB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
 		HB.Text:SetSmoothScaling(false)
 		HB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
@@ -43,7 +44,8 @@ function ns.SetPersonalTexture()
 		end)
 	end
 	HB.Text:SetShown(true)
-	HB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.25, "OUTLINE")
+	HB.Text:SetFontObject("PC_FontOutline")
+	HB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
 	local HPPer = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 	HB.Text:SetText(string.format("%d", HPPer))
 
@@ -51,7 +53,8 @@ function ns.SetPersonalTexture()
 	if not PB.Text then
 		PB.Text = PB:CreateFontString(nil, "OVERLAY")
 		PB.Text:SetPoint("CENTER", PB, "CENTER", 0, -1)
-		PB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.25, "OUTLINE")
+		PB.Text:SetFontObject("PC_FontOutline")
+		PB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
 		PB.Text:SetSmoothScaling(false)
 		PB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
@@ -64,7 +67,8 @@ function ns.SetPersonalTexture()
 		end)
 	end
 	PB.Text:SetShown(true)
-	PB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.25, "OUTLINE")
+	PB.Text:SetFontObject("PC_FontOutline")
+	PB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
 	if UnitPowerType("player") ~= 0 then
 		PB.Text:SetText(ns.value(PB:GetValue()))
 	else
@@ -75,7 +79,8 @@ function ns.SetPersonalTexture()
 	if not AB.Text then
 		AB.Text = AB:CreateFontString(nil, "OVERLAY")
 		AB.Text:SetPoint("CENTER", AB, "CENTER", 0, -1)
-		AB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.3, "OUTLINE")
+		AB.Text:SetFontObject("PC_FontOutline")
+		AB.Text:SetFontHeight(PlateColorDB.myHPheight*1.3)
 		AB.Text:SetSmoothScaling(false)
 		AB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
@@ -93,7 +98,8 @@ function ns.SetPersonalTexture()
 		end)
 	end
 	AB.Text:SetShown(true)
-	AB.Text:SetFont(ns.fonts, PlateColorDB.myHPheight*1.3, "OUTLINE")
+	AB.Text:SetFontObject("PC_FontOutline")
+	AB.Text:SetFontHeight(PlateColorDB.myHPheight*1.3)
 	if AB.powerName and AB.powerName == "STAGGER" then
 		local stagger = (UnitStagger and UnitStagger("player")) or 0
 		local maxHealth = UnitHealthMax("player") or 1
