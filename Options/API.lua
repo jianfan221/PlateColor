@@ -2,11 +2,25 @@ local addonName,ns = ...
 local myVersion = C_AddOns.GetAddOnMetadata(addonName,"Version")
 local prefix = C_ChatInfo.RegisterAddonMessagePrefix(addonName)
 local MaxVersion = 21000000
-if GetLocale() == "zhCN" or GetLocale() == "zhTW" then
-	ns.fonts = "Fonts\\ARKai_T.ttf"
-else
-	ns.fonts = STANDARD_TEXT_FONT
-end
+-- 自己创建 FontFamily，不依赖任何系统字体
+local members = {
+	{ alphabet = "roman",               file = "Fonts\\FRIZQT__.TTF",     height = 14, flags = "" },
+	{ alphabet = "korean",              file = "Fonts\\2002.TTF",         height = 14, flags = "" },
+	{ alphabet = "simplifiedchinese",   file = "Fonts\\ARKai_T.ttf",     height = 14, flags = "" },
+	{ alphabet = "traditionalchinese",  file = "Fonts\\blei00d.TTF",     height = 14, flags = "" },
+	{ alphabet = "russian",             file = "Fonts\\FRIZQT___CYR.TTF", height = 14, flags = "" },
+}
+CreateFontFamily("PC_Font", members)
+
+-- 带描边的版本
+local membersOutline = {
+	{ alphabet = "roman",               file = "Fonts\\FRIZQT__.TTF",     height = 14, flags = "OUTLINE" },
+	{ alphabet = "korean",              file = "Fonts\\2002.TTF",         height = 14, flags = "OUTLINE" },
+	{ alphabet = "simplifiedchinese",   file = "Fonts\\ARKai_T.ttf",     height = 14, flags = "OUTLINE" },
+	{ alphabet = "traditionalchinese",  file = "Fonts\\blei00d.TTF",     height = 14, flags = "OUTLINE" },
+	{ alphabet = "russian",             file = "Fonts\\FRIZQT___CYR.TTF", height = 14, flags = "OUTLINE" },
+}
+CreateFontFamily("PC_FontOutline", membersOutline)
 
 --检查本地化
 ns.L = ns.L or {}
