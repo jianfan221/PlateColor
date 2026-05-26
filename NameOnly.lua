@@ -26,8 +26,10 @@ local function TrySetOnlyName(self)
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self.HealthBarsContainer.healthBar }, "showOnlyName")
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self.ClassificationFrame }, "showOnlyName")
 		if self.healthBar then
-			self.healthBar:Hide()
-			self.healthBar:Show()
+			pcall(function()
+				self.healthBar:Hide()
+				self.healthBar:Show()
+			end)
 		end
 		if self.castBar and (UnitCastingInfo(self.unit) ~= nil or UnitChannelInfo(self.unit) ~= nil) then
 			self.castBar:Show()
