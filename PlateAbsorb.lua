@@ -12,7 +12,8 @@ function ns.AddAbsorbText(event,unit)
 	
 	if not unitFrame.abs then
 		unitFrame.abs = unitFrame.healthBar:CreateFontString(nil, "OVERLAY")
-		unitFrame.abs:SetFont(ns.fonts, 21, "OUTLINE")
+		unitFrame.abs:SetFontObject("PC_FontOutline")
+		unitFrame.abs:SetFontHeight(21)
 		unitFrame.abs:SetSmoothScaling(false)
 	end
 	local anchor = unitFrame.ArrowLeft
