@@ -1,4 +1,4 @@
-local addonName,ns = ...
+﻿local addonName,ns = ...
 local L = ns.L
 
 ns.Y = {}	--用于分页行数自动拓展
@@ -84,7 +84,8 @@ function ns.AddfuncButton(parent,y,name,tip)
 	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	lefttext:SetText(name)
-	lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
 	lefttext:SetTextColor(1,.82,0)
 
 	ns.Y[y] = ns.Y[y] + 1	--最后增加一次起始位置
@@ -191,7 +192,8 @@ function ns.AddSetTiText(parent,y,texts)
 	local Text = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	Text:SetPoint("TOPLEFT",parent,"TOPLEFT", 30, -20+ns.Y[y]*-35)
 	Text:SetText(texts)
-	Text:SetFont(ns.fonts, 20, "OUTLINE")
+	Text:SetFontObject("PC_FontOutline")
+Text:SetFontHeight(20)
 	Text:SetTextColor(1,1,1)
 	ns.Y[y] = ns.Y[y] + 1	--最后增加一次起始位置
 	return Text
@@ -242,7 +244,8 @@ function ns.AddSetClickB(parent,y,name,tip,db,setfun,spare1,spare2)
 	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	lefttext:SetText(name)
-	lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
 	lefttext:SetTextColor(1,.82,0)
 
 		
@@ -273,11 +276,13 @@ function ns.AddSetSlider(parent,y, name, tip, minValue, maxValue, valueStep,varf
 	PCSlider.lefttext = PCSlider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	PCSlider.lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	PCSlider.lefttext:SetText(name)
-	PCSlider.lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	PCSlider.lefttext:SetFontObject("PC_FontOutline")
+	PCSlider.lefttext:SetFontHeight(14)
 	PCSlider.lefttext:SetTextColor(1,.82,0)
 	PCSlider.righttext = PCSlider:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	PCSlider.righttext:SetPoint("LEFT",PCSlider,"RIGHT",10, 0)
-	PCSlider.righttext:SetFont(ns.fonts, 17, "OUTLINE")
+	PCSlider.righttext:SetFontObject("PC_FontOutline")
+	PCSlider.righttext:SetFontHeight(17)
 	PCSlider.righttext:SetTextColor(0,1,0)
 	PCSlider.righttext:SetText(tonumber(string.format(varformat,PlateColorDB[db])))
 
@@ -340,7 +345,8 @@ function ns.AddSetDropdTexture(parent,y,name,tip,db,TextureTable,setfun)
 	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	lefttext:SetText(name)
-	lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
 	lefttext:SetTextColor(1,.82,0)
 	
 	--下拉菜单
@@ -440,7 +446,8 @@ function ns.AddSetDropdTexture2(parent,y,name,tip,db,TextureTable,setfun)
 	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	lefttext:SetText(name)
-	lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
 	lefttext:SetTextColor(1,.82,0)
 	
 	--下拉菜单
@@ -527,7 +534,8 @@ function ns.AddSetDropdM(parent,y,name,tip,optionstext,db,setfun)
 	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	lefttext:SetText(name)
-	lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
 	lefttext:SetTextColor(1,.82,0)
 	
 	--下拉菜单
@@ -586,7 +594,8 @@ function ns.AddSetColorF(parent,y,name,tip,DB,setfun)
 	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	lefttext:SetText(name)
-	lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
 	lefttext:SetTextColor(1,.82,0)
 	
 	local Color = ns.AddColorFrame(rowFrame, 301, -3, "",217,20,DB,setfun)
@@ -656,7 +665,8 @@ function ns.AddClickColor(parent,y,name,tip,db,db2,setfun)
 	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
 	lefttext:SetText(name)
-	lefttext:SetFont(ns.fonts, 14, "OUTLINE")
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
 	lefttext:SetTextColor(1,.82,0)
 
 	local Color = ns.AddColorFrame(rowFrame, 351, -3, tip,167,20,db2,setfun)
