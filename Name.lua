@@ -41,8 +41,15 @@ function ns.SetOnlyNames(unitFrame)
 	ns.SetPoints(unitFrame)
 end
 
-ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
+ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
+	local unitFrame = nameplate and nameplate.UnitFrame
+	if not unitFrame then return end
+	ns.PlateOnlyName(unitFrame)
+end)
+
+ns.hook(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(unitFrame)
+	if not unitFrame then return end
 	if unitFrame:IsForbidden() then return end
-	if not string.match(unitFrame.unit,"nameplate") then return end
 	ns.PlateOnlyName(unitFrame)
 end)
