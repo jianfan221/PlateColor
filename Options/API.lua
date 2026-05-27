@@ -1,7 +1,4 @@
 local addonName,ns = ...
-local myVersion = C_AddOns.GetAddOnMetadata(addonName,"Version")
-local prefix = C_ChatInfo.RegisterAddonMessagePrefix(addonName)
-local MaxVersion = 21000000
 -- 自己创建 FontFamily，不依赖任何系统字体
 local members = {
 	{ alphabet = "roman",               file = "Fonts\\FRIZQT__.TTF",     height = 14, flags = "" },
@@ -296,9 +293,10 @@ end
 local guid = {
     ["Player-980-07B86048"] = true,--tf
 	["简繁丶-无尽之海"] = true,
-	["简子凡-无尽之海"] = true,
+	["简子凡-遗忘海岸"] = true,
 	["简小繁-无尽之海"] = true,
 	["简妹妹-无尽之海"] = true,
+	["简繁繁丶-无尽之海"] = true,
     ["Player-963-079BBBC9"] = true,--tml
 	["Player-877-060C4088"] = true,--gml
 	["Player-877-0640B3C8"] = true,--gmms
@@ -325,11 +323,16 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", filter)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", filter)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", filter)
 
+-- 版本更新相关 ──────────────────────────────
+local myVersion = C_AddOns.GetAddOnMetadata(addonName,"Version")
+C_ChatInfo.RegisterAddonMessagePrefix(addonName)
+local MaxVersion = 21000000
+local latestVersion = tonumber(myVersion) -- 初始值，PLAYER_LOGIN 时再从 DB 校准
+local queryCounter = 0
 
-
-local usenumber = 0
+-- /pcuse 查询群组内其他玩家的版本
 SlashCmdList["PLATECOLORUSE"] = function()
-	usenumber = 0
+	queryCounter = 0
 	if IsInRaid() then
 		C_ChatInfo.SendAddonMessage(addonName, addonName, "RAID")
 	end
@@ -347,63 +350,67 @@ end
 SLASH_PLATECOLORUSE1 = "/pcuse"
 SLASH_PLATECOLORUSE2 = "/platecoloruse"
 
-local MarktTime = GetTime()
-
-local function OnMessageEvent(event, prefixes, text, channel, sender)
+-- 登录时：从 DB 初始化版本状态 + 跨会话提醒 + 向群组广播
+ns.event("PLAYER_LOGIN", function()
 	if IsInInstance() then return end
-	if event == "PLAYER_LOGIN" then
-		PlateColorDB.myVersion = tonumber(myVersion) >= tonumber(PlateColorDB.myVersion) and tonumber(myVersion) or tonumber(PlateColorDB.myVersion)
-		if PlateColorDB.myVersion > MaxVersion then
-			PlateColorDB.myVersion = tonumber(myVersion)
+	-- 从 DB 读取跨会话已知的最高版本
+	PlateColorDB.myVersion = PlateColorDB.myVersion or 0
+	if PlateColorDB.myVersion > MaxVersion then
+		PlateColorDB.myVersion = tonumber(myVersion)
+	end
+	latestVersion = math.max(tonumber(myVersion), PlateColorDB.myVersion)
+	-- 如果上次见过更高版本，提示更新
+	if PlateColorDB.myVersion > tonumber(myVersion) then
+		print(ns.RCTexts(addonName)..ADDONS..ADDON_INTERFACE_VERSION..","..KBASE_RECENTLY_UPDATED..PlateColorDB.myVersion)
+	end
+	-- 向群组广播当前版本
+	local msg = GAME_VERSION_LABEL.."="..myVersion
+	if IsInRaid() then
+		C_ChatInfo.SendAddonMessage(addonName, msg, "RAID")
+	elseif IsInGroup() then
+		C_ChatInfo.SendAddonMessage(addonName, msg, "PARTY")
+	elseif IsInGuild() then
+		C_ChatInfo.SendAddonMessage(addonName, msg, "GUILD")
+	end
+end)
+
+-- 处理收到的插件消息：版本查询/回复/广播
+ns.event("CHAT_MSG_ADDON", function(event, prefix, text, channel, sender)
+	if prefix ~= addonName then return end
+	if IsInInstance() then return end
+
+	-- 1) 版本查询请求 → Whisper 回复对方
+	if text == addonName then
+		C_ChatInfo.SendAddonMessage(addonName, channel.."-"..myVersion, "WHISPER", sender)
+		return
+	end
+
+	-- 2) Whisper 回复（来自其他人的 /pcuse 响应）→ 显示对方版本
+	if channel == "WHISPER" then
+		local sourceChannel, userVersion = strsplit("-", text, 2)
+		if not userVersion then return end
+		if strsplit("-", sender) == UnitName("player") then return end
+		queryCounter = queryCounter + 1
+		local color = "|cffFFFFFF"
+		if sourceChannel == PARTY then
+			color = "|cffAAAAFF"
+		elseif sourceChannel == RAID then
+			color = "|cffFF7F00"
+		elseif sourceChannel == GUILD then
+			color = "|cff40FF40"
 		end
-		if tonumber(PlateColorDB.myVersion) > tonumber(myVersion) then
-			print(ns.RCTexts(addonName)..ADDONS..ADDON_INTERFACE_VERSION..","..KBASE_RECENTLY_UPDATED..PlateColorDB.myVersion)
-		end
-		if IsInRaid() then
-			C_ChatInfo.SendAddonMessage(addonName, GAME_VERSION_LABEL.."="..myVersion, "RAID")
-		elseif IsInGroup() then
-			C_ChatInfo.SendAddonMessage(addonName, GAME_VERSION_LABEL.."="..myVersion, "PARTY")
-		elseif IsInGuild() then
-			C_ChatInfo.SendAddonMessage(addonName, GAME_VERSION_LABEL.."="..myVersion, "GUILD")
-		end
-	elseif event == "CHAT_MSG_ADDON" and prefixes == addonName then
-		if text == addonName then
-			C_ChatInfo.SendAddonMessage(addonName, _G[channel].."-"..myVersion, "WHISPER",sender)
-		end
-		if channel == "WHISPER" then
-			if strsplit("-",sender) == UnitName("player") then return end
-			usenumber = usenumber + 1
-			local color = "|cffFFFFFF"
-			if strsplit("-",text) == PARTY then
-				color = "|cffAAAAFF"
-			elseif strsplit("-",text) == RAID then
-				color = "|cffFF7F00"
-			elseif strsplit("-",text) == GUILD then
-				color = "|cff40FF40"
-			end
-			print(usenumber.."."..color..strsplit("-",text)..": "..sender..", "..GAME_VERSION_LABEL..(select(2,strsplit("-",text)) or ""))
-		end
-		if GetTime() > MarktTime then
-			if strsplit("=",text) == BINDING_HEADER_DEBUG then
-				MarktTime = GetTime()+600
-				print("|cffFFFF00"..select(2,strsplit("=",text)) or "")
-				if channel == "GUILD" and IsInGroup() then
-					C_ChatInfo.SendAddonMessage(addonName, text , "PARTY")
-				elseif channel == "PARTY" and IsInGuild() then
-					C_ChatInfo.SendAddonMessage(addonName, text , "GUILD")
-				end
-			end
-		end
-		if strsplit("=",text) == GAME_VERSION_LABEL and type(tonumber(PlateColorDB.myVersion)) == "number" then
-			local text= select(2,strsplit("=",text)) or 0
-			if tonumber(text) > tonumber(PlateColorDB.myVersion) then
-				if tonumber(text) > MaxVersion then return end
-				print(ns.RCTexts(addonName)..ADDONS..ADDON_INTERFACE_VERSION..","..KBASE_RECENTLY_UPDATED..text)
-				PlateColorDB.myVersion = tonumber(text)
-			end
+		print(queryCounter.."."..color..sourceChannel..": "..sender..", "..GAME_VERSION_LABEL..userVersion.."|r")
+		return
+	end
+
+	-- 3) 版本广播 → 对比版本号
+	local key, val = strsplit("=", text, 2)
+	if key == GAME_VERSION_LABEL and val then
+		local ver = tonumber(val)
+		if ver and ver > latestVersion and ver <= MaxVersion then
+			print(ns.RCTexts(addonName)..ADDONS..ADDON_INTERFACE_VERSION..","..KBASE_RECENTLY_UPDATED..ver)
+			latestVersion = ver
+			PlateColorDB.myVersion = ver -- 持久化，下次登录也能提醒
 		end
 	end
-end
-
-ns.event("PLAYER_LOGIN", OnMessageEvent)
-ns.event("CHAT_MSG_ADDON", OnMessageEvent)
+end)
