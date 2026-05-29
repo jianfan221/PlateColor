@@ -111,11 +111,18 @@ function ns.SetPoints(self)
 	self.castBar.CastTargetNameText:ClearAllPoints();
 	
 	if self:IsPlayer() then
-		self.name:SetFont(self.name:GetFont(), PlateColorDB.helpNameScale,"OUTLINE");
+		self.name:SetFontObject("PC_FontOutline")
+		self.name:SetFontHeight(PlateColorDB.helpNameScale)
 	elseif self.unit and not UnitCanAttack("player",self.unit) then
-		self.name:SetFont(self.name:GetFont(), PlateColorDB.helpNameScale*0.9, "");
+		self.name:SetFontObject("PC_Font")
+		self.name:SetFontHeight(PlateColorDB.helpNameScale*0.9)
 	else
-		self.name:SetFont(self.name:GetFont(), PlateColorDB.nameScale, PlateColorDB.nameOUTLINE and "OUTLINE" or "");
+		if PlateColorDB.nameOUTLINE then
+			self.name:SetFontObject("PC_FontOutline")
+		else
+			self.name:SetFontObject("PC_Font")
+		end
+		self.name:SetFontHeight(PlateColorDB.nameScale)
 	end
 	self.name:SetSmoothScaling(false)
 	--名字位置
@@ -184,9 +191,11 @@ function ns.SetPoints(self)
 	PixelUtil.SetPoint(self.castBar.Icon,"BOTTOMRIGHT", self.castBar, "BOTTOMLEFT", -2, 0);	--施法图标位置
 	PixelUtil.SetPoint(self.castBar.BorderShield,"BOTTOMRIGHT", self.castBar, "BOTTOMLEFT", -2, 0);--不可打断的盾牌
 	
-	self.castBar.Text:SetFont(self.castBar.Text:GetFont(),castTextScales, "OUTLINE");--施法文本尺寸
+	self.castBar.Text:SetFontObject("PC_FontOutline");--施法文本尺寸
+	self.castBar.Text:SetFontHeight(castTextScales)
 	self.castBar.Text:SetSmoothScaling(false)
-	self.castBar.CastTargetNameText:SetFont(self.castBar.CastTargetNameText:GetFont(),castTargetScales, "OUTLINE");--施法目标尺寸
+	self.castBar.CastTargetNameText:SetFontObject("PC_FontOutline");--施法目标尺寸
+	self.castBar.CastTargetNameText:SetFontHeight(castTargetScales)
 	self.castBar.CastTargetNameText:SetSmoothScaling(false)
 	
 	if PlateColorDB.castPoint == 1 then --左
@@ -213,7 +222,8 @@ function ns.SetPoints(self)
 	else
 		self.castBar.PCCastTimeText:SetPoint("RIGHT", self.castBar, "RIGHT", 0, 0)
 	end
-	self.castBar.PCCastTimeText:SetFont(SystemFont_Outline_Small:GetFont(), castTextScales*1.1, "OUTLINE")	--施法时间文字大小
+	self.castBar.PCCastTimeText:SetFontObject("PC_FontOutline")	--施法时间文字大小
+	self.castBar.PCCastTimeText:SetFontHeight(castTextScales*1.1)
 	self.castBar.PCCastTimeText:SetSmoothScaling(false)
 	----调节尺寸部分结束
 	
