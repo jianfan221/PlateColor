@@ -4,10 +4,10 @@ local function SetOnlyNameScale(self)
 	if not self.unit then return end
 	if not PlateColorDB.onlyName and not PlateColorDB.onlyNameNpc then return end
 	if self:IsForbidden() then
-		SystemFont_NamePlate:SetFont(SystemFont_NamePlate:GetFont(),1,"OUTLINE")
-		SystemFont_NamePlate:SetFont(SystemFont_NamePlate:GetFont(),PlateColorDB.helpNameScale,"OUTLINE")
-		SystemFont_NamePlate_Outlined:SetFont(SystemFont_NamePlate_Outlined:GetFont(),1,"OUTLINE")
-		SystemFont_NamePlate_Outlined:SetFont(SystemFont_NamePlate_Outlined:GetFont(),PlateColorDB.helpNameScale,"OUTLINE")
+		SystemFont_NamePlate:SetFontHeight(1)
+		SystemFont_NamePlate:SetFontHeight(PlateColorDB.helpNameScale)
+		SystemFont_NamePlate_Outlined:SetFontHeight(1)
+		SystemFont_NamePlate_Outlined:SetFontHeight(PlateColorDB.helpNameScale)
 	end
 end
 
