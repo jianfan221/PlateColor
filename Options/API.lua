@@ -381,7 +381,7 @@ ns.event("CHAT_MSG_ADDON", function(event, prefix, text, channel, sender)
 
 	-- 1) 版本查询请求 → Whisper 回复对方
 	if text == addonName then
-		C_ChatInfo.SendAddonMessage(addonName, channel.."-"..myVersion, "WHISPER", sender)
+		C_ChatInfo.SendAddonMessage(addonName, _G[channel].."-"..myVersion, "WHISPER", sender)
 		return
 	end
 
