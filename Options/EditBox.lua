@@ -34,12 +34,6 @@ end)
 ImportDialog.InputBox = CreateFrame("ScrollFrame", nil, ImportDialog, "InputScrollFrameTemplate")
 ImportDialog.InputBox:SetPoint("TOPLEFT", ImportDialog, "TOPLEFT", 20, -50)
 ImportDialog.InputBox:SetPoint("BOTTOMRIGHT", ImportDialog, "BOTTOMRIGHT", -20, 60)
-ImportDialog.InputBox.CopyHint = ImportDialog.InputBox.EditBox:CreateFontString(nil, "OVERLAY")
-ImportDialog.InputBox.CopyHint:SetPoint("CENTER", ImportDialog.InputBox, "CENTER", -20, 0)
-ImportDialog.InputBox.CopyHint:SetFont(GameFontHighlightLarge:GetFont(), 150, "OUTLINE")
-ImportDialog.InputBox.CopyHint:SetVertexColor(0,1,0,1)
-ImportDialog.InputBox.CopyHint:SetText("Ctrl+C")
-ImportDialog.InputBox.CopyHint:Hide()
 ImportDialog.InputBox.EditBox:SetSize(ImportDialog.InputBox:GetWidth()-20, ImportDialog.InputBox:GetHeight())
 ImportDialog.InputBox.EditBox:SetTextInsets(0, 0, 5, 0) 
 ImportDialog.InputBox.EditBox:SetFontObject(GameFontHighlightSmall)
@@ -75,7 +69,6 @@ end)
 
 ImportDialog.InputBox.EditBox:SetScript("OnHide", function(self)
     ImportDialog.ExportText = ""
-    ImportDialog.InputBox.CopyHint:Hide()
     ImportDialog.ScriptTrue = false
 end)
 
@@ -88,7 +81,6 @@ function ns.ShowBox(text)
         ImportDialog.ScriptTrue = false
         ImportDialog.InputBox.EditBox:SetText("")
         ImportDialog.InputBox.EditBox:SetFocus(true)
-        ImportDialog.InputBox.CopyHint:Hide()
         ImportDialog.CancelButton:Show()
         ImportDialog.CancelButton:SetText(CANCEL)
         ImportDialog.CancelButton:ClearAllPoints()
@@ -105,7 +97,6 @@ function ns.ShowBox(text)
         ImportDialog:SetPoint("CENTER",0,100)
         ImportDialog.ExportText = text
         ImportDialog.ScriptTrue = true
-        ImportDialog.InputBox.CopyHint:Show()
         ImportDialog.CancelButton:Show()
         ImportDialog.CancelButton:SetText(OKAY)
         ImportDialog.CancelButton:ClearAllPoints()
