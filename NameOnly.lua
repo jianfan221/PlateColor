@@ -4,9 +4,9 @@ local function SetOnlyNameScale(self)
 	if not self.unit then return end
 	if not PlateColorDB.onlyName and not PlateColorDB.onlyNameNpc then return end
 	if self:IsForbidden() then
-		SystemFont_NamePlate:SetFontHeight(1)
+		SystemFont_NamePlate:CopyFontObject(PC_Font)
 		SystemFont_NamePlate:SetFontHeight(PlateColorDB.helpNameScale)
-		SystemFont_NamePlate_Outlined:SetFontHeight(1)
+		SystemFont_NamePlate_Outlined:CopyFontObject(PC_FontOutline)
 		SystemFont_NamePlate_Outlined:SetFontHeight(PlateColorDB.helpNameScale)
 	end
 end
