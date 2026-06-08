@@ -1,10 +1,34 @@
 ﻿local _, ns = ...
+if GetBuildInfo() ~= "12.0.7" then return end
+local function stripBarBorder(bar)
+	if not bar then return end
+	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+	for _, r in ipairs{bar:GetRegions()} do
+		if r.GetAtlas and r:GetAtlas() == "UI-HUD-CoolDownManager-Bar-BG" then
+			r:Hide()
+		end
+	end
+	if not bar.bg then
+		bar.bg = bar:CreateTexture(nil, "BACKGROUND")
+		bar.bg:SetAllPoints(bar)
+		bar.bg:SetColorTexture(0, 0, 0, 0.4)
+	end
+end
+
+function ns.StripPersonalResourceBorders()
+	if not PersonalResourceDisplayFrame then return end
+	stripBarBorder(PersonalResourceDisplayFrame.HealthBarsContainer.healthBar)
+	stripBarBorder(PersonalResourceDisplayFrame.PowerBar)
+	stripBarBorder(PersonalResourceDisplayFrame.AlternatePowerBar)
+end
+
 function ns.SetPersonalTexture()
 	if not PlateColorDB.myHPSetup then return end
 	if GetCVar("nameplateShowSelf") == "0" then  return end
 	if not PersonalResourceDisplayFrame then return end
 
 	PersonalResourceDisplayFrame:SetWidth(PlateColorDB.myHPwidth)
+	PersonalResourceDisplayFrame.HealthBarsContainer:SetWidth(PlateColorDB.myHPwidth)
 	PersonalResourceDisplayFrame.PowerBar:SetWidth(PlateColorDB.myHPwidth)
 	PersonalResourceDisplayFrame.AlternatePowerBar:SetWidth(PlateColorDB.myHPwidth)
 	PersonalResourceDisplayFrame.HealthBarsContainer:SetHeight(PlateColorDB.myHPheight)
@@ -12,6 +36,10 @@ function ns.SetPersonalTexture()
 	PersonalResourceDisplayFrame.AlternatePowerBar:SetHeight(PlateColorDB.myHPheight)
 
 	PersonalResourceDisplayFrame.HealthBarsContainer:SetFrameStrata("LOW")--不然会挡住资源的文本
+
+	-- 去掉 12.07 暴雪默认的圆角遮罩和边框背景
+	ns.StripPersonalResourceBorders()
+
 	if ns.HpTextures[PlateColorDB.myHPTexture] then
 		PersonalResourceDisplayFrame.HealthBarsContainer.healthBar:SetStatusBarTexture(ns.HpTextures[PlateColorDB.myHPTexture])
 		PersonalResourceDisplayFrame.PowerBar:SetStatusBarTexture(ns.HpTextures[PlateColorDB.myHPTexture])
@@ -120,10 +148,11 @@ local NewPowerBar
 
 function ns.AddNewPowerBar()
 	if not PlateColorDB.myHPSetup then return end
-	if GetCVar("nameplateShowSelf") == "0" or PlateColorDB.myHPShowMode == 0  then 
+	if GetCVar("nameplateShowSelf") == "0" then 
 		if NewPowerBar then NewPowerBar:Hide() end
 		return
 	end
+
 	-- 创建父框架
 	if not NewPowerBar then
 		PersonalResourceDisplayFrame.NewPowerBar = CreateFrame("Frame", nil, PersonalResourceDisplayFrame)
@@ -136,18 +165,19 @@ function ns.AddNewPowerBar()
 	local HB = PersonalResourceDisplayFrame.HealthBarsContainer
 	local PB = PersonalResourceDisplayFrame.PowerBar
 	local AB = PersonalResourceDisplayFrame.AlternatePowerBar
-	local NB = (prdClassFrame and prdClassFrame:IsShown()) and prdClassFrame or nil
+	local classFrame = PersonalResourceDisplayFrame.classFrame
+	local NB = (classFrame and classFrame:IsShown()) and classFrame or nil
 	NewPowerBar:ClearAllPoints()
 	if PlateColorDB.myHPShowMode == 2 then
 		if AB:IsShown() and (NB and NB:IsShown()) then
 			HB:Hide()
 			PB:Hide()
 			AB:SetPoint("TOP",PB,"TOP",0,0)
-			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", -1, 1)
+			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", 0, 1)
 		elseif AB:IsShown() or (NB and NB:IsShown()) then
 			HB:Hide()
 			PB:Show()
-			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", -1, 1)
+			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", 0, 1)
 			AB:SetPoint("TOP",AA,"TOP",0,1)
 		else
 			HB:Show()
@@ -159,20 +189,35 @@ function ns.AddNewPowerBar()
 		PB:Show()
 		PB:SetPoint("TOP",HB,"BOTTOM",0,0)
 		AB:SetPoint("TOP",PB,"BOTTOM",0,0)
-		NewPowerBar:SetPoint("TOPLEFT", AB:IsShown() and AB or PB, "BOTTOMLEFT", -1, -1)
+		NewPowerBar:SetPoint("TOPLEFT", AB:IsShown() and AB or PB, "BOTTOMLEFT", 0, -1)
+	elseif PlateColorDB.myHPShowMode == 0 then
+		-- 原版模式：恢复默认布局，隐藏新版资源条
+		if NewPowerBar then NewPowerBar:Hide() end
+		HB:Show()
+		PB:Show()
+		AB:Show()
+		PB:ClearAllPoints()
+		PB:SetPoint("TOP", HB, "BOTTOM", 0, 0)
+		AB:ClearAllPoints()
+		AB:SetPoint("TOP", PB, "BOTTOM", 0, 0)
+		if classFrame then
+			classFrame:ClearAllPoints()
+			classFrame:SetPoint("CENTER", PersonalResourceDisplayFrame.ClassFrameContainer, "CENTER")
+		end
+		return
 	end
-	NewPowerBar:SetShown(prdClassFrame and prdClassFrame:IsShown())
-	if not prdClassFrame then return end
-	prdClassFrame:SetPoint("TOP",0,-800000)
+	NewPowerBar:SetShown(classFrame and classFrame:IsShown())
+	if not classFrame then return end
+	classFrame:SetPoint("TOP",0,-800000)
 
 	-- 获取最大能量值
 	local color = PlateColorDB.newClassBarSetColor and PlateColorDB.newClassBarColor or {r = classr, g = classg, b = classb}
 	local r, g, b = color.r, color.g, color.b
 	local classID = select(3, UnitClass("player"))
-	local maxPower = (classID == 6) and UnitPowerMax("player", 5) or (prdClassFrame.powerType and UnitPowerMax("player", prdClassFrame.powerType) or 0)
+	local maxPower = (classID == 6) and UnitPowerMax("player", 5) or (classFrame.powerType and UnitPowerMax("player", classFrame.powerType) or 0)
 	if not maxPower or maxPower == 0 then return end
 	-- 创建或更新资源点框架
-	local chargeWidth = (PlateColorDB.myHPwidth - 2 * (maxPower - 1)) / maxPower
+	local chargeWidth = PlateColorDB.myHPwidth / maxPower - 2
 	for i = 1, maxPower do
 		if not NewPowerBar[i] then
 			NewPowerBar[i] = CreateFrame("StatusBar", nil, NewPowerBar)
@@ -245,7 +290,7 @@ function ns.AddNewPowerBar()
 			if NewPowerBar:IsShown() then UpdateRuneOrder() end
 		end)
 		
-	elseif prdClassFrame.powerType then
+	elseif classFrame.powerType then
 		-- 其他职业：统一设置位置
 		for i = 1, maxPower do
 			NewPowerBar[i]:SetMinMaxValues(0, 1)
@@ -254,13 +299,14 @@ function ns.AddNewPowerBar()
 		-- 统一用 OnUpdate 更新
 		NewPowerBar:SetScript("OnUpdate", function()
 			if not NewPowerBar:IsShown() then return end
-			if not prdClassFrame or not prdClassFrame:IsShown() or not prdClassFrame.powerType then return end
-			local power = UnitPower("player", prdClassFrame.powerType, true)
-			local maxPower = UnitPowerMax("player", prdClassFrame.powerType)
-			local displayMod = (UnitPowerDisplayMod and UnitPowerDisplayMod(prdClassFrame.powerType)) or 1
+			local cf = PersonalResourceDisplayFrame and PersonalResourceDisplayFrame.classFrame
+			if not cf or not cf:IsShown() or not cf.powerType then return end
+			local power = UnitPower("player", cf.powerType, true)
+			local maxPower = UnitPowerMax("player", cf.powerType)
+			local displayMod = (UnitPowerDisplayMod and UnitPowerDisplayMod(cf.powerType)) or 1
 			if not power or ns.MM(power) or not maxPower or ns.MM(maxPower) or not displayMod or ns.MM(displayMod) then return end
 			if displayMod == 0 then displayMod = 1 end
-			if prdClassFrame.powerType == 19 then
+			if cf.powerType == 19 then
 				local partial = (UnitPartialPower("player", 19) or 0) / 1000.0
 				power = power + partial
 			end
@@ -296,8 +342,8 @@ function ns.AllmyPowerBar()
 end
 ns.event("PLAYER_ENTERING_WORLD", function(event)
 	ns.AllmyPowerBar()
-	if prdClassFrame and prdClassFrame.Setup then
-		ns.hook(prdClassFrame, "Setup", function()
+	if PersonalResourceDisplayFrame and PersonalResourceDisplayFrame.SetupClassBar then
+		ns.hook(PersonalResourceDisplayFrame, "SetupClassBar", function()
 			ns.AddNewPowerBar()
 		end)
 	end
