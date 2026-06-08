@@ -1,4 +1,4 @@
-﻿## Interface: 120000,120001,120005
+﻿## Interface: 120000,120001,120005,120007
 ## Title: |cffff5900P|cffffb300l|cfff0ff00a|cff96ff00t|cff3cff00e|cff00ffd2C|cff00d1ffo|cff00B3FFl|cffD56AFFo|cffFF2AA5r|r
 ## Notes: /PC open the settings interface
 ## Notes-zhCN: /PC 打开设置界面
@@ -7,7 +7,7 @@
 ## Category-zhCN: 姓名板
 ## IconTexture: 135451
 ## SavedVariables: PlateColorDB
-## Version: 20260609
+## Version: 20260609.1
 
 texture\TextureTable.lua
 DB\XML.xml
