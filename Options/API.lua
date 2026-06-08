@@ -49,7 +49,9 @@ ns.hook = hooksecurefunc
 
 --判断是否是秘密值
 function ns.MM(value)
-	if issecretvalue(value) or issecrettable(value) then
+	if not issecretvalue or not issecrettable then
+		return false
+	elseif issecretvalue(value) or issecrettable(value) then
 		return true
 	else
 		return false
@@ -57,14 +59,14 @@ function ns.MM(value)
 end
 
 --驱散颜色
-ns.discolor = C_CurveUtil.CreateColorCurve()
-ns.discolor:SetType(Enum.LuaCurveType.Step)
-ns.discolor:AddPoint(0, CreateColor(0,  0,  0,  0))--无
-ns.discolor:AddPoint(1, CreateColor(1,  1,  1,  1))--魔法
-ns.discolor:AddPoint(2, CreateColor(0.5,0,  1,  1))--诅咒
-ns.discolor:AddPoint(3, CreateColor(1,0.5,  0,  1))--疾病
-ns.discolor:AddPoint(4, CreateColor(0,  1,  0,  1))--中毒
-ns.discolor:AddPoint(9, CreateColor(1,  0,  0,  1))--激怒
+ns.dispelColor = C_CurveUtil.CreateColorCurve()
+ns.dispelColor:SetType(Enum.LuaCurveType.Step)
+ns.dispelColor:AddPoint(0, CreateColor(0,  0,  0,  0))--无
+ns.dispelColor:AddPoint(1, CreateColor(1,  1,  1,  1))--魔法
+ns.dispelColor:AddPoint(2, CreateColor(0.5,0,  1,  1))--诅咒
+ns.dispelColor:AddPoint(3, CreateColor(1,0.5,  0,  1))--疾病
+ns.dispelColor:AddPoint(4, CreateColor(0,  1,  0,  1))--中毒
+ns.dispelColor:AddPoint(9, CreateColor(1,  0,  0,  1))--激怒
 
 --数值简化
 local NumberData = {
