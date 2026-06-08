@@ -1,7 +1,7 @@
 local _, ns = ...
 --任务标记
 local NameQuestTable = {}
-function ns.CteatNameQuest(unitFrame)
+function ns.CreateNameQuest(unitFrame)
 	if not unitFrame then return end
 	if not unitFrame.unit then return end
 	if not PlateColorDB.questMark then return end
@@ -63,7 +63,7 @@ local  function QuestMarkEvent(event, IDs)
 		if not namePlate then return end
 		local unitFrame = namePlate.UnitFrame
 		if PlateColorDB.nameQuestPos ~= 0 then
-			ns.CteatNameQuest(unitFrame)
+			ns.CreateNameQuest(unitFrame)
 		end
 	end
 		--进入游戏获取任务
@@ -76,7 +76,7 @@ local  function QuestMarkEvent(event, IDs)
 		end
 		C_Timer.After(2,function()
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				ns.CteatNameQuest(namePlate.UnitFrame)
+				ns.CreateNameQuest(namePlate.UnitFrame)
 			end
 		end)
 	end
@@ -88,7 +88,7 @@ local  function QuestMarkEvent(event, IDs)
 			if not NameQuestTable[title] then return end
 			NameQuestTable[title] = not C_QuestLog.IsComplete(IDs)
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				ns.CteatNameQuest(namePlate.UnitFrame)
+				ns.CreateNameQuest(namePlate.UnitFrame)
 			end
 		end)
 	end
@@ -99,7 +99,7 @@ local  function QuestMarkEvent(event, IDs)
 			if info and not info.isHeader and (info.isTask or not info.isHidden) then
 				NameQuestTable[info.title] = not C_QuestLog.IsComplete(IDs)
 				for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-					ns.CteatNameQuest(namePlate.UnitFrame)
+					ns.CreateNameQuest(namePlate.UnitFrame)
 				end
 			end
 		end)
@@ -111,7 +111,7 @@ local  function QuestMarkEvent(event, IDs)
 			if not title then return end
 			NameQuestTable[title] = nil
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				ns.CteatNameQuest(namePlate.UnitFrame)
+				ns.CreateNameQuest(namePlate.UnitFrame)
 			end
 		end)
 	end
