@@ -14,14 +14,14 @@ end
 ns.hook(NamePlateAuraItemMixin,"OnLoad",SetCooldownText)
 
 --驱散颜色
-local discolor = C_CurveUtil.CreateColorCurve()
-discolor:SetType(Enum.LuaCurveType.Step)
-discolor:AddPoint(0, CreateColor(0,  0,  0,  0))--无
-discolor:AddPoint(1, CreateColor(1,  1,  1,  1))--魔法
-discolor:AddPoint(2, CreateColor(0.5,0,  1,  1))--诅咒
-discolor:AddPoint(3, CreateColor(1,0.5,  0,  1))--疾病
-discolor:AddPoint(4, CreateColor(0,  1,  0,  1))--中毒
-discolor:AddPoint(9, CreateColor(1,  0,  0,  1))--激怒
+local dispelColor = C_CurveUtil.CreateColorCurve()
+dispelColor:SetType(Enum.LuaCurveType.Step)
+dispelColor:AddPoint(0, CreateColor(0,  0,  0,  0))--无
+dispelColor:AddPoint(1, CreateColor(1,  1,  1,  1))--魔法
+dispelColor:AddPoint(2, CreateColor(0.5,0,  1,  1))--诅咒
+dispelColor:AddPoint(3, CreateColor(1,0.5,  0,  1))--疾病
+dispelColor:AddPoint(4, CreateColor(0,  1,  0,  1))--中毒
+dispelColor:AddPoint(9, CreateColor(1,  0,  0,  1))--激怒
 ns.hook(NamePlateAuraItemMixin, "SetAura", function(self,aura)
     if self and not self:IsForbidden() then
         self:EnableMouse(not PlateColorDB.hideAuraTooltip)
@@ -36,7 +36,7 @@ ns.hook(NamePlateAuraItemMixin, "SetAura", function(self,aura)
             self.Stealable:SetBlendMode("ADD")
         end
         self.Stealable:Hide()
-        local color = C_UnitAuras.GetAuraDispelTypeColor(self.unitToken, aura.auraInstanceID, discolor)
+        local color = C_UnitAuras.GetAuraDispelTypeColor(self.unitToken, aura.auraInstanceID, dispelColor)
         if color and UnitCanAttack("player", self.unitToken) then
             self.Stealable:SetVertexColor(color:GetRGB())
             self.Stealable:SetAlphaFromBoolean(self.isBuff,255,0)
