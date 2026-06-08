@@ -71,7 +71,7 @@ local npOverlapH = ns.AddSetSlider(ConFrame2,2,L["水平堆叠间距"],L["垂直
 local npRange = ns.AddSetSlider(ConFrame2,2,L["姓名版可见范围"],L["姓名版可见范围"],10,60,1,"%d","npRange",ns.SetSelectedScale)
 
 local TiTextQT = ns.AddSetTiText(ConFrame2,2,L["其他"])
-local nameQuest = ns.AddSetClickB(ConFrame2,2,L["任务标志"],L["任务标志"],"questMark",ns.CteatNameQuest)
+local nameQuest = ns.AddSetClickB(ConFrame2,2,L["任务标志"],L["任务标志"],"questMark",ns.CreateNameQuest)
 local levelText = ns.AddSetClickB(ConFrame2,2,L["等级文本"],L["等级文本鼠标提示"],"levelText")
 local absorbText = ns.AddSetClickB(ConFrame2,2,L["吸收盾数值"],L["吸收盾数值鼠标提示"],"absorbText")
 
