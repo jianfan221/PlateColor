@@ -50,3 +50,17 @@ ns.hook(NamePlateUnitFrameMixin, "UpdateShowOnlyName", function(self)
 		TrySetOnlyName(self)
 	end)
 end)
+
+local function OnUnitFlagsChanged(event, unit)
+	if not unit or not PlateColorDB.onlyNameNpc then return end
+	if not string.match(unit,"nameplate") then return end
+	local nameplate = C_NamePlate.GetNamePlateForUnit(unit, false)
+	if nameplate and nameplate.UnitFrame then
+		C_Timer.After(0.1, function()
+			TrySetOnlyName(nameplate.UnitFrame)
+		end)
+	end
+end
+
+ns.event("UNIT_FLAGS", OnUnitFlagsChanged)
+ns.event("UNIT_FACTION", OnUnitFlagsChanged)
