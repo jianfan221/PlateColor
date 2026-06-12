@@ -2,6 +2,15 @@
 
 --设置焦点
 
+local modKey = {[1]="shift", [2]="ctrl", [3]="alt"}
+local function GetFocusMacroText()
+	local advance = GetBuildInfo() == "12.0.7" and "~" or ""
+	local icon = PlateColorDB.setFocusIcon
+	local markmacro = "\n/tm [@mouseover]"..advance..icon
+
+	return modKey[PlateColorDB.setFocusMod], "/focus [@mouseover]"..markmacro
+end
+
 function ns.SetFocus()
 	if InCombatLockdown() then return end
 	
@@ -22,11 +31,9 @@ function ns.SetFocus()
 		--先清除旧绑定
 		ClearOverrideBindings(ShiftFocuserButton)
 		
-		local markmacro = PlateColorDB.setFocusIcon ~= 0 and "\n/tm [@mouseover]"..PlateColorDB.setFocusIcon or ""
-		local modifier = PlateColorDB.setFocusMod == 1 and "shift" or PlateColorDB.setFocusMod == 2 and "ctrl" or PlateColorDB.setFocusMod == 3 and "alt"
-		local mouseButton = "1"
-		ShiftFocuserButton:SetAttribute("macrotext1", "/focus [@mouseover]"..markmacro)
-		SetOverrideBindingClick(ShiftFocuserButton, true, modifier.."-BUTTON"..mouseButton, "ShiftFocuserButton")
+		local modifier, macrotext = GetFocusMacroText()
+		ShiftFocuserButton:SetAttribute("macrotext1", macrotext)
+		SetOverrideBindingClick(ShiftFocuserButton, true, modifier.."-BUTTON1", "ShiftFocuserButton")
 	end
 end
 
@@ -41,9 +48,7 @@ local function SetFocusHotkey(frame)
 		return
 	end
 	
-	local markmacro = PlateColorDB.setFocusIcon ~= 0 and "\n/tm [@mouseover]"..PlateColorDB.setFocusIcon or ""
-	local modifier = PlateColorDB.setFocusMod == 1 and "shift" or PlateColorDB.setFocusMod == 2 and "ctrl" or PlateColorDB.setFocusMod == 3 and "alt"
-	local mouseButton = "1"
+	local modifier, macrotext = GetFocusMacroText()
 	
 	--清除旧的属性
 	frame:SetAttribute("shift-type1", nil)
@@ -53,8 +58,8 @@ local function SetFocusHotkey(frame)
 	frame:SetAttribute("alt-type1", nil)
 	frame:SetAttribute("alt-macrotext1", nil)
 	
-	frame:SetAttribute(modifier.."-type"..mouseButton, "macro")
-	frame:SetAttribute(modifier.."-macrotext"..mouseButton, "/focus [@mouseover]"..markmacro)
+	frame:SetAttribute(modifier.."-type1", "macro")
+	frame:SetAttribute(modifier.."-macrotext1", macrotext)
 end
 
 local duf = {
