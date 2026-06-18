@@ -1,5 +1,5 @@
 ﻿local _, ns = ...
-if GetBuildInfo() ~= "12.0.7" then return end
+
 local function stripBarBorder(bar)
 	if not bar then return end
 	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
@@ -12,6 +12,15 @@ local function stripBarBorder(bar)
 		bar.bg = bar:CreateTexture(nil, "BACKGROUND")
 		bar.bg:SetAllPoints(bar)
 		bar.bg:SetColorTexture(0, 0, 0, 0.4)
+	end
+	if not bar.borders then
+		bar.borders = CreateFrame("Frame", nil, bar, "BackdropTemplate")
+		bar.borders:SetFrameLevel(0)
+		bar.borders:SetFrameStrata(bar:GetFrameStrata())
+		bar.borders:SetPoint("TOPLEFT", -1, 1)
+		bar.borders:SetPoint("BOTTOMRIGHT", 1, -1)
+		bar.borders:SetBackdrop({edgeFile = 'Interface\\Buttons\\WHITE8x8',edgeSize = 1})
+		bar.borders:SetBackdropBorderColor(0, 0, 0, 1)
 	end
 end
 
@@ -61,9 +70,9 @@ function ns.SetPersonalTexture()
 	local HB = PersonalResourceDisplayFrame.HealthBarsContainer.healthBar
 	if not HB.Text then
 		HB.Text = HB:CreateFontString(nil, "OVERLAY")
-		HB.Text:SetPoint("CENTER", HB, "CENTER", 0, -1)
+		HB.Text:SetPoint("CENTER", HB, "CENTER", 0, 0)
 		HB.Text:SetFontObject("PC_FontOutline")
-		HB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
+		HB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
 		HB.Text:SetSmoothScaling(false)
 		HB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
@@ -73,16 +82,16 @@ function ns.SetPersonalTexture()
 	end
 	HB.Text:SetShown(true)
 	HB.Text:SetFontObject("PC_FontOutline")
-	HB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
+	HB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
 	local HPPer = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
 	HB.Text:SetText(string.format("%d", HPPer))
 
 	local PB = PersonalResourceDisplayFrame.PowerBar
 	if not PB.Text then
 		PB.Text = PB:CreateFontString(nil, "OVERLAY")
-		PB.Text:SetPoint("CENTER", PB, "CENTER", 0, -1)
+		PB.Text:SetPoint("CENTER", PB, "CENTER", 0, 0)
 		PB.Text:SetFontObject("PC_FontOutline")
-		PB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
+		PB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
 		PB.Text:SetSmoothScaling(false)
 		PB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
@@ -96,7 +105,7 @@ function ns.SetPersonalTexture()
 	end
 	PB.Text:SetShown(true)
 	PB.Text:SetFontObject("PC_FontOutline")
-	PB.Text:SetFontHeight(PlateColorDB.myHPheight*1.25)
+	PB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
 	if UnitPowerType("player") ~= 0 then
 		PB.Text:SetText(ns.value(PB:GetValue()))
 	else
@@ -106,9 +115,9 @@ function ns.SetPersonalTexture()
 	local AB = PersonalResourceDisplayFrame.AlternatePowerBar
 	if not AB.Text then
 		AB.Text = AB:CreateFontString(nil, "OVERLAY")
-		AB.Text:SetPoint("CENTER", AB, "CENTER", 0, -1)
+		AB.Text:SetPoint("CENTER", AB, "CENTER", 0, 0)
 		AB.Text:SetFontObject("PC_FontOutline")
-		AB.Text:SetFontHeight(PlateColorDB.myHPheight*1.3)
+		AB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
 		AB.Text:SetSmoothScaling(false)
 		AB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
@@ -127,7 +136,7 @@ function ns.SetPersonalTexture()
 	end
 	AB.Text:SetShown(true)
 	AB.Text:SetFontObject("PC_FontOutline")
-	AB.Text:SetFontHeight(PlateColorDB.myHPheight*1.3)
+	AB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
 	if AB.powerName and AB.powerName == "STAGGER" then
 		local stagger = (UnitStagger and UnitStagger("player")) or 0
 		local maxHealth = UnitHealthMax("player") or 1
@@ -167,37 +176,42 @@ function ns.AddNewPowerBar()
 	local AB = PersonalResourceDisplayFrame.AlternatePowerBar
 	local classFrame = PersonalResourceDisplayFrame.classFrame
 	local NB = (classFrame and classFrame:IsShown()) and classFrame or nil
+	HB:ClearAllPoints()
+	HB:SetPoint("TOP", AA, "TOP", 0, -4)
+	PB:ClearAllPoints()
+	PB:SetPoint("TOP", HB, "BOTTOM", 0, 0)
 	NewPowerBar:ClearAllPoints()
 	if PlateColorDB.myHPShowMode == 2 then
 		if AB:IsShown() and (NB and NB:IsShown()) then
 			HB:Hide()
 			PB:Hide()
+			AB:ClearAllPoints()
 			AB:SetPoint("TOP",PB,"TOP",0,0)
-			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", 0, 1)
+			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", -1, 1)
 		elseif AB:IsShown() or (NB and NB:IsShown()) then
 			HB:Hide()
 			PB:Show()
-			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", 0, 1)
-			AB:SetPoint("TOP",AA,"TOP",0,1)
+			NewPowerBar:SetPoint("BOTTOMLEFT", PB, "TOPLEFT", -1, 1)
+			AB:ClearAllPoints()
+			AB:SetPoint("BOTTOM",PB,"TOP",0,0)
 		else
 			HB:Show()
 			PB:Show()
+			AB:ClearAllPoints()
 			AB:SetPoint("TOP",PB,"BOTTOM",0,0)
 		end
 	elseif PlateColorDB.myHPShowMode == 1 then
 		HB:Show()
 		PB:Show()
-		PB:SetPoint("TOP",HB,"BOTTOM",0,0)
+		AB:ClearAllPoints()
 		AB:SetPoint("TOP",PB,"BOTTOM",0,0)
-		NewPowerBar:SetPoint("TOPLEFT", AB:IsShown() and AB or PB, "BOTTOMLEFT", 0, -1)
+		NewPowerBar:SetPoint("TOPLEFT", AB:IsShown() and AB or PB, "BOTTOMLEFT", -1, -1)
 	elseif PlateColorDB.myHPShowMode == 0 then
 		-- 原版模式：恢复默认布局，隐藏新版资源条
 		if NewPowerBar then NewPowerBar:Hide() end
 		HB:Show()
 		PB:Show()
 		AB:Show()
-		PB:ClearAllPoints()
-		PB:SetPoint("TOP", HB, "BOTTOM", 0, 0)
 		AB:ClearAllPoints()
 		AB:SetPoint("TOP", PB, "BOTTOM", 0, 0)
 		if classFrame then
@@ -217,7 +231,7 @@ function ns.AddNewPowerBar()
 	local maxPower = (classID == 6) and UnitPowerMax("player", 5) or (classFrame.powerType and UnitPowerMax("player", classFrame.powerType) or 0)
 	if not maxPower or maxPower == 0 then return end
 	-- 创建或更新资源点框架
-	local chargeWidth = PlateColorDB.myHPwidth / maxPower - 2
+	local chargeWidth = (PlateColorDB.myHPwidth - 2 * (maxPower - 1)) / maxPower
 	for i = 1, maxPower do
 		if not NewPowerBar[i] then
 			NewPowerBar[i] = CreateFrame("StatusBar", nil, NewPowerBar)
