@@ -360,19 +360,18 @@ ns.event("PLAYER_ENTERING_WORLD", function(event)
 	C_Timer.After(1, function()
 		ns.AllmyPowerBar()
 	end)
-	if PersonalResourceDisplayFrame then
-		ns.hook(PersonalResourceDisplayFrame, "UpdateAdditionalBarAnchors", function()
-			ns.AddNewPowerBar()
-		end)
-		ns.hook(PersonalResourceDisplayFrame, "SetupPowerBar", function()
+	if not PersonalResourceDisplayFrame then return end
+	if PersonalResourceDisplayFrame.classFrame and PersonalResourceDisplayFrame.classFrame.Setup then
+		ns.hook(PersonalResourceDisplayFrame.classFrame, "Setup", function()
 			ns.AddNewPowerBar()
 		end)
 	end
-end)
-
--- 12.0.7: SetupClassBar 仅在初始化时调用一次，形态切换改用事件监听
-ns.event("UPDATE_SHAPESHIFT_FORM", function()
-	ns.AddNewPowerBar()
+	ns.hook(PersonalResourceDisplayFrame, "UpdateAdditionalBarAnchors", function()
+		ns.AddNewPowerBar()
+	end)
+	ns.hook(PersonalResourceDisplayFrame, "SetupPowerBar", function()
+		ns.AddNewPowerBar()
+	end)
 end)
 
 ns.event("CVAR_UPDATE", function(event, cvar,a)
