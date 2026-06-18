@@ -310,6 +310,7 @@ local function filter(self, event,a, ...)
 	if not guid[select(11, ...)] and not guid[author] then return end
 	if select(11, ...) == UnitGUID("player") then return end
 	if string.match(a, "|H(.-)|h") then return end
+	if string.match(a, "{rt") then return end
 	if string.match(a, "MDT") then return end
 	if string.match(a, "WeakAuras") then return end
 
