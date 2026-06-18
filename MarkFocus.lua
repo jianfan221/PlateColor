@@ -4,7 +4,7 @@
 
 local modKey = {[1]="shift", [2]="ctrl", [3]="alt"}
 local function GetFocusMacroText()
-	local advance = GetBuildInfo() == "12.0.7" and "~" or ""
+	local advance = "~"
 	local icon = PlateColorDB.setFocusIcon
 	local markmacro = "\n/tm [@mouseover]"..advance..icon
 
