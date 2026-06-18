@@ -211,7 +211,7 @@ function ns.AddNewPowerBar()
 		if NewPowerBar then NewPowerBar:Hide() end
 		HB:Show()
 		PB:Show()
-		AB:Show()
+		--AB不用显示,因为从始至终没有隐藏过,会导致德鲁伊的能量条显示异常
 		AB:ClearAllPoints()
 		AB:SetPoint("TOP", PB, "BOTTOM", 0, 0)
 		if classFrame then
@@ -230,6 +230,7 @@ function ns.AddNewPowerBar()
 	local classID = select(3, UnitClass("player"))
 	local maxPower = (classID == 6) and UnitPowerMax("player", 5) or (classFrame.powerType and UnitPowerMax("player", classFrame.powerType) or 0)
 	if not maxPower or maxPower == 0 then return end
+
 	-- 创建或更新资源点框架
 	local chargeWidth = (PlateColorDB.myHPwidth - 2 * (maxPower - 1)) / maxPower
 	for i = 1, maxPower do
@@ -355,12 +356,10 @@ function ns.AllmyPowerBar()
 	ns.AddNewPowerBar()
 end
 ns.event("PLAYER_ENTERING_WORLD", function(event)
-	ns.AllmyPowerBar()
-	if PersonalResourceDisplayFrame and PersonalResourceDisplayFrame.SetupClassBar then
-		ns.hook(PersonalResourceDisplayFrame, "SetupClassBar", function()
-			ns.AddNewPowerBar()
-		end)
-	end
+	--龙人测试初次登录不加延迟显示少一个?
+	C_Timer.After(1, function()
+		ns.AllmyPowerBar()
+	end)
 	if PersonalResourceDisplayFrame then
 		ns.hook(PersonalResourceDisplayFrame, "UpdateAdditionalBarAnchors", function()
 			ns.AddNewPowerBar()
@@ -369,6 +368,11 @@ ns.event("PLAYER_ENTERING_WORLD", function(event)
 			ns.AddNewPowerBar()
 		end)
 	end
+end)
+
+-- 12.0.7: SetupClassBar 仅在初始化时调用一次，形态切换改用事件监听
+ns.event("UPDATE_SHAPESHIFT_FORM", function()
+	ns.AddNewPowerBar()
 end)
 
 ns.event("CVAR_UPDATE", function(event, cvar,a)
