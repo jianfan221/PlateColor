@@ -69,6 +69,7 @@ realltextRe:HookScript("OnClick", function()
 	C_CVar.SetCVar("nameplateDebuffPadding", 0)--姓名板增减益图标间距-0
 	C_CVar.SetCVar("nameplateSimplifiedTypes", "")--简化模式-无
 	print("|cffff0000[PlateColor]|r " .. L["已设置暴雪姓名板选项"])
+	UIErrorsFrame:AddExternalWarningMessage(L["已设置暴雪姓名板选项"])
 end)
 
 local HitTest = ns.AddSetTiText(ConFrame1,1,L["点击范围"])
