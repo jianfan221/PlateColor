@@ -16,10 +16,7 @@ end
 SLASH_PLATECOLOR1 = "/pc"
 SLASH_PLATECOLOR2 = "/platecolor"
 
-local creattrue = false
 ns.event("PLAYER_LOGIN", function(event)
-if creattrue then return end
-creattrue = true
 
 --标题文本
 local TiText = PCGUI:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
