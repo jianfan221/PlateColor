@@ -1,6 +1,16 @@
 ﻿local _, ns = ...
 ns.update = {
 
+[20260622] = [[
+适配 12.1 PTR:
+新增 GetCastBar 工具函数,适配12.1统一获取施法条
+适配12.1施法条已移至 CastBarsContainer 下,全面改用 GetCastBar 获取
+重写血条锚点逻辑,HealthBarsContainer 不再按施法条定位
+友方玩家服务器名适配12.1新版 CVar 控制
+NPC颜色事件处理兼容12.1新层级结构
+更新 TOC 接口版本至 120100
+]],
+
 [20260620] = [[
 焦点设置框架列表改为运行时查找,避免跨插件加载顺序问题
 焦点设置新增对 UnhaltedUnitFrames 头像/目标/焦点/Boss 框体的支持
