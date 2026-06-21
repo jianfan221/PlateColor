@@ -31,7 +31,7 @@ function ns.BorderSetting(unitFrame, frame, offset)
 	unitFrame.healthBar.BGMask:SetTextureSliceMargins(margin, margin, margin, margin)
 	unitFrame.healthBar.BGMask:SetTexture(ns.HPBorderMask[PlateColorDB.hpBorderTexture], "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 	--施法条遮罩
-	local castbar = unitFrame.CastBar or unitFrame.castBar
+	local castbar = ns.GetCastBar(unitFrame)
 	if castbar then
 		if not castbar.customMask then
 			castbar.customMask = castbar:CreateMaskTexture()
