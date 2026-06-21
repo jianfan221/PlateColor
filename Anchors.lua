@@ -1,5 +1,10 @@
 ﻿local _, ns = ...
 
+-- PTR 12.1: castBar 移到了 CastBarsContainer 下
+function ns.GetCastBar(unitFrame)
+	return unitFrame.CastBarsContainer and unitFrame.CastBarsContainer.castBar or unitFrame.castBar
+end
+
 local SimplifiedTypes = {--简化姓名版包含友方玩家的选项转换为不包含友方玩家防止副本内不显示
 ["D"] = "",
 ["H"] = "",
@@ -33,7 +38,9 @@ function ns.SetSelectedScale()
 		local UseClassColor = PlateColorDB.onlyNameClassColor and 1 or 0
 		C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames",UseClassColor)--友方玩家名字使用职业颜色
 	end
-	if TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then--取消服务器名称显示12.0.1 (66384)
+	if C_CVar.GetCVar("nameplateShowFriendlyRealmName") then
+		C_CVar.SetCVar("nameplateShowFriendlyRealmName",0)--12.1取消友方玩家服务器
+	elseif TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then--取消服务器名称显示12.0.1 (66384)
 		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
 	end
 	if InCombatLockdown() then return end
@@ -104,11 +111,14 @@ function ns.SetPoints(self)
 	
 	self.name:ClearAllPoints();
 	self.HealthBarsContainer:ClearAllPoints();
-	self.castBar:ClearAllPoints();
-	self.castBar.Text:ClearAllPoints();
-	self.castBar.Icon:ClearAllPoints();
-	self.castBar.BorderShield:ClearAllPoints();
-	self.castBar.CastTargetNameText:ClearAllPoints();
+	local castBar = ns.GetCastBar(self)
+	if castBar then
+		castBar:ClearAllPoints();
+		castBar.Text:ClearAllPoints();
+		castBar.Icon:ClearAllPoints();
+		castBar.BorderShield:ClearAllPoints();
+		castBar.CastTargetNameText:ClearAllPoints();
+	end
 	
 	if self:IsPlayer() then
 		self.name:SetFontObject("PC_FontOutline")
@@ -173,58 +183,60 @@ function ns.SetPoints(self)
 		castTextScales = castTextScales*0.7
 		castTargetScales = castTargetScales*0.7
 	end
-	PixelUtil.SetPoint(self.castBar, "BOTTOMLEFT", self, "BOTTOMLEFT", -hpWidht+50, 0);--施法条宽度
-	PixelUtil.SetPoint(self.castBar, "BOTTOMRIGHT", self, "BOTTOMRIGHT", hpWidht-50, 0);--施法条宽度
-	PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMLEFT", self.castBar, "TOPLEFT", 0, 1);--血条宽度跟随施法条
-	PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMRIGHT", self.castBar, "TOPRIGHT", 0, 1);--血条宽度跟随施法条
-	PixelUtil.SetHeight(self.HealthBarsContainer, hpHeight);--血条高度
-	PixelUtil.SetHeight(self.castBar,castBarHeight)--施法条高度
-	PixelUtil.SetHeight(self.castBar.Spark,castBarHeight*2)--施法闪光高度
-	if PlateColorDB.castIconBig then
-		local bigsize = castBarHeight+hpHeight+3
-		PixelUtil.SetSize(self.castBar.Icon,bigsize,bigsize)--施法图标大
-		PixelUtil.SetSize(self.castBar.BorderShield,bigsize*0.9,bigsize)--不可打断的盾牌
-	else
-		PixelUtil.SetSize(self.castBar.Icon,castBarHeight,castBarHeight)--施法图标小
-		PixelUtil.SetSize(self.castBar.BorderShield,castBarHeight*0.9,castBarHeight) --不可打断的盾牌
+	local castBar = ns.GetCastBar(self)
+	-- 血条左下对准左下、右上对准右下。Y 偏移已加施法条高度,1+是让血条和施法条有间隙,保持施法条底部在UnitFrame底部
+	PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMLEFT", self, "BOTTOMLEFT", -hpWidht+50, 1+castBarHeight);
+	PixelUtil.SetPoint(self.HealthBarsContainer, "TOPRIGHT", self, "BOTTOMRIGHT", hpWidht-50, 1+castBarHeight + hpHeight);
+	if castBar then
+		PixelUtil.SetPoint(castBar, "BOTTOMLEFT", self, "BOTTOMLEFT", -hpWidht+50, 0);
+		PixelUtil.SetPoint(castBar, "TOPRIGHT", self, "BOTTOMRIGHT", hpWidht-50, castBarHeight);
+		PixelUtil.SetHeight(castBar.Spark,castBarHeight*2)--施法闪光高度
+		if PlateColorDB.castIconBig then
+			local bigsize = castBarHeight+hpHeight+2
+			PixelUtil.SetSize(castBar.Icon,bigsize,bigsize)--施法图标大
+			PixelUtil.SetSize(castBar.BorderShield,bigsize*0.9,bigsize)--不可打断的盾牌
+		else
+			PixelUtil.SetSize(castBar.Icon,castBarHeight,castBarHeight)--施法图标小
+			PixelUtil.SetSize(castBar.BorderShield,castBarHeight*0.9,castBarHeight) --不可打断的盾牌
+		end
+		PixelUtil.SetPoint(castBar.Icon,"BOTTOMRIGHT", castBar, "BOTTOMLEFT", -1, 0);	--施法图标位置
+		PixelUtil.SetPoint(castBar.BorderShield,"BOTTOMRIGHT", castBar, "BOTTOMLEFT", -1, 0);--不可打断的盾牌
+
+		castBar.Text:SetFontObject("PC_FontOutline");--施法文本尺寸
+		castBar.Text:SetFontHeight(castTextScales)
+		castBar.Text:SetSmoothScaling(false)
+		castBar.CastTargetNameText:SetFontObject("PC_FontOutline");--施法目标尺寸
+		castBar.CastTargetNameText:SetFontHeight(castTargetScales)
+		castBar.CastTargetNameText:SetSmoothScaling(false)
+		
+		if PlateColorDB.castPoint == 1 then --左
+			PixelUtil.SetPoint(castBar.Text,"LEFT", castBar, "LEFT", 0, 0);--施法文本位置
+		elseif PlateColorDB.castPoint == 2 then--中
+			PixelUtil.SetPoint(castBar.Text,"CENTER", castBar, "CENTER", 0, 0);--施法文本位置
+		end
+		if PlateColorDB.castTargetPoint == 1 then--右侧内部
+			PixelUtil.SetPoint(castBar.CastTargetNameText,"RIGHT", castBar, "RIGHT", 1, -1); --施法目标名字
+		elseif PlateColorDB.castTargetPoint == 2 then--右侧外部
+			PixelUtil.SetPoint(castBar.CastTargetNameText,"BOTTOMLEFT", castBar, "BOTTOMRIGHT", 1, -1); --施法目标名字
+		elseif PlateColorDB.castTargetPoint == 3 then--右侧中
+			PixelUtil.SetPoint(castBar.CastTargetNameText,"LEFT", self.HealthBarsContainer.healthBar, "RIGHT", 1, -1); --施法目标名字
+		elseif PlateColorDB.castTargetPoint == 4 then--右上
+			PixelUtil.SetPoint(castBar.CastTargetNameText,"BOTTOMLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -8, -1); --施法目标名字
+		end
+		--创建施法剩余时间文本
+		if not castBar.PCCastTimeText then
+			castBar.PCCastTimeText = castBar:CreateFontString(nil)
+		end
+		castBar.PCCastTimeText:ClearAllPoints();
+		if PlateColorDB.castTargetPoint == 1 then
+			castBar.PCCastTimeText:SetPoint("LEFT", castBar, "RIGHT", 0, 0)
+		else
+			castBar.PCCastTimeText:SetPoint("RIGHT", castBar, "RIGHT", 0, 0)
+		end
+		castBar.PCCastTimeText:SetFontObject("PC_FontOutline")	--施法时间文字大小
+		castBar.PCCastTimeText:SetFontHeight(castTextScales*1.1)
+		castBar.PCCastTimeText:SetSmoothScaling(false)
 	end
-	PixelUtil.SetPoint(self.castBar.Icon,"BOTTOMRIGHT", self.castBar, "BOTTOMLEFT", -2, 0);	--施法图标位置
-	PixelUtil.SetPoint(self.castBar.BorderShield,"BOTTOMRIGHT", self.castBar, "BOTTOMLEFT", -2, 0);--不可打断的盾牌
-	
-	self.castBar.Text:SetFontObject("PC_FontOutline");--施法文本尺寸
-	self.castBar.Text:SetFontHeight(castTextScales)
-	self.castBar.Text:SetSmoothScaling(false)
-	self.castBar.CastTargetNameText:SetFontObject("PC_FontOutline");--施法目标尺寸
-	self.castBar.CastTargetNameText:SetFontHeight(castTargetScales)
-	self.castBar.CastTargetNameText:SetSmoothScaling(false)
-	
-	if PlateColorDB.castPoint == 1 then --左
-		PixelUtil.SetPoint(self.castBar.Text,"LEFT", self.castBar, "LEFT", 0, 0);--施法文本位置
-	elseif PlateColorDB.castPoint == 2 then--中
-		PixelUtil.SetPoint(self.castBar.Text,"CENTER", self.castBar, "CENTER", 0, 0);--施法文本位置
-	end
-	if PlateColorDB.castTargetPoint == 1 then--右侧内部
-		PixelUtil.SetPoint(self.castBar.CastTargetNameText,"RIGHT", self.castBar, "RIGHT", 1, -1); --施法目标名字
-	elseif PlateColorDB.castTargetPoint == 2 then--右侧外部
-		PixelUtil.SetPoint(self.castBar.CastTargetNameText,"BOTTOMLEFT", self.castBar, "BOTTOMRIGHT", 1, -1); --施法目标名字
-	elseif PlateColorDB.castTargetPoint == 3 then--右侧中
-		PixelUtil.SetPoint(self.castBar.CastTargetNameText,"LEFT", self.HealthBarsContainer.healthBar, "RIGHT", 1, -1); --施法目标名字
-	elseif PlateColorDB.castTargetPoint == 4 then--右上
-		PixelUtil.SetPoint(self.castBar.CastTargetNameText,"BOTTOMLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -8, -1); --施法目标名字
-	end
-	--创建施法剩余时间文本
-	if not self.castBar.PCCastTimeText then
-		self.castBar.PCCastTimeText = self.castBar:CreateFontString(nil)
-	end
-	self.castBar.PCCastTimeText:ClearAllPoints();
-	if PlateColorDB.castTargetPoint == 1 then
-		self.castBar.PCCastTimeText:SetPoint("LEFT", self.castBar, "RIGHT", 0, 0)
-	else
-		self.castBar.PCCastTimeText:SetPoint("RIGHT", self.castBar, "RIGHT", 0, 0)
-	end
-	self.castBar.PCCastTimeText:SetFontObject("PC_FontOutline")	--施法时间文字大小
-	self.castBar.PCCastTimeText:SetFontHeight(castTextScales*1.1)
-	self.castBar.PCCastTimeText:SetSmoothScaling(false)
 	----调节尺寸部分结束
 	
 	--隐藏和清除自带的生命值显示
