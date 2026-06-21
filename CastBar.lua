@@ -58,8 +58,9 @@ ns.hook(NamePlateCastingBarMixin,"OnEvent",SetPlateCastBar)
 ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
 	local unitFrame = namePlate.UnitFrame
-	if unitFrame.castBar then
-		SetPlateCastBar(unitFrame.castBar)
+	local castBar = ns.GetCastBar(unitFrame)
+	if castBar then
+		SetPlateCastBar(castBar)
 	end
 end)
 ns.hook(NamePlateCastingBarMixin,"FinishSpell",function(self)
