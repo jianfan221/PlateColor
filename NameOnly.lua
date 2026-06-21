@@ -19,10 +19,13 @@ local function TrySetOnlyName(self)
 	if not self then return end
 	if not self.unit then return end
 	if not PlateColorDB.onlyNameNpc then return end
+	local castBar = ns.GetCastBar(self)
 	if UnitCanAttack("player", self.unit) then
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self }, "showOnlyName")
-		TextureLoadingGroupMixin.RemoveTexture({ textures = self.castBar }, "showOnlyName")
-		TextureLoadingGroupMixin.RemoveTexture({ textures = self.castBar }, "widgetsOnly")
+		if castBar then
+			TextureLoadingGroupMixin.RemoveTexture({ textures = castBar }, "showOnlyName")
+			TextureLoadingGroupMixin.RemoveTexture({ textures = castBar }, "widgetsOnly")
+		end
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self.HealthBarsContainer.healthBar }, "showOnlyName")
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self.ClassificationFrame }, "showOnlyName")
 		if self.healthBar then
@@ -31,16 +34,24 @@ local function TrySetOnlyName(self)
 				self.healthBar:Show()
 			end)
 		end
-		if self.castBar and (UnitCastingInfo(self.unit) ~= nil or UnitChannelInfo(self.unit) ~= nil) then
-			self.castBar:Show()
+		if castBar and (UnitCastingInfo(self.unit) ~= nil or UnitChannelInfo(self.unit) ~= nil) then
+			castBar:Show()
 		end
 	elseif not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player", self.unit)) then
 		TableUtil.TrySet(self, "showOnlyName")
-		TableUtil.TrySet(self.castBar, "showOnlyName")
-		TableUtil.TrySet(self.castBar, "widgetsOnly")
+		if castBar then
+			TableUtil.TrySet(castBar, "showOnlyName")
+			TableUtil.TrySet(castBar, "widgetsOnly")
+		end
 		TableUtil.TrySet(self.HealthBarsContainer.healthBar, "showOnlyName")
 		TableUtil.TrySet(self.ClassificationFrame, "showOnlyName")
 		TableUtil.TrySet(self.optionTable, "colorNameBySelection")
+		--如果非保护并且有血条,直接执行隐藏
+		if not self:IsForbidden() and self.healthBar then
+			pcall(function()
+				self.healthBar:Hide()
+			end)
+		end
 	end
 end
 
