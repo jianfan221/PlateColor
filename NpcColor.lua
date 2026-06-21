@@ -58,11 +58,17 @@ end
 
 --hook姓名版施法事件
 local function NpcCastColor(self,event)
+	if not self then return end
 	if event == "PLAYER_ENTERING_WORLD" then return end
 	--if not string.match(event,"STAR") then return end
 	if self:IsForbidden() then return end
 	if not self.unit then return end
+	-- PTR 12.1: castBar 移到了 CastBarsContainer 下, GetParent 多了一层
 	local unitFrame = self:GetParent()
+	if unitFrame and not unitFrame.unit then
+		unitFrame = unitFrame:GetParent()
+	end
+	if not unitFrame or not unitFrame.unit then return end
 	local CastingInfo = select(8, UnitCastingInfo(self.unit))
 	local ChanelInfo = select(7, UnitChannelInfo(self.unit))
 	local uninterruptable = CastingInfo
@@ -82,7 +88,10 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local unitFrame = namePlate.UnitFrame
 	unitFrame.NpckickColor = nil
 	--unitFrame.NpcNokickColor = nil
-	NpcCastColor(unitFrame.castBar)
+	local castBar = ns.GetCastBar(unitFrame)
+	if castBar then
+		NpcCastColor(castBar)
+	end
 	ns.UpdateSetColor(unitFrame)
 end)
 
