@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     tags:
-      - '*'
+      - '[0-9v]*'
     paths-ignore:
       - ".github/**"
       - "README.md"
