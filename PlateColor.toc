@@ -31,4 +31,3 @@ PlateAbsorb.lua
 PlateColor.lua
 PlateDotList.lua
 PlateDotSet.lua
-Update.lua
