@@ -1,4 +1,4 @@
-﻿## Interface: 120000,120001,120005,120007,120100
+## Interface: 120000,120001,120005,120007,120100
 ## Title: |cffff5900P|cffffb300l|cfff0ff00a|cff96ff00t|cff3cff00e|cff00ffd2C|cff00d1ffo|cff00B3FFl|cffD56AFFo|cffFF2AA5r|r
 ## Notes: /PC open the settings interface
 ## Notes-zhCN: /PC 打开设置界面
