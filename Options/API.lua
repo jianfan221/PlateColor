@@ -355,7 +355,7 @@ SLASH_PLATECOLORUSE2 = "/platecoloruse"
 
 -- 登录时：从 DB 初始化版本状态 + 跨会话提醒 + 向群组广播
 ns.event("PLAYER_LOGIN", function()
-	if IsInInstance() then return end
+	if C_Secrets.ShouldAurasBeSecret() then return end
 	-- 从 DB 读取跨会话已知的最高版本
 	PlateColorDB.myVersion = PlateColorDB.myVersion or 0
 	if PlateColorDB.myVersion > MaxVersion then
@@ -380,7 +380,7 @@ end)
 -- 处理收到的插件消息：版本查询/回复/广播
 ns.event("CHAT_MSG_ADDON", function(event, prefix, text, channel, sender)
 	if prefix ~= addonName then return end
-	if IsInInstance() then return end
+	if C_Secrets.ShouldAurasBeSecret() then return end
 
 	-- 1) 版本查询请求 → Whisper 回复对方
 	if text == addonName then
