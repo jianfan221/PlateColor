@@ -29,5 +29,3 @@ PlateAuras.lua
 Personal.lua
 PlateAbsorb.lua
 PlateColor.lua
-PlateDotList.lua
-PlateDotSet.lua
