@@ -44,14 +44,6 @@ function ns.UpdateHpbarColor(unitFrame)
         hr, hg, hb = DB.myThreatColor.r, DB.myThreatColor.g, DB.myThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
 
-     -- 【dot染色插入在这里】
-    elseif unitFrame.mydotcount and unitFrame.mydotcount == 1 then
-        hr, hg, hb = DB.dotcolor1.r, DB.dotcolor1.g, DB.dotcolor1.b
-        unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
-    elseif unitFrame.mydotcount and unitFrame.mydotcount >= 2 then
-        hr, hg, hb = DB.dotcolor2.r, DB.dotcolor2.g, DB.dotcolor2.b
-        unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
-
     -- 【第二部分：常规底色确定】
     elseif unitFrame.isTarget and DB.myTarget then
         hr, hg, hb = DB.myTargetColor.r, DB.myTargetColor.g, DB.myTargetColor.b
