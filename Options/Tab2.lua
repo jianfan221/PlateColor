@@ -23,12 +23,6 @@ ConFrame2:SetSize(670,480)
 ConFramescrollFrame2:SetScrollChild(ConFrame2)
 ns.Y[2] = 0	--设置起始位置
 
-local AuraTest = ns.AddSetTiText(ConFrame2,2,AURAS)
-local AuraClick = ns.AddfuncButton(ConFrame2,2,AURAS..SHOW_TARGET_CASTBAR_IN_V_KEY..COLOR,AURAS..SHOW_TARGET_CASTBAR_IN_V_KEY..COLOR)
-AuraClick:HookScript("OnClick", function()
-	ns.OpenPlateDotList()
-end)
-
 local TiText4 = ns.AddSetTiText(ConFrame2,2,L["箭头"])
 local arrowShowTable = {{L["不显示"],0},{L["左"],1},{L["右"],2},{L["左+右"],3}}
 local arrowPoint = ns.AddSetDropdM(ConFrame2,2,L["箭头显示方式"],L["箭头显示方式"],arrowShowTable,"arrowPoint",ns.UpdateHpTexture)
