@@ -13,6 +13,13 @@ local function SetCooldownText(self)
 end
 ns.hook(NamePlateAuraItemMixin,"OnLoad",SetCooldownText)
 
+--鼠标提示开关（所有版本通用）
+ns.hook(NamePlateAuraItemMixin, "SetAura", function(self, aura)
+	if self and not self:IsForbidden() then
+		self:EnableMouse(not PlateColorDB.hideAuraTooltip)
+	end
+end)
+
 --驱散颜色 (12.1 前使用旧版)
 local _, _, _, tocversion = GetBuildInfo()
 if tocversion < 120100 then
@@ -24,11 +31,7 @@ if tocversion < 120100 then
     dispelColor:AddPoint(3, CreateColor(1,0.5,  0,  1))--疾病
     dispelColor:AddPoint(4, CreateColor(0,  1,  0,  1))--中毒
     dispelColor:AddPoint(9, CreateColor(1,  0,  0,  1))--激怒
-    ns.hook(NamePlateAuraItemMixin, "SetAura", function(self,aura)
-        if self and not self:IsForbidden() then
-            self:EnableMouse(not PlateColorDB.hideAuraTooltip)
-        end
-
+    ns.hook(NamePlateAuraItemMixin, "SetAura", function(self, aura)
         if self and not self:IsForbidden() and self.unitToken then
             if not self.Stealable then
                 self.Stealable = self:CreateTexture(nil, "OVERLAY")
