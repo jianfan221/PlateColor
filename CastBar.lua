@@ -26,48 +26,55 @@ local function SetPlateCastBar(self, event)
     self.Background:SetTexture(130937)
     self.Background:SetVertexColor(0.1, 0.1, 0.1, 0.9)
 
-    -- --- 核心拦截点 ---
-    -- 施法正常完成后，我们不再通过这个函数覆盖颜色，交给系统原生的淡出处理
-    if event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then return end
-    -- ----------------
+	--获取施法条材质用于设置颜色
+	local barTexture = self:GetStatusBarTexture()
+	if not barTexture then return end
 
-    -- 只有在施法进行中或失败时，才执行下方的颜色覆盖
+	-- 失败/中断直接设红色并返回，不走后续颜色逻辑
+	if event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+		barTexture:SetVertexColor(colorRed:GetRGB())
+		return
+	end
+
+    -- 默认读条使用黄色,如果是引导使用绿色,中断状态是false时使用这里的颜色
     local currentFalseColor = colorYellow
-    if event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
-        currentFalseColor = colorRed
-    elseif self.channeling then
+    if event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
         currentFalseColor = colorGreen
     end
 
-	local _, _, _, _, _, _, _, CastType = UnitCastingInfo(self.unit)
-	local BarType = CastType
-	if BarType == nil then
-		local _, _, _, _, _, _, ChannelType = UnitChannelInfo(self.unit)
-		BarType = ChannelType
+	-- 在可能改变可中断状态的事件时更新缓存，结束时 API 已返回 nil 不再重新查
+	if event == "NAME_PLATE_UNIT_ADDED"
+	   or event == "UNIT_SPELLCAST_START"
+	   or event == "UNIT_SPELLCAST_CHANNEL_START"
+	   or event == "UNIT_SPELLCAST_EMPOWER_START"
+	   or event == "UNIT_SPELLCAST_INTERRUPTIBLE"
+	   or event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
+		local _, _, _, _, _, _, _, CastType = UnitCastingInfo(self.unit)
+		self.IsBarType = CastType
+		if self.IsBarType == nil then
+			local _, _, _, _, _, _, ChannelType = UnitChannelInfo(self.unit)
+			self.IsBarType = ChannelType
+		end
+		if self.IsBarType == nil then
+			self.IsBarType = false
+		end
 	end
-	if BarType == nil then
-		BarType = false
-	end
-
-    local barTexture = self:GetStatusBarTexture()
-    if barTexture then
-        barTexture:SetVertexColorFromBoolean(BarType, trueColor, currentFalseColor)
-    end
+	if self.IsBarType == nil then return end
+	--可中断信息是秘密值,self.IsBarType == true时使用trueColor
+    barTexture:SetVertexColorFromBoolean(self.IsBarType, trueColor, currentFalseColor)
 end
 ns.hook(NamePlateCastingBarMixin,"OnEvent",SetPlateCastBar)
+ns.hook(NamePlateCastingBarMixin,"FinishSpell", SetPlateCastBar)
+if NamePlateCastingBarMixin.UpdateBarFillTexture then
+	ns.hook(NamePlateCastingBarMixin, "UpdateBarFillTexture", SetPlateCastBar)
+end
 ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
 	local unitFrame = namePlate.UnitFrame
 	local castBar = ns.GetCastBar(unitFrame)
 	if castBar then
-		SetPlateCastBar(castBar)
+		SetPlateCastBar(castBar, event)
 	end
-end)
-ns.hook(NamePlateCastingBarMixin,"FinishSpell",function(self)
-	if self:IsForbidden() then return end
-	if not self.unit then return end
-	if PlateColorDB.castTexture == "Blizzard-default" then return end--选择了原版材质就用默认的
-	self:SetStatusBarTexture(ns.HpTextures[PlateColorDB.castTexture])
 end)
 
 --施法时间,获取施法剩余时间API抄的Platynator\Display\CastTimeText.lua
