@@ -35,6 +35,10 @@ local function SetPlateCastBar(self, event)
 		barTexture:SetVertexColor(colorRed:GetRGB())
 		return
 	end
+	-- UNIT_SPELLCAST_STOP 会和失败中断同时触发,避免污染失败中断的红色直接返回
+	if event == "UNIT_SPELLCAST_STOP" then
+        return
+    end
 
     -- 默认读条使用黄色,如果是引导使用绿色,中断状态是false时使用这里的颜色
     local currentFalseColor = colorYellow
