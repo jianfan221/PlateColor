@@ -176,9 +176,12 @@ ns.enUS = {
 ["等级>1鼠标提示"] = "Usually elite mobs in Mythic+ dungeons",
 ["等级>1颜色"] = "Level>1 Color",
 ["BOSS颜色"] = "BOSS Color",
+["NPC尺寸"] = "NPC Size",
 ["可打断NPC颜色"] = "Interruptible NPC Color",
 ["可能是可打断NPC颜色"] = "Possibly Interruptible NPC Color",
 ["不可打断NPC颜色"] = "Uninterruptible NPC Color",
+["大秘境缩小杂兵尺寸"] = "M+ Trash Scale Down",
+["大秘境缩小杂兵尺寸鼠标提示"] = "Reduces nameplate size of non-elite units in M+",
 
 
 --tab 辅助功能
@@ -222,5 +225,8 @@ ns.enUS = {
 ["继续执行将失去现有的配置\n是否需要恢复默认"] = "Continuing will lose the current configuration\nDo you want to restore defaults?",
 ["已设置暴雪姓名板选项"] = "Blizzard nameplate options set",
 ["战斗中无法设置暴雪姓名板选项"] = "Cannot set Blizzard nameplate options in combat",
-["复制完成"] = "Copy completed"
+["复制完成"] = "Copy completed",
+
+-- Tab7 keys
+["更新日志"] = "Update Log"
 }
