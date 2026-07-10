@@ -18,6 +18,54 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 生成最近3个标签的更新日志
+        run: |
+          if [ ! -f "Update.lua" ]; then
+            echo "Update.lua 不存在，跳过更新日志生成"
+            exit 0
+          fi
+
+          mapfile -t TAGS < <(git tag --sort=-creatordate)
+          TAG_COUNT=${#TAGS[@]}
+
+          if [ "$TAG_COUNT" -ge 3 ]; then
+            RANGE_START="${TAGS[2]}"
+          elif [ "$TAG_COUNT" -ge 2 ]; then
+            RANGE_START="${TAGS[1]}"
+          elif [ "$TAG_COUNT" -ge 1 ]; then
+            RANGE_START="${TAGS[0]}"
+          else
+            echo "没有找到标签，跳过"
+            exit 0
+          fi
+
+          # 收集更新记录（从新到旧）
+          CHANGES=""
+          NEXT_TAG="HEAD"
+          for ((i = 0; i < TAG_COUNT; i++)); do
+            TAG="${TAGS[i]}"
+            if [ "$TAG" = "$RANGE_START" ]; then
+              break
+            fi
+            LOG=$(git log --format="* %s" "$TAG..$NEXT_TAG" 2>/dev/null || true)
+            if [ -n "$LOG" ]; then
+              CHANGES+="## $TAG"$'\n'
+              CHANGES+="$LOG"$'\n'
+              CHANGES+=$'\n'
+            fi
+            NEXT_TAG="$TAG"
+          done
+
+          # 写入 Update.lua（给插件用）
+          {
+            echo "local _, ns = ..."
+            echo "ns.UpdateText = [["
+            echo "$CHANGES"
+            echo "]]"
+          } > Update.lua
+
+          echo "已生成 Update.lua（起始标签: $RANGE_START）"
+
       - uses: BigWigsMods/packager@master
         with:
           args: -p 307518 -a BKpgPa6E
