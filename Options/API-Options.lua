@@ -120,6 +120,7 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
 		PlateColorDB[DB]["g"] = g
 		PlateColorDB[DB]["b"] = b
 		if setfun then--设置姓名版对应功能
+			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
@@ -131,6 +132,7 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
         btn.color:SetColorTexture(r, g, b)
 
 		if setfun then--设置姓名版对应功能
+			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
@@ -236,6 +238,7 @@ function ns.AddSetClickB(parent,y,name,tip,db,setfun,spare1,spare2)
 		PlateColorDB[db] = check:GetChecked()
 		if InCombatLockdown() then return end
 		if setfun then--设置姓名版对应功能
+			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
@@ -292,6 +295,7 @@ function ns.AddSetSlider(parent,y, name, tip, minValue, maxValue, valueStep,varf
 		PlateColorDB[db] = tonumber(string.format(varformat,value))
 		if InCombatLockdown() then return end
 		if setfun then--设置姓名版对应功能
+			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
@@ -393,6 +397,7 @@ function ns.AddSetDropdTexture(parent,y,name,tip,db,TextureTable,setfun)
 			RadioDropdown.selectTexture:SetAtlas(TextureTable[PlateColorDB[db]])
 		end
 		if setfun then--设置姓名版对应功能
+			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
@@ -483,6 +488,7 @@ function ns.AddSetDropdTexture2(parent,y,name,tip,db,TextureTable,setfun)
         PlateColorDB[db] = value
 		RadioDropdown.selectTexture:SetTexture(TextureTable[PlateColorDB[db]])
 		if setfun then--设置姓名版对应功能
+			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
@@ -563,6 +569,7 @@ function ns.AddSetDropdM(parent,y,name,tip,optionstext,db,setfun)
 	local function SetSelected(value)
 		PlateColorDB[db] = value
 		if setfun then--设置姓名版对应功能
+			setfun()--先无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
@@ -657,6 +664,7 @@ function ns.AddClickColor(parent,y,name,tip,db,db2,setfun)
 		PlateColorDB[db] = check:GetChecked()
 		if InCombatLockdown() then return end
 		if setfun then--设置姓名版对应功能
+			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 				setfun(namePlate.UnitFrame)
 			end
