@@ -43,7 +43,7 @@ jobs:
             ENTRIES=""
             for hash in $(git rev-list "$NEXT..$CUR" 2>/dev/null); do
               MSG=$(git log --format="%s" -1 "$hash" 2>/dev/null)
-              FILES=$(git show --name-only --format="" "$hash" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' | sed 's/^, //')
+              FILES=$(git show --name-only --format="" "$hash" 2>/dev/null | tr '\n' ', ' | sed 's/^, //' | sed 's/, *$//' | sed 's/, ,//g')
               [ -z "$FILES" ] && FILES="$hash"
               ENTRIES+="$FILES|$MSG"$'\n'
             done
