@@ -28,32 +28,36 @@ jobs:
           mapfile -t TAGS < <(git tag --sort=-creatordate)
           TAG_COUNT=${#TAGS[@]}
 
-          if [ "$TAG_COUNT" -ge 3 ]; then
-            RANGE_START="${TAGS[2]}"
-          elif [ "$TAG_COUNT" -ge 2 ]; then
-            RANGE_START="${TAGS[1]}"
-          elif [ "$TAG_COUNT" -ge 1 ]; then
-            RANGE_START="${TAGS[0]}"
-          else
+          if [ "$TAG_COUNT" -lt 1 ]; then
             echo "没有找到标签，跳过"
             exit 0
           fi
 
-          # 收集更新记录（从新到旧）
           CHANGES=""
-          NEXT_TAG="HEAD"
-          for ((i = 0; i < TAG_COUNT; i++)); do
-            TAG="${TAGS[i]}"
-            if [ "$TAG" = "$RANGE_START" ]; then
-              break
-            fi
-            LOG=$(git log --format="* %s" "$TAG..$NEXT_TAG" 2>/dev/null || true)
-            if [ -n "$LOG" ]; then
-              CHANGES+="## $TAG"$'\n'
-              CHANGES+="$LOG"$'\n'
+          # 最多处理3个标签段（当前~前一个、前一个~前两个、前两个~前三个）
+          for ((i = 0; i < 3 && i + 1 < TAG_COUNT; i++)); do
+            CUR="${TAGS[i]}"
+            NEXT="${TAGS[i+1]}"
+
+            # 收集该标签段的提交（带文件名）
+            ENTRIES=""
+            for hash in $(git rev-list "$NEXT..$CUR" 2>/dev/null); do
+              MSG=$(git log --format="%s" -1 "$hash" 2>/dev/null)
+              FILES=$(git show --name-only --format="" "$hash" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' | sed 's/^, //')
+              [ -z "$FILES" ] && FILES="$hash"
+              ENTRIES+="$FILES|$MSG"$'\n'
+            done
+
+            if [ -n "$ENTRIES" ]; then
+              CHANGES+="## $CUR"$'\n'
+              while IFS= read -r line; do
+                [ -z "$line" ] && continue
+                f="${line%%|*}"
+                m="${line#*|}"
+                CHANGES+="* $f $m"$'\n'
+              done <<< "$ENTRIES"
               CHANGES+=$'\n'
             fi
-            NEXT_TAG="$TAG"
           done
 
           # 写入 Update.lua（给插件用）
@@ -64,7 +68,7 @@ jobs:
             echo "]]"
           } > Update.lua
 
-          echo "已生成 Update.lua（起始标签: $RANGE_START）"
+          echo "已生成 Update.lua"
 
       - uses: BigWigsMods/packager@master
         with:
