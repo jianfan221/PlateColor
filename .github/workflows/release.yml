@@ -34,8 +34,8 @@ jobs:
           fi
 
           CHANGES=""
-          # 最多处理3个标签段（当前~前一个、前一个~前两个、前两个~前三个）
-          for ((i = 0; i < 3 && i + 1 < TAG_COUNT; i++)); do
+          # 最多处理5个标签段
+          for ((i = 0; i < 5 && i + 1 < TAG_COUNT; i++)); do
             CUR="${TAGS[i]}"
             NEXT="${TAGS[i+1]}"
 
@@ -49,12 +49,12 @@ jobs:
             done
 
             if [ -n "$ENTRIES" ]; then
-              CHANGES+="## $CUR"$'\n'
+              CHANGES+="|cff3cff00## $CUR|r"$'\n'
               while IFS= read -r line; do
                 [ -z "$line" ] && continue
                 f="${line%%|*}"
                 m="${line#*|}"
-                CHANGES+="* $f $m"$'\n'
+                CHANGES+="* $m |cfff0ff00$f|r"$'\n'
               done <<< "$ENTRIES"
               CHANGES+=$'\n'
             fi
