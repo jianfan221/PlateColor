@@ -48,6 +48,24 @@ function ns.SetSelectedScale()
 end
 ns.event("PLAYER_ENTERING_WORLD", ns.SetSelectedScale)
 
+-- 全局姓名板点击范围（只设一次即可）
+function ns.UpdateGlobalHitInsets()
+	if InCombatLockdown() then return end
+	if PlateColorDB.HitHelp then
+		C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, 10000, 10000, 10000, 10000)
+	else
+		C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, -PlateColorDB.HitWidth, -PlateColorDB.HitWidth, -PlateColorDB.HitHeight, -PlateColorDB.HitBottom)
+	end
+	C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Enemy, -PlateColorDB.HitWidth, -PlateColorDB.HitWidth, -PlateColorDB.HitHeight, -PlateColorDB.HitBottom)
+end
+ns.event("PLAYER_ENTERING_WORLD", ns.UpdateGlobalHitInsets)
+
+-- 选项变更时同时刷新全局+单个姓名板
+function ns.RefreshHitSettings(self)
+	ns.UpdateGlobalHitInsets()
+	ns.SetPoints(self)
+end
+
 function ns.SetPoints(self)
 	if not self then return end
 	if not self.unit then return end
@@ -100,13 +118,20 @@ function ns.SetPoints(self)
 	)
 	self.HitTestFrameShow:SetShown(PlateColorDB.HitTestShow and (not self:IsFriend() or not PlateColorDB.HitHelp))
 
+	-- 单个姓名板点击区域（与 HitTestFrameShow 视觉范围同步）
 	if not InCombatLockdown() then
-		if PlateColorDB.HitHelp then
-			C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, 10000, 10000, 10000, 10000)--左右上下
+		if self:IsFriend() and PlateColorDB.HitHelp then
+			namePlateFrame:ClearAllHitTestPoints()
 		else
-			C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, -PlateColorDB.HitWidth, -PlateColorDB.HitWidth, -PlateColorDB.HitHeight, -PlateColorDB.HitBottom)
+			namePlateFrame:SetHitTestPoints({
+				{ point = "TOPLEFT",     relativeTo = self.HealthBarsContainer.healthBar,
+				  relativePoint = "TOPLEFT",     offsetX = -PlateColorDB.HitWidth - extraXOffset,
+				  offsetY =  PlateColorDB.HitHeight + extraYOffset },
+				{ point = "BOTTOMRIGHT", relativeTo = self.HealthBarsContainer.healthBar,
+				  relativePoint = "BOTTOMRIGHT", offsetX =  PlateColorDB.HitWidth + extraXOffset,
+				  offsetY = -PlateColorDB.HitBottom - extraYOffset },
+			})
 		end
-		C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Enemy, -PlateColorDB.HitWidth, -PlateColorDB.HitWidth, -PlateColorDB.HitHeight, -PlateColorDB.HitBottom)
 	end
 	
 	self.name:ClearAllPoints();
@@ -120,21 +145,6 @@ function ns.SetPoints(self)
 		castBar.CastTargetNameText:ClearAllPoints();
 	end
 	
-	if self:IsPlayer() then
-		self.name:SetFontObject("PC_FontOutline")
-		self.name:SetFontHeight(PlateColorDB.helpNameScale)
-	elseif self.unit and not UnitCanAttack("player",self.unit) then
-		self.name:SetFontObject("PC_Font")
-		self.name:SetFontHeight(PlateColorDB.helpNameScale*0.9)
-	else
-		if PlateColorDB.nameOUTLINE then
-			self.name:SetFontObject("PC_FontOutline")
-		else
-			self.name:SetFontObject("PC_Font")
-		end
-		self.name:SetFontHeight(PlateColorDB.nameScale)
-	end
-	self.name:SetSmoothScaling(false)
 	--名字位置
 	if not self.healthBar:IsShown() then
 		if self.NpcFuntext and self.NpcFuntext:IsShown() then
@@ -171,18 +181,41 @@ function ns.SetPoints(self)
 
 	local hpWidht = PlateColorDB.hpWidht
 	local hpHeight = PlateColorDB.hpHeight
+	local nameScale = PlateColorDB.nameScale
 	local castBarHeight = PlateColorDB.castBarHeight
 	local castTextScales = PlateColorDB.castTextScale
 	local castTargetScales = PlateColorDB.castTargetScale
 	
 	--部分需要尺寸调节
-	if UnitIsOtherPlayersPet(self.unit) and not UnitIsPlayer(self.unit) then
-		hpWidht = hpWidht-27
-		hpHeight = hpHeight*0.7
-		castBarHeight = castBarHeight*0.7
-		castTextScales = castTextScales*0.7
-		castTargetScales = castTargetScales*0.7
+	if (UnitIsOtherPlayersPet(self.unit) and not UnitIsPlayer(self.unit)) or
+	   (PlateColorDB.MPlusTrashScale and select(2, IsInInstance()) == "party"
+		and UnitCanAttack("player", self.unit)
+		and UnitClassification(self.unit) == "normal") then
+		local Trashscale = 0.7
+		hpWidht = hpWidht - 80 * (1 - Trashscale)
+		hpHeight = hpHeight * Trashscale
+		nameScale = nameScale * Trashscale
+		castBarHeight = castBarHeight * Trashscale
+		castTextScales = castTextScales * Trashscale
+		castTargetScales = castTargetScales * Trashscale
 	end
+
+	if self:IsPlayer() then
+		self.name:SetFontObject("PC_FontOutline")
+		self.name:SetFontHeight(PlateColorDB.helpNameScale)
+	elseif self.unit and not UnitCanAttack("player",self.unit) then
+		self.name:SetFontObject("PC_Font")
+		self.name:SetFontHeight(PlateColorDB.helpNameScale*0.9)
+	else
+		if PlateColorDB.nameOUTLINE then
+			self.name:SetFontObject("PC_FontOutline")
+		else
+			self.name:SetFontObject("PC_Font")
+		end
+		self.name:SetFontHeight(nameScale)
+	end
+	self.name:SetSmoothScaling(false)
+
 	local castBar = ns.GetCastBar(self)
 	-- 血条左下对准左下、右上对准右下。Y 偏移已加施法条高度,1+是让血条和施法条有间隙,保持施法条底部在UnitFrame底部
 	PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMLEFT", self, "BOTTOMLEFT", -hpWidht+50, 1+castBarHeight);
