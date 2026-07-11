@@ -176,12 +176,9 @@ ns.enUS = {
 ["等级>1鼠标提示"] = "Usually elite mobs in Mythic+ dungeons",
 ["等级>1颜色"] = "Level>1 Color",
 ["BOSS颜色"] = "BOSS Color",
-["NPC尺寸"] = "NPC Size",
 ["可打断NPC颜色"] = "Interruptible NPC Color",
 ["可能是可打断NPC颜色"] = "Possibly Interruptible NPC Color",
 ["不可打断NPC颜色"] = "Uninterruptible NPC Color",
-["大秘境缩小杂兵尺寸"] = "M+ Trash Scale Down",
-["大秘境缩小杂兵尺寸鼠标提示"] = "Reduces nameplate size of non-elite units in M+",
 
 
 --tab 辅助功能
