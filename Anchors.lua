@@ -5,17 +5,37 @@ function ns.GetCastBar(unitFrame)
 	return unitFrame.CastBarsContainer and unitFrame.CastBarsContainer.castBar or unitFrame.castBar
 end
 
-local SimplifiedTypes = {--简化姓名版包含友方玩家的选项转换为不包含友方玩家防止副本内不显示
-["D"] = "",
-["H"] = "",
-["L"] = "",
-}
+-- 设置位域 CVar 的单个位（读当前掩码→改指定位→写回）用于下拉菜单的多选cvar
+local function SetBitCVar(cvar, enumValue, enabled)
+	local mask = 0
+	for i = 1, 8 do
+		if CVarCallbackRegistry:GetCVarBitfieldIndex(cvar, i) then
+			mask = bit.bor(mask, bit.lshift(1, i - 1))
+		end
+	end
+	if enabled then
+		mask = bit.bor(mask, bit.lshift(1, enumValue - 1))
+	else
+		mask = bit.band(mask, bit.bnot(bit.lshift(1, enumValue - 1)))
+	end
+	CVarCallbackRegistry:SetCVarBitfieldMask(cvar, mask)
+end
+
+-- 姓名板尺寸修改
+local function IsPetTrashScale(unit)
+	if not unit then return false end
+	-- 缩小玩家的宠物
+	if UnitIsOtherPlayersPet(unit) and not UnitIsPlayer(unit) then
+		return 0.75
+	end
+	return false
+end
 
 function ns.SetSelectedScale()
 	if InCombatLockdown() then return end
 	C_CVar.SetCVar("nameplateLargerScale", 1.2)	--精英
-	SetCVar("namePlateMinScale", 1)	--距离缩放
-	SetCVar("namePlateMaxScale", 1)	--距离缩放
+	C_CVar.SetCVar("namePlateMinScale", 1)	--距离缩放
+	C_CVar.SetCVar("namePlateMaxScale", 1)	--距离缩放
 	C_CVar.SetCVar("nameplateSelectedScale",PlateColorDB.SelectedScale)--目标尺寸
 	C_CVar.SetCVar("nameplateOccludedAlphaMult",PlateColorDB.wallAlpha)--隔墙透明度
 	C_CVar.SetCVar("nameplateMaxAlpha", PlateColorDB.allNpAlpha)--非当前目标透明度
@@ -23,28 +43,33 @@ function ns.SetSelectedScale()
 	C_CVar.SetCVar("nameplateOverlapV", PlateColorDB.npOverlapV)--垂直堆叠间距
 	C_CVar.SetCVar("nameplateOverlapH", PlateColorDB.npOverlapH)--水平堆叠间距
 	C_CVar.SetCVar("nameplateMaxDistance", PlateColorDB.npRange)--姓名版可见范围
+
 	
-	if (PlateColorDB.onlyName or PlateColorDB.onlyNameNpc) and SimplifiedTypes[C_CVar.GetCVar("nameplateSimplifiedTypes")] then
-		C_CVar.SetCVar("nameplateSimplifiedTypes",SimplifiedTypes[C_CVar.GetCVar("nameplateSimplifiedTypes")])--去除友方玩家姓名版选项防止副本内不显示
+	--启用NPC名字模式时,关闭友方NPC简化姓名板
+	if PlateColorDB.onlyNameNpc then
+		SetBitCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyNpc, false)
 	end
-	if C_CVar.GetCVar("nameplateInfoDisplay") ~="" and C_CVar.GetCVar("nameplateInfoDisplay") ~="D" then
-		C_CVar.SetCVar("nameplateInfoDisplay","D")--去掉血量百分比显示
+	--启用友方玩家名字模式时,关闭友方玩家简化姓名板
+	if PlateColorDB.onlyName then
+		SetBitCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyPlayer, false)
 	end
-	if C_CVar.GetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits") then
-		local UseonlyName = PlateColorDB.onlyName and 1 or 0
-		C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits",UseonlyName)--友方玩家只显示名字
-	end
-	if C_CVar.GetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames") then
-		local UseClassColor = PlateColorDB.onlyNameClassColor and 1 or 0
-		C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames",UseClassColor)--友方玩家名字使用职业颜色
-	end
-	if C_CVar.GetCVar("nameplateShowFriendlyRealmName") then
-		C_CVar.SetCVar("nameplateShowFriendlyRealmName",0)--12.1取消友方玩家服务器
-	elseif TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then--取消服务器名称显示12.0.1 (66384)
+	--去掉血量百分比因为我们自己创建了
+	SetBitCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthPercent, false)
+	--去掉血量数值因为我们自己创建了
+	SetBitCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthValue, false)
+
+	--友方玩家名字模式
+	C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits",PlateColorDB.onlyName and 1 or 0)
+	--友方玩家名字模式使用职业颜色
+	C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames",PlateColorDB.onlyNameClassColor and 1 or 0)
+	--12.1取消友方玩家的服务器名称显示
+	C_CVar.SetCVar("nameplateShowFriendlyRealmName",0)
+	--取消服务器名称显示12.0.1 (66384)
+	if TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then
 		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
 	end
 	if InCombatLockdown() then return end
-	SetCVar("UnitNameFriendlyPlayerName", GetCVar("UnitNameFriendlyPlayerName"))--调用一次刷新设置
+	C_CVar.SetCVar("UnitNameFriendlyPlayerName", C_CVar.GetCVar("UnitNameFriendlyPlayerName"))--调用一次刷新设置
 end
 ns.event("PLAYER_ENTERING_WORLD", ns.SetSelectedScale)
 
@@ -186,12 +211,10 @@ function ns.SetPoints(self)
 	local castTextScales = PlateColorDB.castTextScale
 	local castTargetScales = PlateColorDB.castTargetScale
 	
-	--部分需要尺寸调节
-	if (UnitIsOtherPlayersPet(self.unit) and not UnitIsPlayer(self.unit)) or
-	   (PlateColorDB.MPlusTrashScale and select(2, IsInInstance()) == "party"
-		and UnitCanAttack("player", self.unit)
-		and UnitClassification(self.unit) == "normal") then
-		local Trashscale = 0.7
+	--部分需要尺寸调节（其他玩家的宠物）
+	local TrashScale = IsPetTrashScale(self.unit)
+	if TrashScale then
+		local Trashscale = TrashScale
 		hpWidht = hpWidht - 80 * (1 - Trashscale)
 		hpHeight = hpHeight * Trashscale
 		nameScale = nameScale * Trashscale
