@@ -40,6 +40,4 @@ NpckickColor.check:HookScript("OnClick",function(self)
 end)
 local NpcSukickColor = ns.AddClickColor(ConFrame4,4,L["可能是可打断NPC颜色"],L["可能是可打断NPC颜色"],"NpcSukick","NpcSukickColor",ns.UpdateSetColor)
 
-ns.AddSetTiText(ConFrame4,4,L["NPC尺寸"])
-ns.AddSetClickB(ConFrame4,4,L["大秘境缩小杂兵尺寸"],L["大秘境缩小杂兵尺寸鼠标提示"],"MPlusTrashScale",ns.SetPoints)
 end)
