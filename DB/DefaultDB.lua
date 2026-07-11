@@ -123,9 +123,7 @@ ns.PlateColorDB = {
 	NpcSukickColor = {r=0,g=1, b=1},-- 可能是可打断NPC颜色
 	NpcNokick = true,			--不可打断NPC
 	NpcNokickColor = {r=0,g=1, b=1},--不可打断NPC颜色
-	
-	MPlusTrashScale = true,		--大秘境缩小杂兵尺寸
-	
+
 	setFocusMod = 1,			--设置焦点快捷键
 	setFocusIcon = 0,			--设置焦点时自动标记
 	sendFocusIcon = true,		--就位确认时通报焦点标记至小队
