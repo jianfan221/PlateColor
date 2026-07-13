@@ -12,7 +12,9 @@ function ns.PlateOnlyName(unitFrame)
 		unitFrame.NpcFuntext:SetSmoothScaling(false)
 		unitFrame.NpcFuntext:SetAlpha(0.9)
 	end
-	if ns.MM(UnitGUID(unitFrame.unit)) then
+	local guid = UnitGUID(unitFrame.unit)
+	local isMM = ns.MM(guid)
+	if isMM then
 		unitFrame.NpcFuntext:Hide()
 		return
 	end
@@ -23,8 +25,12 @@ function ns.PlateOnlyName(unitFrame)
 		text = GetGuildInfo(unitFrame.unit) or ""
 		unitFrame.NpcFuntext:SetText(text)
 	elseif not unitFrame:IsPlayer() then
-		local tooltipData = C_TooltipInfo.GetUnit(unitFrame.unit)
-		if tooltipData and tooltipData.lines[2] and not string.match(tooltipData.lines[2].leftText,LEVEL) and not unitFrame:IsPlayer() then
+		if not unitFrame.tooltipData or unitFrame.tooltipData_guid ~= guid then
+			unitFrame.tooltipData = C_TooltipInfo.GetUnit(unitFrame.unit)
+			unitFrame.tooltipData_guid = guid
+		end
+		local tooltipData = unitFrame.tooltipData
+		if tooltipData and tooltipData.lines[2] and not string.match(tooltipData.lines[2].leftText, LEVEL) and not unitFrame:IsPlayer() then
 			unitFrame.NpcFuntext:SetFontObject("PC_Font")
 			unitFrame.NpcFuntext:SetFontHeight(PlateColorDB.helpNameScale * 0.8)
 			text = tooltipData.lines[2].leftText or ""
