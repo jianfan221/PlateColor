@@ -20,8 +20,13 @@ function ns.CreateNameQuest(unitFrame)
 	else
 		unitFrame.NameQuest:SetPoint("TOP",unitFrame,"TOP",0,0)
 	end
-	if not ns.MM(UnitGUID(unitFrame.unit)) then
-		local tooltipData = C_TooltipInfo.GetUnit(unitFrame.unit)
+	local guid = UnitGUID(unitFrame.unit)
+	if not ns.MM(guid) then
+		if not unitFrame.tooltipData or unitFrame.tooltipData_guid ~= guid then
+			unitFrame.tooltipData = C_TooltipInfo.GetUnit(unitFrame.unit)
+			unitFrame.tooltipData_guid = guid
+		end
+		local tooltipData = unitFrame.tooltipData
 		if tooltipData and tooltipData.lines then
 			unitFrame.NameQuest:Hide()
 			local lines = tooltipData.lines
@@ -76,6 +81,7 @@ local  function QuestMarkEvent(event, IDs)
 		end
 		C_Timer.After(2,function()
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+				namePlate.UnitFrame.tooltipData = nil
 				ns.CreateNameQuest(namePlate.UnitFrame)
 			end
 		end)
@@ -88,6 +94,7 @@ local  function QuestMarkEvent(event, IDs)
 			if not NameQuestTable[title] then return end
 			NameQuestTable[title] = not C_QuestLog.IsComplete(IDs)
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+				namePlate.UnitFrame.tooltipData = nil
 				ns.CreateNameQuest(namePlate.UnitFrame)
 			end
 		end)
@@ -99,6 +106,7 @@ local  function QuestMarkEvent(event, IDs)
 			if info and not info.isHeader and (info.isTask or not info.isHidden) then
 				NameQuestTable[info.title] = not C_QuestLog.IsComplete(IDs)
 				for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+					namePlate.UnitFrame.tooltipData = nil
 					ns.CreateNameQuest(namePlate.UnitFrame)
 				end
 			end
@@ -111,6 +119,7 @@ local  function QuestMarkEvent(event, IDs)
 			if not title then return end
 			NameQuestTable[title] = nil
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+				namePlate.UnitFrame.tooltipData = nil
 				ns.CreateNameQuest(namePlate.UnitFrame)
 			end
 		end)
