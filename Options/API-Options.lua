@@ -122,7 +122,7 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
     end
@@ -134,7 +134,7 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
     end
@@ -240,7 +240,7 @@ function ns.AddSetClickB(parent,y,name,tip,db,setfun,spare1,spare2)
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
 	end)
@@ -297,7 +297,7 @@ function ns.AddSetSlider(parent,y, name, tip, minValue, maxValue, valueStep,varf
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
 	end)
@@ -399,7 +399,7 @@ function ns.AddSetDropdTexture(parent,y,name,tip,db,TextureTable,setfun)
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
     end
@@ -490,7 +490,7 @@ function ns.AddSetDropdTexture2(parent,y,name,tip,db,TextureTable,setfun)
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
     end
@@ -571,7 +571,7 @@ function ns.AddSetDropdM(parent,y,name,tip,optionstext,db,setfun)
 		if setfun then--设置姓名版对应功能
 			setfun()--先无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
 	end
@@ -666,7 +666,7 @@ function ns.AddClickColor(parent,y,name,tip,db,db2,setfun)
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				setfun(namePlate.UnitFrame)
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
 			end
 		end
 	end)
