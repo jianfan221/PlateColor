@@ -6,7 +6,7 @@ local healthColorObj = CreateColor(0, 0, 0, 1)
 
 -- 血条变色
 function ns.UpdateHpbarColor(unitFrame)
-    if unitFrame:IsForbidden() or not unitFrame.unit then return end
+    if not unitFrame or unitFrame:IsForbidden() or not unitFrame.unit then return end
     if UnitIsPlayer(unitFrame.unit) then return end
     if not unitFrame.healthBar or not unitFrame.healthBar:IsShown() then return end
 
