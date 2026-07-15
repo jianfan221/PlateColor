@@ -80,3 +80,60 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local unitFrame = namePlate.UnitFrame
 	ns.CrowdControlListFrameScale(unitFrame)
 end)
+
+--12.1 AuraContainer 血条左侧仅显示敌方增益魔法/激怒
+if tocversion >= 120100 then
+	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+		if not UnitCanAttack("player", unit) then return end
+		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
+		if not namePlate then return end
+		local unitFrame = namePlate.UnitFrame
+		if unitFrame.PC_DispelAuras then 
+            unitFrame.PC_DispelAuras:SetUnit(unit)
+            return
+        end
+
+		unitFrame.PC_DispelAuras = CreateFrame("AuraContainer", nil, unitFrame.healthBar, "CustomAuraContainerTemplate")
+		unitFrame.PC_DispelAuras:SetPoint("RIGHT", unitFrame.healthBar, "LEFT", -5, 0)
+		unitFrame.PC_DispelAuras:SetUnit(unit)
+		unitFrame.PC_DispelAuras:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
+			maxFrameCount = 8,
+			initializeFrame = function(btn)
+				btn:SetSize(30, 30)
+				local icon = btn:CreateTexture(nil, "ARTWORK")
+				icon:SetAllPoints(btn)
+				btn:SetIcon(icon)
+
+                local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
+                cooldown:SetAllPoints(btn)
+                cooldown:SetDrawBling(false)--冷却结束时是否播放闪光
+                cooldown:SetDrawEdge(false)--冷却进度线
+                cooldown:SetHideCountdownNumbers(false)
+                btn:SetDurationCooldown(cooldown)
+
+                local count = btn:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+                count:SetPoint("BOTTOMRIGHT", btn, -2, 2)
+                count:SetFontHeight(12)
+                btn:SetApplicationCount(count, {})
+
+				local border = btn:CreateTexture(nil, "OVERLAY")
+				border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
+				border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
+				border:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
+				border:SetBlendMode("ADD")
+				btn:SetAuraBorder(border, {showWhenHelpful = true, style = 1})
+			end,
+		})
+		unitFrame.PC_DispelAuras:SetAuraGroupLayout("magicEnrage", {
+			layoutType = "GRID",
+			anchorPoint = "TOPRIGHT",
+			spacingX = 4,
+		})
+
+		--隐藏暴雪默认左侧增益避免重叠
+		if unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
+			unitFrame.AurasFrame.BuffListFrame:Hide()
+		end
+	end)
+end
+
