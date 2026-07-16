@@ -5,22 +5,6 @@ function ns.GetCastBar(unitFrame)
 	return unitFrame.CastBarsContainer and unitFrame.CastBarsContainer.castBar or unitFrame.castBar
 end
 
--- 设置位域 CVar 的单个位（读当前掩码→改指定位→写回）用于下拉菜单的多选cvar
-local function SetBitCVar(cvar, enumValue, enabled)
-	local mask = 0
-	for i = 1, 8 do
-		if CVarCallbackRegistry:GetCVarBitfieldIndex(cvar, i) then
-			mask = bit.bor(mask, bit.lshift(1, i - 1))
-		end
-	end
-	if enabled then
-		mask = bit.bor(mask, bit.lshift(1, enumValue - 1))
-	else
-		mask = bit.band(mask, bit.bnot(bit.lshift(1, enumValue - 1)))
-	end
-	CVarCallbackRegistry:SetCVarBitfieldMask(cvar, mask)
-end
-
 -- 姓名板尺寸修改
 local function IsPetTrashScale(unit)
 	if not unit then return false end
@@ -47,16 +31,16 @@ function ns.SetSelectedScale()
 	
 	--启用NPC名字模式时,关闭友方NPC简化姓名板
 	if PlateColorDB.onlyNameNpc then
-		SetBitCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyNpc, false)
+		ns.SetCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyNpc, false)
 	end
 	--启用友方玩家名字模式时,关闭友方玩家简化姓名板
 	if PlateColorDB.onlyName then
-		SetBitCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyPlayer, false)
+		ns.SetCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyPlayer, false)
 	end
 	--去掉血量百分比因为我们自己创建了
-	SetBitCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthPercent, false)
+	ns.SetCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthPercent, false)
 	--去掉血量数值因为我们自己创建了
-	SetBitCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthValue, false)
+	ns.SetCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthValue, false)
 
 	--友方玩家名字模式
 	C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits",PlateColorDB.onlyName and 1 or 0)
