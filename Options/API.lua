@@ -47,6 +47,22 @@ end
 
 ns.hook = hooksecurefunc
 
+-- 设置位域 CVar 的单个位（读当前掩码→改指定位→写回）用于下拉菜单的多选cvar
+function ns.SetCVar(cvar, enumValue, enabled)
+	local mask = 0
+	for i = 1, 8 do
+		if CVarCallbackRegistry:GetCVarBitfieldIndex(cvar, i) then
+			mask = bit.bor(mask, bit.lshift(1, i - 1))
+		end
+	end
+	if enabled then
+		mask = bit.bor(mask, bit.lshift(1, enumValue - 1))
+	else
+		mask = bit.band(mask, bit.bnot(bit.lshift(1, enumValue - 1)))
+	end
+	CVarCallbackRegistry:SetCVarBitfieldMask(cvar, mask)
+end
+
 --判断是否是秘密值
 function ns.MM(value)
 	if not issecretvalue or not issecrettable then
