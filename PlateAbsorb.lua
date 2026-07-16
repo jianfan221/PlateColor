@@ -17,7 +17,9 @@ function ns.AddAbsorbText(event,unit)
 		unitFrame.abs:SetSmoothScaling(false)
 	end
 	local anchor = unitFrame.ArrowLeft
-	if unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
+	if unitFrame.PC_DispelAuras then
+		anchor = unitFrame.PC_DispelAuras
+	elseif unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
 		anchor = unitFrame.AurasFrame.BuffListFrame
 	end
 	unitFrame.abs:ClearAllPoints()
