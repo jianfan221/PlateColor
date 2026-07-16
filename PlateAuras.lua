@@ -81,58 +81,84 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	ns.CrowdControlListFrameScale(unitFrame)
 end)
 
---12.1 AuraContainer 血条左侧仅显示敌方增益魔法/激怒
+--12.1 AuraContainer 血条左侧仅显示敌方可驱散光环
 if tocversion >= 120100 then
+	local auraPool
+	local dispelMap = {}
+	EventUtil.ContinueOnPlayerLogin(function()
+        --玩家登录后创建驱散光环容器,关闭自带的左侧增益光环
+        ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
+        ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
+		auraPool = CreateFramePool("Frame", UIParent, nil, nil, false, function(frame)
+			local c = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
+			c:Hide()
+			c:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
+				maxFrameCount = 8,
+				initializeFrame = function(btn)
+					btn:SetSize(20*PlateColorDB.auraLScale, 20*PlateColorDB.auraLScale)--20乘以缩放比例
+					local icon = btn:CreateTexture(nil, "ARTWORK")
+					icon:SetAllPoints(btn)
+					btn:SetIcon(icon)
+					local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
+					cooldown:SetAllPoints(btn)
+					cooldown:SetHideCountdownNumbers(false)
+					btn:SetDurationCooldown(cooldown)
+					local count = cooldown:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+					count:SetPoint("BOTTOMRIGHT", btn, 0, 0)
+                    count:SetVertexColor(1, 1, 1)
+					count:SetFontHeight(13)
+					btn:SetApplicationCount(count, {})
+					local border = btn:CreateTexture(nil, "OVERLAY")
+					border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
+					border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
+					border:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
+					border:SetBlendMode("ADD")
+					btn:SetAuraBorder(border, {showWhenHelpful = true, style = 1})
+				end,
+			})
+			c:SetAuraGroupLayout("magicEnrage", {
+				layoutType = "GRID",
+				anchorPoint = "TOPRIGHT",
+				point = "TOPLEFT",
+				spacingX = 4,
+			})
+			frame.container = c
+		end, 40)
+	end)
+
 	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+		if dispelMap[unit] then
+			auraPool:Release(dispelMap[unit])
+			dispelMap[unit] = nil
+		end
 		if not UnitCanAttack("player", unit) then return end
+
 		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
 		if not namePlate then return end
 		local unitFrame = namePlate.UnitFrame
-		if unitFrame.PC_DispelAuras then 
-            unitFrame.PC_DispelAuras:SetUnit(unit)
-            return
-        end
 
-		unitFrame.PC_DispelAuras = CreateFrame("AuraContainer", nil, unitFrame.healthBar, "CustomAuraContainerTemplate")
-		unitFrame.PC_DispelAuras:SetPoint("RIGHT", unitFrame.healthBar, "LEFT", -5, 0)
+		local poolFrame = auraPool:Acquire()
+		if not poolFrame then return end
+
+		dispelMap[unit] = poolFrame
+		unitFrame.PC_DispelAuras = poolFrame.container
+		unitFrame.PC_DispelAuras:SetParent(unitFrame.healthBar)
+		local anchor = unitFrame.healthBar
+		if unitFrame.ArrowLeft then anchor = unitFrame.ArrowLeft end
+		unitFrame.PC_DispelAuras:ClearAllPoints()
+		unitFrame.PC_DispelAuras:SetPoint("RIGHT", anchor, "LEFT", -5, 0)
+		unitFrame.PC_DispelAuras:Show()
 		unitFrame.PC_DispelAuras:SetUnit(unit)
-		unitFrame.PC_DispelAuras:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
-			maxFrameCount = 8,
-			initializeFrame = function(btn)
-				btn:SetSize(30, 30)
-				local icon = btn:CreateTexture(nil, "ARTWORK")
-				icon:SetAllPoints(btn)
-				btn:SetIcon(icon)
 
-                local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
-                cooldown:SetAllPoints(btn)
-                cooldown:SetDrawBling(false)--冷却结束时是否播放闪光
-                cooldown:SetDrawEdge(false)--冷却进度线
-                cooldown:SetHideCountdownNumbers(false)
-                btn:SetDurationCooldown(cooldown)
-
-                local count = btn:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-                count:SetPoint("BOTTOMRIGHT", btn, -2, 2)
-                count:SetFontHeight(12)
-                btn:SetApplicationCount(count, {})
-
-				local border = btn:CreateTexture(nil, "OVERLAY")
-				border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
-				border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
-				border:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
-				border:SetBlendMode("ADD")
-				btn:SetAuraBorder(border, {showWhenHelpful = true, style = 1})
-			end,
-		})
-		unitFrame.PC_DispelAuras:SetAuraGroupLayout("magicEnrage", {
-			layoutType = "GRID",
-			anchorPoint = "TOPRIGHT",
-			spacingX = 4,
-		})
-
-		--隐藏暴雪默认左侧增益避免重叠
 		if unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
 			unitFrame.AurasFrame.BuffListFrame:Hide()
+		end
+	end)
+
+	ns.event("NAME_PLATE_UNIT_REMOVED", function(event, unit)
+		if dispelMap[unit] then
+			auraPool:Release(dispelMap[unit])
+			dispelMap[unit] = nil
 		end
 	end)
 end
