@@ -94,10 +94,12 @@ if tocversion >= 120100 then
 			frame.container:Hide()
 			frame.container:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
 				maxFrameCount = 3,
+				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
 					btn:SetSize(20*PlateColorDB.auraLScale, 20*PlateColorDB.auraLScale)--20乘以缩放比例
 					local icon = btn:CreateTexture(nil, "ARTWORK")
 					icon:SetAllPoints(btn)
+					icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 					btn:SetIcon(icon)
 					local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
 					cooldown:SetAllPoints(btn)
@@ -108,19 +110,13 @@ if tocversion >= 120100 then
                     count:SetVertexColor(1, 1, 1)
 					count:SetFontHeight(13)
 					btn:SetApplicationCount(count, {})
-					local border = btn:CreateTexture(nil, "OVERLAY")
+					local border = cooldown:CreateTexture(nil, "OVERLAY")
 					border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
 					border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
 					border:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
 					border:SetBlendMode("ADD")
 					btn:SetAuraBorder(border, {showWhenHelpful = true, style = 1})
 				end,
-			})
-			frame.container:SetAuraGroupLayout("magicEnrage", {
-				layoutType = "GRID",
-				anchorPoint = "TOPRIGHT",
-				point = "TOPLEFT",
-				spacingX = 4,
 			})
 		end, 40)
 	end)
@@ -142,12 +138,14 @@ if tocversion >= 120100 then
 		dispelMap[unit] = poolFrame
 		unitFrame.PC_DispelAuras = poolFrame.container
 		unitFrame.PC_DispelAuras:SetParent(unitFrame.healthBar)
-		local anchor = unitFrame.healthBar
-		if unitFrame.ArrowLeft then anchor = unitFrame.ArrowLeft end
-		unitFrame.PC_DispelAuras:ClearAllPoints()
-		unitFrame.PC_DispelAuras:SetPoint("RIGHT", anchor, "LEFT", -5, 0)
 		unitFrame.PC_DispelAuras:Show()
 		unitFrame.PC_DispelAuras:SetUnit(unit)
+		C_Timer.After(0, function()
+			local anchor = unitFrame.healthBar
+			if unitFrame.ArrowLeft then anchor = unitFrame.ArrowLeft end
+			unitFrame.PC_DispelAuras:ClearAllPoints()
+			unitFrame.PC_DispelAuras:SetPoint("RIGHT", anchor, "LEFT", -5, 0)
+		end)
 
 		if unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
 			unitFrame.AurasFrame.BuffListFrame:Hide()
