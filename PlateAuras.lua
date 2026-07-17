@@ -93,7 +93,7 @@ if tocversion >= 120100 then
 			frame.container = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
 			frame.container:Hide()
 			frame.container:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
-				maxFrameCount = 8,
+				maxFrameCount = 3,
 				initializeFrame = function(btn)
 					btn:SetSize(20*PlateColorDB.auraLScale, 20*PlateColorDB.auraLScale)--20乘以缩放比例
 					local icon = btn:CreateTexture(nil, "ARTWORK")
