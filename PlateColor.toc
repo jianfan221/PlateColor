@@ -6,6 +6,7 @@
 ## Category: NamePlates
 ## Category-zhCN: 姓名板
 ## IconTexture: 135451
+## X-ModUs-UID: 22
 ## SavedVariables: PlateColorDB
 ## Version: 20260714
 
