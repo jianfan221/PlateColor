@@ -90,9 +90,9 @@ if tocversion >= 120100 then
         ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
         ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
 		auraPool = CreateFramePool("Frame", UIParent, nil, nil, false, function(frame)
-			local c = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
-			c:Hide()
-			c:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
+			frame.container = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
+			frame.container:Hide()
+			frame.container:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
 				maxFrameCount = 8,
 				initializeFrame = function(btn)
 					btn:SetSize(20*PlateColorDB.auraLScale, 20*PlateColorDB.auraLScale)--20乘以缩放比例
@@ -116,13 +116,12 @@ if tocversion >= 120100 then
 					btn:SetAuraBorder(border, {showWhenHelpful = true, style = 1})
 				end,
 			})
-			c:SetAuraGroupLayout("magicEnrage", {
+			frame.container:SetAuraGroupLayout("magicEnrage", {
 				layoutType = "GRID",
 				anchorPoint = "TOPRIGHT",
 				point = "TOPLEFT",
 				spacingX = 4,
 			})
-			frame.container = c
 		end, 40)
 	end)
 
