@@ -63,6 +63,17 @@ function ns.SetCVar(cvar, enumValue, enabled)
 	CVarCallbackRegistry:SetCVarBitfieldMask(cvar, mask)
 end
 
+-- 读取位域 CVar 的单个位，返回 true/false
+function ns.GetCVar(cvar, enumValue)
+	local mask = 0
+	for i = 1, 8 do
+		if CVarCallbackRegistry:GetCVarBitfieldIndex(cvar, i) then
+			mask = bit.bor(mask, bit.lshift(1, i - 1))
+		end
+	end
+	return bit.band(mask, bit.lshift(1, enumValue - 1)) ~= 0
+end
+
 --判断是否是秘密值
 function ns.MM(value)
 	if not issecretvalue or not issecrettable then
