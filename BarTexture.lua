@@ -207,27 +207,12 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	ns.UpdateFocusTexture(namePlate.UnitFrame)
 end)
 
---ns.event("PLAYER_TARGET_CHANGED", function(event)
---	C_Timer.After(0,function()
---		for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
---			ns.UpdateTargetTexture(namePlate.UnitFrame)
---		end
---	end)
---end)
-
 ns.event("PLAYER_FOCUS_CHANGED", function(event)
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 		ns.UpdateFocusTexture(namePlate.UnitFrame)
 	end
 end)
 
---ns.event("RAID_TARGET_UPDATE", function(event)
---	C_Timer.After(0,function()
---		for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
---			ns.UpdateTargetTexture(namePlate.UnitFrame)
---		end
---	end)
---end)
 ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
 	if unitFrame:IsForbidden() then return end
 	if not string.match(unitFrame.unit,"nameplate") then return end
