@@ -96,7 +96,7 @@ if tocversion >= 120100 then
 				maxFrameCount = 3,
 				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
-					btn:SetSize(20*PlateColorDB.auraLScale, 20*PlateColorDB.auraLScale)--20乘以缩放比例
+					btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)--NamePlateConstants.AURA_ITEM_HEIGHT == 25
 					local icon = btn:CreateTexture(nil, "ARTWORK")
 					icon:SetAllPoints(btn)
 					icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
