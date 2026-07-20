@@ -6,7 +6,6 @@ ns.PlateColorDB = {
 	HitWidth = 5,				--点击范围宽度
 	HitHeight = 12,				--点击范围顶部
 	HitBottom = 0,				--点击范围底部
-	HitHelp = true,				--点击范围友方穿透
 	
 	whiteName = false,			--白色名字
 	nameOUTLINE = true,			--名字描边
