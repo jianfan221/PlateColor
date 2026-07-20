@@ -23,14 +23,14 @@ ConFramescrollFrame6:SetScrollChild(ConFrame6)
 ns.Y[6] = 0	--设置起始位置
 
 
-local titext1 = ns.AddSetTiText(ConFrame6,6,L["配置"])
+ns.AddSetTiText(ConFrame6,6,L["配置"])
 local realltextRe = ns.AddfuncButton(ConFrame6,6,L["恢复插件默认设置"],L["恢复插件默认设置"])
 realltextRe:HookScript("OnClick", function()
 	 StaticPopup_Show("PLATECOLOR_REDB")
 end)
 
 -- 导出按钮
-local exporttext = ns.AddSetTiText(ConFrame6,6,L["导入导出"])
+ns.AddSetTiText(ConFrame6,6,L["导入导出"])
 local exportbtn = ns.AddfuncButton(ConFrame6,6,L["导出当前配置"],L["导出当前配置"])
 exportbtn:HookScript("OnClick", function()
 	if not PlateColorDB or not next(PlateColorDB) then
