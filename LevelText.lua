@@ -13,19 +13,26 @@ function ns.CteatLevelText(unitFrame)
 	if not unitFrame.unit then return end
 	local NpLevel = UnitLevel(unitFrame.unit)
 	local PlayerLevel = UnitLevel("player")
-	local LevelText = (NpLevel > 0 and (NpLevel < PlayerLevel or NpLevel > PlayerLevel + 2)) and NpLevel or ""
-	local difficulty = C_PlayerInfo.GetContentDifficultyCreatureForPlayer(unitFrame.unit)
-	local color = GetDifficultyColor(difficulty);
+	local unitLevelText = (NpLevel > 0 and (NpLevel < PlayerLevel or NpLevel > PlayerLevel + 2)) and NpLevel or ""
+	unitFrame.LevelText:SetText(unitLevelText)
 
+	if C_PlayerInfo and C_PlayerInfo.GetContentDifficultyCreatureForPlayer then
+		local difficulty = C_PlayerInfo.GetContentDifficultyCreatureForPlayer(unitFrame.unit)
+		local color = GetDifficultyColor(difficulty) or {r=1, g=1, b=1}
+		unitFrame.LevelText:SetVertexColor(color.r, color.g, color.b);
+	else
+		local color = GetQuestDifficultyColor(NpLevel) or {r=1, g=1, b=1}
+		unitFrame.LevelText:SetVertexColor(color.r, color.g, color.b);
+	end
+
+	-- 寻找最左侧的参考物
 	unitFrame.LevelText:ClearAllPoints()
-    -- 寻找最左侧的参考物
     local anchor = unitFrame.healthBar
 	if unitFrame.ClassificationFrame and unitFrame.ClassificationFrame:IsShown() then
         anchor = unitFrame.ClassificationFrame
     end
 	unitFrame.LevelText:SetPoint("RIGHT",anchor,"LEFT",- 3,0)
-	unitFrame.LevelText:SetVertexColor(color.r, color.g, color.b);
-	unitFrame.LevelText:SetText(LevelText)
+
 end
 
 ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
