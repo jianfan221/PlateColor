@@ -261,6 +261,88 @@ function ns.AddSetClickB(parent,y,name,tip,db,setfun,spare1,spare2)
 	
 end
 
+--基于 CVar 的复选框开关（不保存到 DB，初始状态由 CVar 决定）
+--cvarName: CVar 名称
+--enumValue: (可选) 位域 CVar 的位索引，传此值则用 ns.GetCVar/ns.SetCVar 读写位域
+--setfun: (可选) 切换后回调
+function ns.AddCVarClickB(parent, y, name, tip, cvarName, enumValue, setfun)
+	local rowFrame = CreateFrame("Frame", nil, parent)
+    rowFrame:SetSize(630, 26)
+    rowFrame:SetPoint("TOPLEFT", 10, -10+ns.Y[y]*-35)
+	local SliderBackground = rowFrame:CreateTexture(nil, "BACKGROUND")
+	SliderBackground:SetTexture(130937)
+	SliderBackground:SetAllPoints(rowFrame)
+	SliderBackground:SetColorTexture(0, 0, 0, 0)
+	SliderBackground:SetScript("OnEnter", function(self)
+		self:SetColorTexture(0.5, 0.5, 0.5, .2)
+	end)
+	SliderBackground:SetScript("OnLeave", function(self)
+		self:SetColorTexture(0, 0, 0, 0)
+	end)
+	local check = CreateFrame("CheckButton", nil, rowFrame, "InterfaceOptionsCheckButtonTemplate")
+	check:SetPoint("LEFT", 297, 0)
+	check:SetSize(30,30)
+	
+	-- 从 CVar 读取初始状态
+	local function GetCVarState()
+		if enumValue then
+			return ns.GetCVar(cvarName, enumValue)
+		else
+			return GetCVar(cvarName) == "1"
+		end
+	end
+	check:SetChecked(GetCVarState())
+	
+	check:SetScript("OnEnter",function(self) 
+		SliderBackground:SetColorTexture(0.5, 0.5, 0.5, .2)
+		if tip then
+			GameTooltip:SetOwner(self, "ANCHOR_TOP")
+			GameTooltip:AddLine("|cffFFFFFF"..tip.."|r") 
+			GameTooltip:Show()
+		end
+	end)
+	check:SetScript("OnLeave", function(self)    
+		SliderBackground:SetColorTexture(0, 0, 0, 0)
+		if tip then
+			GameTooltip:Hide()
+		end
+	end)
+	
+	check:SetScript("OnClick", function ( ... )
+		local checked = check:GetChecked()
+		if enumValue then
+			ns.SetCVar(cvarName, enumValue, checked)
+		else
+			C_CVar.SetCVar(cvarName, checked and "1" or "0")
+		end
+		if InCombatLockdown() then return end
+		if setfun then
+			setfun()
+			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+				if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
+			end
+		end
+	end)
+	
+	-- 监听 CVar 外部变化，自动同步 UI
+	ns.hookcvar(cvarName, function()
+		check:SetChecked(GetCVarState())
+	end)
+	
+	local lefttext = rowFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
+	lefttext:SetText(name)
+	lefttext:SetFontObject("PC_FontOutline")
+	lefttext:SetFontHeight(14)
+	lefttext:SetTextColor(1,.82,0)
+
+	ns.Y[y] = ns.Y[y] + 1
+	local cleckandtext = {}
+	cleckandtext.text = lefttext
+	cleckandtext.check = check
+	return cleckandtext
+end
+
 --设置主页面滑动条
 local OptionFrames = {}
 local OptionFrameid = 1
