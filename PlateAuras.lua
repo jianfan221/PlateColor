@@ -83,13 +83,13 @@ end)
 
 --12.1 AuraContainer 血条左侧仅显示敌方可驱散光环
 if tocversion >= 120100 then
-	local auraPool
+	local dispelPool
 	local dispelMap = {}
 	EventUtil.ContinueOnPlayerLogin(function()
         --玩家登录后创建驱散光环容器,关闭自带的左侧增益光环
         ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
         ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
-		auraPool = CreateFramePool("Frame", UIParent, nil, nil, false, function(frame)
+		dispelPool = CreateFramePool("Frame", UIParent, nil, nil, false, function(frame)
 			frame.container = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
 			frame.container:Hide()
 			frame.container:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
@@ -123,7 +123,7 @@ if tocversion >= 120100 then
 
 	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 		if dispelMap[unit] then
-			auraPool:Release(dispelMap[unit])
+			dispelPool:Release(dispelMap[unit])
 			dispelMap[unit] = nil
 		end
 		if not UnitCanAttack("player", unit) then return end
@@ -132,11 +132,11 @@ if tocversion >= 120100 then
 		if not namePlate then return end
 		local unitFrame = namePlate.UnitFrame
 
-		local poolFrame = auraPool:Acquire()
-		if not poolFrame then return end
+		local dispelFrame = dispelPool:Acquire()
+		if not dispelFrame then return end
 
-		dispelMap[unit] = poolFrame
-		unitFrame.PC_DispelAuras = poolFrame.container
+		dispelMap[unit] = dispelFrame
+		unitFrame.PC_DispelAuras = dispelFrame.container
 		unitFrame.PC_DispelAuras:SetParent(unitFrame.healthBar)
 		unitFrame.PC_DispelAuras:Show()
 		unitFrame.PC_DispelAuras:SetUnit(unit)
@@ -154,7 +154,7 @@ if tocversion >= 120100 then
 
 	ns.event("NAME_PLATE_UNIT_REMOVED", function(event, unit)
 		if dispelMap[unit] then
-			auraPool:Release(dispelMap[unit])
+			dispelPool:Release(dispelMap[unit])
 			dispelMap[unit] = nil
 		end
 	end)
