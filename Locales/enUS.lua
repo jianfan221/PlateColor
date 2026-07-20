@@ -33,7 +33,6 @@ ns.enUS = {
 ["点击范围宽度"] = "Click Range Width",
 ["点击范围顶部"] = "Click Range Top",
 ["点击范围底部"] = "Click Range Bottom",
-["友方点击穿透"] = "Friendly Click Through",
 
 ["名字"] = "Name",
 ["白色名字"] = "White Name",
