@@ -2,7 +2,6 @@
 
 local function stripBarBorder(bar)
 	if not bar then return end
-	bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
 	for _, r in ipairs{bar:GetRegions()} do
 		if r.GetAtlas and r:GetAtlas() == "UI-HUD-CoolDownManager-Bar-BG" then
 			r:Hide()
@@ -52,6 +51,7 @@ function ns.SetPersonalTexture()
 	if ns.HpTextures[PlateColorDB.myHPTexture] then
 		PersonalResourceDisplayFrame.HealthBarsContainer.healthBar:SetStatusBarTexture(ns.HpTextures[PlateColorDB.myHPTexture])
 		PersonalResourceDisplayFrame.PowerBar:SetStatusBarTexture(ns.HpTextures[PlateColorDB.myHPTexture])
+		PersonalResourceDisplayFrame.AlternatePowerBar:SetStatusBarTexture(ns.HpTextures[PlateColorDB.myHPTexture])
 	end
 
 	if not PlateColorDB.myHPValue then
@@ -129,6 +129,9 @@ function ns.SetPersonalTexture()
 					local maxHealth = UnitHealthMax("player") or 1
 					self.Text:SetText(string.format("%d", maxHealth > 0 and (stagger / maxHealth * 100) or 0))
 				end
+			elseif self.powerName == "MANA" then
+				local powerPer = UnitPowerPercent("player", 0, true, CurveConstants.ScaleTo100)
+				self.Text:SetText(string.format("%d", powerPer))
 			elseif self.powerName then
 				self.Text:SetText(string.format("%d",self:GetValue()))
 			end
@@ -160,6 +163,10 @@ function ns.AddNewPowerBar()
 	if GetCVar("nameplateShowSelf") == "0" then 
 		if NewPowerBar then NewPowerBar:Hide() end
 		return
+	end
+	local _,classname = UnitClass("player")
+	if classname == "DRUID" then
+		PersonalResourceDisplayFrame.AlternatePowerBar:Hide()
 	end
 
 	-- 创建父框架
@@ -355,7 +362,7 @@ function ns.AllmyPowerBar()
 	ns.SetPersonalTexture()
 	ns.AddNewPowerBar()
 end
-ns.event("PLAYER_ENTERING_WORLD", function(event)
+ns.event("PLAYER_ENTERING_WORLD", function()
 	--龙人测试初次登录不加延迟显示少一个?
 	C_Timer.After(1, function()
 		ns.AllmyPowerBar()
@@ -374,14 +381,9 @@ ns.event("PLAYER_ENTERING_WORLD", function(event)
 	end)
 end)
 
-ns.event("CVAR_UPDATE", function(event, cvar,a)
-	if cvar == "nameplateShowSelf" then
-		ns.AllmyPowerBar()
-	end
-end)
-ns.event("TRAIT_CONFIG_UPDATED", function(event, unit)
-	ns.AddNewPowerBar()
-end)
+ns.hookcvar("nameplateShowSelf", ns.AllmyPowerBar)
+
+ns.event("TRAIT_CONFIG_UPDATED", ns.AddNewPowerBar)
 
 ns.hook(EditModeManagerFrame, "OnSystemPositionChange", function(edit,self)
 	if not PlateColorDB.myHPEdit then return end
