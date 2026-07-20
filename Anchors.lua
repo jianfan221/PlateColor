@@ -24,6 +24,7 @@ function ns.SetSelectedScale()
 	C_CVar.SetCVar("nameplateOccludedAlphaMult",PlateColorDB.wallAlpha)--隔墙透明度
 	C_CVar.SetCVar("nameplateMaxAlpha", PlateColorDB.allNpAlpha)--非当前目标透明度
 	C_CVar.SetCVar("nameplateMinAlpha", PlateColorDB.allNpAlpha)--非当前目标透明度
+	C_CVar.SetCVar("nameplateNotSelectedAlpha",PlateColorDB.allNpAlpha) --非当前目标透明度(怀旧)
 	C_CVar.SetCVar("nameplateOverlapV", PlateColorDB.npOverlapV)--垂直堆叠间距
 	C_CVar.SetCVar("nameplateOverlapH", PlateColorDB.npOverlapH)--水平堆叠间距
 	C_CVar.SetCVar("nameplateMaxDistance", PlateColorDB.npRange)--姓名版可见范围
@@ -60,7 +61,8 @@ ns.event("PLAYER_ENTERING_WORLD", ns.SetSelectedScale)
 -- 全局姓名板点击范围（只设一次即可）
 function ns.UpdateGlobalHitInsets()
 	if InCombatLockdown() then return end
-	if PlateColorDB.HitHelp then
+	local onlyfriendplayer = C_CVar.GetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits")
+	if onlyfriendplayer == "1" then
 		C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, 10000, 10000, 10000, 10000)
 	else
 		C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, -PlateColorDB.HitWidth, -PlateColorDB.HitWidth, -PlateColorDB.HitHeight, -PlateColorDB.HitBottom)
@@ -68,6 +70,7 @@ function ns.UpdateGlobalHitInsets()
 	C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Enemy, -PlateColorDB.HitWidth, -PlateColorDB.HitWidth, -PlateColorDB.HitHeight, -PlateColorDB.HitBottom)
 end
 ns.event("PLAYER_ENTERING_WORLD", ns.UpdateGlobalHitInsets)
+ns.hookcvar("nameplateShowOnlyNameForFriendlyPlayerUnits", ns.UpdateGlobalHitInsets)
 
 -- 选项变更时同时刷新全局+单个姓名板
 function ns.RefreshHitSettings(self)
@@ -102,8 +105,6 @@ function ns.SetPoints(self)
 		self.HitTestClipFrame:SetAllPoints(namePlateFrame)
 		self.HitTestClipFrame:SetClipsChildren(true)
 		self.HitTestClipFrame:EnableMouse(false)
-	end
-	if not self.HitTestFrameShow then
 		self.HitTestFrameShow = self.HitTestClipFrame:CreateTexture(nil, "OVERLAY")
 		self.HitTestFrameShow:SetTexture("Interface\\Addons\\PlateColor\\texture\\HitTexture.png")
 		self.HitTestFrameShow:SetAlpha(0.8)
@@ -125,24 +126,8 @@ function ns.SetPoints(self)
 		PlateColorDB.HitWidth + extraXOffset,
 		-PlateColorDB.HitBottom - extraYOffset
 	)
-	self.HitTestFrameShow:SetShown(PlateColorDB.HitTestShow and (not self:IsFriend() or not PlateColorDB.HitHelp))
+	self.HitTestFrameShow:SetShown(PlateColorDB.HitTestShow and self.healthBar:IsShown() and not InCombatLockdown())
 
-	-- 单个姓名板点击区域（与 HitTestFrameShow 视觉范围同步）
-	if not InCombatLockdown() then
-		if self:IsFriend() and PlateColorDB.HitHelp then
-			namePlateFrame:ClearAllHitTestPoints()
-		else
-			namePlateFrame:SetHitTestPoints({
-				{ point = "TOPLEFT",     relativeTo = self.HealthBarsContainer.healthBar,
-				  relativePoint = "TOPLEFT",     offsetX = -PlateColorDB.HitWidth - extraXOffset,
-				  offsetY =  PlateColorDB.HitHeight + extraYOffset },
-				{ point = "BOTTOMRIGHT", relativeTo = self.HealthBarsContainer.healthBar,
-				  relativePoint = "BOTTOMRIGHT", offsetX =  PlateColorDB.HitWidth + extraXOffset,
-				  offsetY = -PlateColorDB.HitBottom - extraYOffset },
-			})
-		end
-	end
-	
 	self.name:ClearAllPoints();
 	self.HealthBarsContainer:ClearAllPoints();
 	local castBar = ns.GetCastBar(self)
@@ -153,7 +138,7 @@ function ns.SetPoints(self)
 		castBar.BorderShield:ClearAllPoints();
 		castBar.CastTargetNameText:ClearAllPoints();
 	end
-	
+
 	--名字位置
 	if not self.healthBar:IsShown() then
 		if self.NpcFuntext and self.NpcFuntext:IsShown() then
