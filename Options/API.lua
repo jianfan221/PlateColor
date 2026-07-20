@@ -47,6 +47,11 @@ end
 
 ns.hook = hooksecurefunc
 
+-- CVAR 变更回调（封装 CVarCallbackRegistry:RegisterCallback）
+function ns.hookcvar(cvar, handler)
+	CVarCallbackRegistry:RegisterCallback(cvar, handler)
+end
+
 -- 设置位域 CVar 的单个位（读当前掩码→改指定位→写回）用于下拉菜单的多选cvar
 function ns.SetCVar(cvar, enumValue, enabled)
 	local mask = 0
