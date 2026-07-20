@@ -23,9 +23,9 @@ ConFrame5:SetSize(670,480)
 ConFramescrollFrame5:SetScrollChild(ConFrame5)
 ns.Y[5] = 0	--设置起始位置
 
-local focustitle = ns.AddSetTiText(ConFrame5,5,L["焦点"])
+ns.AddSetTiText(ConFrame5,5,L["焦点"])
 local setFocusModTable = {{L["不使用"],0},{L["Shift"],1},{L["Ctrl"],2},{L["Alt"],3}}
-local setFocusMod = ns.AddSetDropdM(ConFrame5,5,L["设置焦点快捷键"],L["设置焦点快捷键鼠标提示"],setFocusModTable,"setFocusMod",ns.PCSetFocus)
+ns.AddSetDropdM(ConFrame5,5,L["设置焦点快捷键"],L["设置焦点快捷键鼠标提示"],setFocusModTable,"setFocusMod",ns.PCSetFocus)
 
 local setFocusIconTable = {
 {L["不标记"],0},
@@ -38,7 +38,7 @@ local setFocusIconTable = {
 {"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_7:16|t",7},
 {"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_8:16|t",8},
 }
-local setFocusIcon = ns.AddSetDropdM(ConFrame5,5,L["设置焦点时自动标记"],L["设置焦点时自动标记"],setFocusIconTable,"setFocusIcon",ns.PCSetFocus)
-local sendFocusIcon = ns.AddSetClickB(ConFrame5,5,L["就位时通报标记"],L["就位时通报标记"],"sendFocusIcon")
+ns.AddSetDropdM(ConFrame5,5,L["设置焦点时自动标记"],L["设置焦点时自动标记"],setFocusIconTable,"setFocusIcon",ns.PCSetFocus)
+ns.AddSetClickB(ConFrame5,5,L["就位时通报标记"],L["就位时通报标记"],"sendFocusIcon")
 
 end)
