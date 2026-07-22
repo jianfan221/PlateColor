@@ -23,9 +23,11 @@ function ns.NpcLevelColor(unitFrame)
 
 	local IsLeader = UnitIsLieutenant(unitFrame.unit) or npclevel == playerlevel+1
 	local IsBoss =  UnitEffectiveLevel(unitFrame.unit) == -1 or npclevel == playerlevel+2
-	local IsPALADIN = UnitClassBase(unitFrame.unit) == "PALADIN"
+	local class = UnitClassBase(unitFrame.unit)
+	local power = UnitPowerType(unitFrame.unit)
+	local IsPALADIN = not ns.MM(class) and class == "PALADIN" or ns.MM(class) and not ns.MM(power) and power == 0
 	--local PowerMANA = UnitPowerType(unitFrame.unit) == 0
-	
+
 	if IsLeader and PlateColorDB.NpcLv1 then
 		return PlateColorDB.NpcLv1Color
 	elseif IsBoss and PlateColorDB.NpcLv2 then
