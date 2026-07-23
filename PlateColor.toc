@@ -8,7 +8,7 @@
 ## IconTexture: 135451
 ## X-ModUs-UID: 22
 ## SavedVariables: PlateColorDB
-## Version: 20260718
+## Version: 20260723
 
 texture\TextureTable.lua
 DB\XML.xml
