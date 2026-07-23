@@ -35,7 +35,7 @@ function ns.SetSelectedScale()
 		ns.SetCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyNpc, false)
 	end
 	--启用友方玩家名字模式时,关闭友方玩家简化姓名板
-	if PlateColorDB.onlyName then
+	if C_CVar.GetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits") == "1" then
 		ns.SetCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyPlayer, false)
 	end
 	--去掉血量百分比因为我们自己创建了
@@ -43,13 +43,7 @@ function ns.SetSelectedScale()
 	--去掉血量数值因为我们自己创建了
 	ns.SetCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthValue, false)
 
-	--友方玩家名字模式
-	C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits",PlateColorDB.onlyName and 1 or 0)
-	--友方玩家名字模式使用职业颜色
-	C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames",PlateColorDB.onlyNameClassColor and 1 or 0)
-	--12.1取消友方玩家的服务器名称显示
-	C_CVar.SetCVar("nameplateShowFriendlyRealmName",0)
-	--取消服务器名称显示12.0.1 (66384)
+	--取消服务器名称显示12.0.1 (66384)--12.1后可删除
 	if TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then
 		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
 	end
@@ -57,6 +51,7 @@ function ns.SetSelectedScale()
 	C_CVar.SetCVar("UnitNameFriendlyPlayerName", C_CVar.GetCVar("UnitNameFriendlyPlayerName"))--调用一次刷新设置
 end
 ns.event("PLAYER_ENTERING_WORLD", ns.SetSelectedScale)
+ns.hookcvar("nameplateShowOnlyNameForFriendlyPlayerUnits", ns.SetSelectedScale)
 
 -- 全局姓名板点击范围（只设一次即可）
 function ns.UpdateGlobalHitInsets()
