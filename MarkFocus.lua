@@ -11,29 +11,30 @@ local function GetFocusMacroText()
 	return modKey[PlateColorDB.setFocusMod], "/focus [@mouseover]"..markmacro
 end
 
+local QuickFocusButton
 function ns.SetFocus()
 	if InCombatLockdown() then return end
 	
 	if PlateColorDB.setFocusMod == 0 then
-		if ShiftFocuserButton then
-			ClearOverrideBindings(ShiftFocuserButton)
+		if QuickFocusButton then
+			ClearOverrideBindings(QuickFocusButton)
 		end
 		return
 	end
 
-	if not ShiftFocuserButton then
-		ShiftFocuserButton = CreateFrame("CheckButton", "ShiftFocuserButton", UIParent, "SecureActionButtonTemplate")
-		ShiftFocuserButton:RegisterForClicks("AnyDown", "AnyUp")
-		ShiftFocuserButton:SetAttribute("type", "macro")
+	if not QuickFocusButton then
+		QuickFocusButton = CreateFrame("CheckButton", "QuickFocusButton", UIParent, "SecureActionButtonTemplate")
+		QuickFocusButton:RegisterForClicks("AnyDown", "AnyUp")
+		QuickFocusButton:SetAttribute("type", "macro")
 	end
 	
-	if ShiftFocuserButton then
+	if QuickFocusButton then
 		--先清除旧绑定
-		ClearOverrideBindings(ShiftFocuserButton)
+		ClearOverrideBindings(QuickFocusButton)
 		
 		local modifier, macrotext = GetFocusMacroText()
-		ShiftFocuserButton:SetAttribute("macrotext1", macrotext)
-		SetOverrideBindingClick(ShiftFocuserButton, true, modifier.."-BUTTON1", "ShiftFocuserButton")
+		QuickFocusButton:SetAttribute("macrotext1", macrotext)
+		SetOverrideBindingClick(QuickFocusButton, true, modifier.."-BUTTON1", "QuickFocusButton")
 	end
 end
 
@@ -42,8 +43,8 @@ local function SetFocusHotkey(frame)
 	if not frame.SetAttribute then return end
 	if InCombatLockdown() then return end
 	if PlateColorDB.setFocusMod == 0 then
-		if ShiftFocuserButton then
-			ClearOverrideBindings(ShiftFocuserButton)
+		if QuickFocusButton then
+			ClearOverrideBindings(QuickFocusButton)
 		end
 		return
 	end
