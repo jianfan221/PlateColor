@@ -93,7 +93,7 @@ if tocversion >= 120100 then
 			frame.container = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
 			frame.container:Hide()
 			frame.container:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
-				maxFrameCount = 3,
+				maxFrameCount = 2,
 				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
 					btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)--NamePlateConstants.AURA_ITEM_HEIGHT == 25
@@ -113,9 +113,28 @@ if tocversion >= 120100 then
 					local border = cooldown:CreateTexture(nil, "OVERLAY")
 					border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
 					border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
-					border:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
-					border:SetBlendMode("ADD")
+					border:SetTexture("Interface\\AddOns\\PlateColor\\texture\\Border\\soft-square2.png")
 					btn:SetAuraBorder(border, {showWhenHelpful = true, style = 1})
+				end,
+			})
+			frame.container:AddAuraGroup("important", "HELPFUL|IMPORTANT|!DISPELLABLE", {
+				maxFrameCount = 2,
+				layout = { elementSpacingX = 2 },
+				initializeFrame = function(btn)
+					btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)
+					local icon = btn:CreateTexture(nil, "ARTWORK")
+					icon:SetAllPoints(btn)
+					icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+					btn:SetIcon(icon)
+					local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
+					cooldown:SetAllPoints(btn)
+					cooldown:SetHideCountdownNumbers(false)
+					btn:SetDurationCooldown(cooldown)
+					local count = cooldown:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+					count:SetPoint("BOTTOMRIGHT", btn, 0, 0)
+					count:SetVertexColor(1, 1, 1)
+					count:SetFontHeight(13)
+					btn:SetApplicationCount(count, {})
 				end,
 			})
 		end, 40)
