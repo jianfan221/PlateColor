@@ -94,8 +94,8 @@ ns.AddSetSlider(ConFrame1,1,L["名字垂直偏移"],L["名字垂直偏移"],-10,
 ns.AddSetSlider(ConFrame1,1,L["名字尺寸"],L["名字尺寸"],5,30,1,"%d","nameScale",ns.SetPoints)
 
 ns.AddSetTiText(ConFrame1,1,L["友方"])
-ns.AddSetClickB(ConFrame1,1,L["友方玩家名字模式"],L["友方玩家名字模式"],"onlyName",ns.SetOnlyNames)
-ns.AddSetClickB(ConFrame1,1,L["友方玩家名字模式职业染色"],L["友方玩家名字模式职业染色"],"onlyNameClassColor",ns.SetOnlyNames)
+ns.AddCVarClickB(ConFrame1,1,L["友方玩家名字模式"],L["友方玩家名字模式"],"nameplateShowOnlyNameForFriendlyPlayerUnits")
+ns.AddCVarClickB(ConFrame1,1,L["友方玩家名字模式职业染色"],L["友方玩家名字模式职业染色"],"nameplateUseClassColorForFriendlyPlayerUnitNames")
 ns.AddSetClickB(ConFrame1,1,L["友方玩家公会名称"],L["友方玩家公会名称"],"showGuildName",ns.SetOnlyNames)
 ns.AddSetClickB(ConFrame1,1,L["友方NPC名字模式"],L["友方NPC名字模式"],"onlyNameNpc",ns.SetOnlyNames)
 ns.AddSetSlider(ConFrame1,1,L["友方名字模式尺寸"],L["友方名字模式尺寸"],5,30,1,"%d","helpNameScale",ns.SetOnlyNames)
