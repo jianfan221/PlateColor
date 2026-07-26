@@ -1,7 +1,7 @@
 ﻿local _, ns = ...
 
 function ns.AddAbsorbText(event,unit)
-	if not string.match(unit,"nameplate") then return end
+	if not unit or not string.match(unit,"nameplate") then return end
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
 	if not namePlate then return end
 	if not namePlate.UnitFrame then return end
@@ -16,14 +16,10 @@ function ns.AddAbsorbText(event,unit)
 		unitFrame.abs:SetFontHeight(21)
 		unitFrame.abs:SetSmoothScaling(false)
 	end
-	local anchor = unitFrame.ArrowLeft
-	if unitFrame.PC_DispelAuras then
-		anchor = unitFrame.PC_DispelAuras
-	elseif unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
-		anchor = unitFrame.AurasFrame.BuffListFrame
-	end
+	local anchor = unitFrame.ArrowLeft or unitFrame.healthBar
+
 	unitFrame.abs:ClearAllPoints()
-	unitFrame.abs:SetPoint("RIGHT", anchor, "LEFT",-6,-1)
+	unitFrame.abs:SetPoint("RIGHT", anchor, "LEFT", 6, -1)
 	
 	unitFrame.abs:SetText("")
 	local number = UnitGetTotalAbsorbs(unitFrame.unit)
