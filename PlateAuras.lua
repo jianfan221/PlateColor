@@ -23,14 +23,6 @@ end)
 --驱散颜色 (12.1 前使用旧版)
 local _, _, _, tocversion = GetBuildInfo()
 if tocversion < 120100 then
-    local dispelColor = C_CurveUtil.CreateColorCurve()
-    dispelColor:SetType(Enum.LuaCurveType.Step)
-    dispelColor:AddPoint(0, CreateColor(0,  0,  0,  0))--无
-    dispelColor:AddPoint(1, CreateColor(1,  1,  1,  1))--魔法
-    dispelColor:AddPoint(2, CreateColor(0.5,0,  1,  1))--诅咒
-    dispelColor:AddPoint(3, CreateColor(1,0.5,  0,  1))--疾病
-    dispelColor:AddPoint(4, CreateColor(0,  1,  0,  1))--中毒
-    dispelColor:AddPoint(9, CreateColor(1,  0,  0,  1))--激怒
     ns.hook(NamePlateAuraItemMixin, "SetAura", function(self, aura)
         if self and not self:IsForbidden() and self.unitToken then
             if not self.Stealable then
@@ -41,7 +33,7 @@ if tocversion < 120100 then
                 self.Stealable:SetBlendMode("ADD")
             end
             self.Stealable:Hide()
-            local color = C_UnitAuras.GetAuraDispelTypeColor(self.unitToken, aura.auraInstanceID, dispelColor)
+            local color = C_UnitAuras.GetAuraDispelTypeColor(self.unitToken, aura.auraInstanceID, ns.dispelColor)
             if color and UnitCanAttack("player", self.unitToken) then
                 self.Stealable:SetVertexColor(color:GetRGB())
                 self.Stealable:SetAlphaFromBoolean(self.isBuff,255,0)
@@ -114,7 +106,12 @@ if tocversion >= 120100 then
 					border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
 					border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
 					border:SetTexture("Interface\\AddOns\\PlateColor\\texture\\Border\\soft-square2.png")
-					btn:SetAuraBorder(border, {showWhenHelpful = true, style = 1})
+					btn:AddDispelTypeTexture(border, {
+						showWhenHelpful = true,
+						showWhenHarmful = false,
+						style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
+						customDispelColorCurve = ns.dispelColor,
+					})
 				end,
 			})
 			frame.container:AddAuraGroup("important", "HELPFUL|IMPORTANT|!DISPELLABLE", {
