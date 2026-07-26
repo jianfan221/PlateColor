@@ -89,6 +89,7 @@ if tocversion >= 120100 then
 				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
 					btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)--NamePlateConstants.AURA_ITEM_HEIGHT == 25
+					btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
 					local icon = btn:CreateTexture(nil, "ARTWORK")
 					icon:SetAllPoints(btn)
 					icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
@@ -119,6 +120,7 @@ if tocversion >= 120100 then
 				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
 					btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)
+					btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
 					local icon = btn:CreateTexture(nil, "ARTWORK")
 					icon:SetAllPoints(btn)
 					icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
@@ -158,9 +160,9 @@ if tocversion >= 120100 then
 		unitFrame.PC_DispelAuras:SetUnit(unit)
 		C_Timer.After(0, function()
 			local anchor = unitFrame.healthBar
-			if unitFrame.ArrowLeft then anchor = unitFrame.ArrowLeft end
+			if unitFrame.abs then anchor = unitFrame.abs end
 			unitFrame.PC_DispelAuras:ClearAllPoints()
-			unitFrame.PC_DispelAuras:SetPoint("RIGHT", anchor, "LEFT", -5, 0)
+			unitFrame.PC_DispelAuras:SetPoint("RIGHT", anchor, "LEFT", -2, 0)
 		end)
 
 		if unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
