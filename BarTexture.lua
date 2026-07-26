@@ -130,7 +130,7 @@ function ns.UpdateTargetTexture(unitFrame)
 			if unitFrame.ArrowLeft:IsShown() then
 				unitFrame.ArrowLeft:SetSize(scale, scale)
 			else
-				unitFrame.ArrowLeft:SetSize(1, scale)
+				unitFrame.ArrowLeft:SetSize(8, scale)
 			end
 		else
 			unitFrame.ArrowLeft:SetSize(scale * 0.8, scale * 0.8)
