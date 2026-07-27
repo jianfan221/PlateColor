@@ -81,7 +81,7 @@ if tocversion >= 120100 then
 		dispelPool = CreateFramePool("Frame", UIParent, nil, nil, false, function(frame)
 			frame.container = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
 			frame.container:Hide()
-			frame.container:AddAuraGroup("magicEnrage", "HELPFUL|DISPELLABLE", {
+			frame.container:AddAuraGroup("disBuff", "HELPFUL|DISPELLABLE", {
 				maxFrameCount = 2,
 				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
@@ -112,7 +112,7 @@ if tocversion >= 120100 then
 					})
 				end,
 			})
-			frame.container:AddAuraGroup("important", "HELPFUL|IMPORTANT|!DISPELLABLE", {
+			frame.container:AddAuraGroup("otherBuff", "HELPFUL|INCLUDE_NAME_PLATE_ONLY|!DISPELLABLE", {
 				maxFrameCount = 2,
 				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
