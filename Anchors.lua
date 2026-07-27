@@ -29,7 +29,18 @@ function ns.SetSelectedScale()
 	C_CVar.SetCVar("nameplateOverlapH", PlateColorDB.npOverlapH)--水平堆叠间距
 	C_CVar.SetCVar("nameplateMaxDistance", PlateColorDB.npRange)--姓名版可见范围
 
-	
+	--友方玩家名字模式
+	C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits", PlateColorDB.onlyName and "1" or "0")
+	--友方玩家名字模式职业颜色
+	C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames", PlateColorDB.onlyNameClassColor and "1" or "0")
+	--取消显示服务器名称
+	C_CVar.SetCVar("nameplateShowFriendlyRealmName", 0)
+
+	--取消服务器名称显示12.0.1 (66384)--12.1后可删除
+	if TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then
+		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
+	end
+
 	--启用NPC名字模式时,关闭友方NPC简化姓名板
 	if PlateColorDB.onlyNameNpc then
 		ns.SetCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyNpc, false)
@@ -38,15 +49,11 @@ function ns.SetSelectedScale()
 	if C_CVar.GetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits") == "1" then
 		ns.SetCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyPlayer, false)
 	end
+
 	--去掉血量百分比因为我们自己创建了
 	ns.SetCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthPercent, false)
 	--去掉血量数值因为我们自己创建了
 	ns.SetCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthValue, false)
-
-	--取消服务器名称显示12.0.1 (66384)--12.1后可删除
-	if TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then
-		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
-	end
 
 	--刷新设置
 	C_CVar.SetCVar("UnitNameFriendlyPlayerName", C_CVar.GetCVar("UnitNameFriendlyPlayerName"))
