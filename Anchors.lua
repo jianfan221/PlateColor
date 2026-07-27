@@ -47,8 +47,9 @@ function ns.SetSelectedScale()
 	if TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then
 		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
 	end
-	if InCombatLockdown() then return end
-	C_CVar.SetCVar("UnitNameFriendlyPlayerName", C_CVar.GetCVar("UnitNameFriendlyPlayerName"))--调用一次刷新设置
+
+	--刷新设置
+	C_CVar.SetCVar("UnitNameFriendlyPlayerName", C_CVar.GetCVar("UnitNameFriendlyPlayerName"))
 end
 ns.event("PLAYER_ENTERING_WORLD", ns.SetSelectedScale)
 ns.hookcvar("nameplateShowOnlyNameForFriendlyPlayerUnits", ns.SetSelectedScale)
