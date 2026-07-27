@@ -53,6 +53,10 @@ realltextRe:HookScript("OnClick", function()
 	C_CVar.SetCVar("nameplateShowEnemyMinus", 1)--显示敌对小怪姓名板-开启
 	C_CVar.SetCVar("nameplateShowFriendlyPlayers", 1)--显示友方玩家姓名板-开启
 	C_CVar.SetCVar("nameplateShowFriendlyPlayerMinions", 0)--显示友方仆从姓名板--关闭
+	C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits", 1)--友方玩家名字模式-开启
+	C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames", 1)--名字模式职业染色-开启
+	C_CVar.SetCVar("nameplateShowFriendlyRealmName", 1)--显示服务器名称-关闭
+
 	C_CVar.SetCVar("nameplateShowFriendlyNpcs", 1)--显示友方NPC姓名板-开启
 	C_CVar.SetCVar("nameplateShowOffscreen", 1)--显示屏幕外的姓名板-开启
 	C_CVar.SetCVar("nameplateStackingTypes", "A")--堆叠模式-敌对
@@ -63,8 +67,8 @@ realltextRe:HookScript("OnClick", function()
 	C_CVar.SetCVar("nameplateInfoDisplay","D")--姓名板信息-稀有度图标
 	C_CVar.SetCVar("nameplateCastBarDisplay","O")--施法条--不选最后一个
 	C_CVar.SetCVar("nameplateThreatDisplay","B")--仇恨--仅闪光
-	C_CVar.SetCVar("nameplateEnemyNpcAuraDisplay","G")--敌方NPC的增减益状态
-	C_CVar.SetCVar("nameplateEnemyPlayerAuraDisplay","G")--敌方玩家的增减益状态
+	C_CVar.SetCVar("nameplateEnemyNpcAuraDisplay","F")--敌方NPC的增减益状态
+	C_CVar.SetCVar("nameplateEnemyPlayerAuraDisplay","F")--敌方玩家的增减益状态
 	C_CVar.SetCVar("nameplateFriendlyPlayerAuraDisplay","G")--友方玩家的增减益状态
 	C_CVar.SetCVar("nameplateDebuffPadding", 0)--姓名板增减益图标间距-0
 	C_CVar.SetCVar("nameplateSimplifiedTypes", "")--简化模式-无
