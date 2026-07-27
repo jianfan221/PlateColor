@@ -55,7 +55,7 @@ realltextRe:HookScript("OnClick", function()
 	C_CVar.SetCVar("nameplateShowFriendlyPlayerMinions", 0)--显示友方仆从姓名板--关闭
 	C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits", 1)--友方玩家名字模式-开启
 	C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames", 1)--名字模式职业染色-开启
-	C_CVar.SetCVar("nameplateShowFriendlyRealmName", 1)--显示服务器名称-关闭
+	C_CVar.SetCVar("nameplateShowFriendlyRealmName", 0)--显示服务器名称-关闭
 
 	C_CVar.SetCVar("nameplateShowFriendlyNpcs", 1)--显示友方NPC姓名板-开启
 	C_CVar.SetCVar("nameplateShowOffscreen", 1)--显示屏幕外的姓名板-开启
