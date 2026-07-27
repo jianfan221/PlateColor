@@ -103,7 +103,7 @@ if tocversion >= 120100 then
                     count:SetVertexColor(1, 1, 1)
 					count:SetFontHeight(13)
 					btn:SetApplicationCount(count, {})
-					local border = cooldown:CreateTexture(nil, "OVERLAY")
+					local border = cooldown:CreateTexture(nil, "ARTWORK")
 					border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
 					border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
 					border:SetTexture("Interface\\AddOns\\PlateColor\\texture\\Border\\soft-square2.png")
@@ -159,8 +159,8 @@ if tocversion >= 120100 then
 		unitFrame.PC_DispelAuras:Show()
 		unitFrame.PC_DispelAuras:SetUnit(unit)
 		C_Timer.After(0, function()
-			local anchor = unitFrame.healthBar
-			if unitFrame.abs then anchor = unitFrame.abs end
+			local anchor = unitFrame.abs or unitFrame.healthBar
+
 			unitFrame.PC_DispelAuras:ClearAllPoints()
 			unitFrame.PC_DispelAuras:SetPoint("RIGHT", anchor, "LEFT", -2, 0)
 		end)
