@@ -67,6 +67,7 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit,false)
 	if not namePlate then return end
 	local unitFrame = namePlate.UnitFrame
+	if not unitFrame then return end
 	ns.CrowdControlListFrameScale(unitFrame)
 end)
 
@@ -137,15 +138,21 @@ if tocversion >= 120100 then
 	end)
 
 	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
+		if not namePlate then return end
+		local unitFrame = namePlate.UnitFrame
+		if not unitFrame then return end
+
+		-- 统一清理旧状态：dispelMap 重复注册 + 姓名板复用残留
 		if dispelMap[unit] then
 			dispelPool:Release(dispelMap[unit])
 			dispelMap[unit] = nil
 		end
-		if not UnitCanAttack("player", unit) then return end
+		unitFrame.PC_DispelAuras = nil
 
-		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
-		if not namePlate then return end
-		local unitFrame = namePlate.UnitFrame
+		if not UnitCanAttack("player", unit) then
+			return
+		end
 
 		local dispelFrame = dispelPool:Acquire()
 		if not dispelFrame then return end
