@@ -113,7 +113,7 @@ if tocversion >= 120100 then
 					})
 				end,
 			})
-			frame.container:AddAuraGroup("otherBuff", "HELPFUL|INCLUDE_NAME_PLATE_ONLY|!DISPELLABLE", {
+			frame.container:AddAuraGroup("otherBuff", "HELPFUL|IMPORTANT|!DISPELLABLE", {
 				maxFrameCount = 2,
 				layout = { elementSpacingX = 2 },
 				initializeFrame = function(btn)
