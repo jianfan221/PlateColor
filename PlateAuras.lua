@@ -20,29 +20,6 @@ ns.hook(NamePlateAuraItemMixin, "SetAura", function(self, aura)
 	end
 end)
 
---驱散颜色 (12.1 前使用旧版)
-local _, _, _, tocversion = GetBuildInfo()
-if tocversion < 120100 then
-    ns.hook(NamePlateAuraItemMixin, "SetAura", function(self, aura)
-        if self and not self:IsForbidden() and self.unitToken then
-            if not self.Stealable then
-                self.Stealable = self:CreateTexture(nil, "OVERLAY")
-                self.Stealable:SetPoint("TOPLEFT", self, "TOPLEFT", -5, 5)
-                self.Stealable:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 5, -5)
-                self.Stealable:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
-                self.Stealable:SetBlendMode("ADD")
-            end
-            self.Stealable:Hide()
-            local color = C_UnitAuras.GetAuraDispelTypeColor(self.unitToken, aura.auraInstanceID, ns.dispelColor)
-            if color and UnitCanAttack("player", self.unitToken) then
-                self.Stealable:SetVertexColor(color:GetRGB())
-                self.Stealable:SetAlphaFromBoolean(self.isBuff,255,0)
-                self.Stealable:Show()
-            end
-        end
-    end)
-end
-
 function ns.CrowdControlListFrameScale(unitFrame)
     unitFrame.AurasFrame.DebuffListFrame:SetScale(PlateColorDB.auraTopScale)
     if unitFrame.AurasFrame.BuffListFrame then--左侧光环
@@ -71,8 +48,30 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	ns.CrowdControlListFrameScale(unitFrame)
 end)
 
+--驱散颜色 (12.1 前使用旧版)
+if not DoesTemplateExist("CustomAuraContainerTemplate") then
+    ns.hook(NamePlateAuraItemMixin, "SetAura", function(self, aura)
+        if self and not self:IsForbidden() and self.unitToken then
+            if not self.Stealable then
+                self.Stealable = self:CreateTexture(nil, "OVERLAY")
+                self.Stealable:SetPoint("TOPLEFT", self, "TOPLEFT", -5, 5)
+                self.Stealable:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 5, -5)
+                self.Stealable:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
+                self.Stealable:SetBlendMode("ADD")
+            end
+            self.Stealable:Hide()
+            local color = C_UnitAuras.GetAuraDispelTypeColor(self.unitToken, aura.auraInstanceID, ns.dispelColor)
+            if color and UnitCanAttack("player", self.unitToken) then
+                self.Stealable:SetVertexColor(color:GetRGB())
+                self.Stealable:SetAlphaFromBoolean(self.isBuff,255,0)
+                self.Stealable:Show()
+            end
+        end
+    end)
+end
+
 --12.1 AuraContainer 血条左侧仅显示敌方可驱散光环
-if tocversion >= 120100 then
+if DoesTemplateExist("CustomAuraContainerTemplate") then
 	local dispelPool
 	local dispelMap = {}
 	EventUtil.ContinueOnPlayerLogin(function()
