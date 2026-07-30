@@ -218,12 +218,13 @@ ns.hook("CompactUnitFrame_UpdateName", function(unitFrame)
 	if not string.match(unitFrame.unit,"nameplate") then return end
 	ns.UpdateTargetTexture(unitFrame)
 end)
-
-ns.hook(GameTooltip,"SetWorldCursor", function(frame)
-	if frame:IsForbidden() then return end
-	C_Timer.After(0,function()
-		for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-			ns.UpdateMouseoverTexture(namePlate.UnitFrame)
-		end
+if GameTooltip and GameTooltip.SetWorldCursor then
+	ns.hook(GameTooltip,"SetWorldCursor", function(frame)
+		if frame:IsForbidden() then return end
+		C_Timer.After(0,function()
+			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+				ns.UpdateMouseoverTexture(namePlate.UnitFrame)
+			end
+		end)
 	end)
-end)
+end
