@@ -1,4 +1,6 @@
 local _, ns = ...
+if not C_TooltipInfo or not C_TooltipInfo.GetUnit then return end
+
 --任务标记
 local NameQuestTable = {}
 function ns.CreateNameQuest(unitFrame)
