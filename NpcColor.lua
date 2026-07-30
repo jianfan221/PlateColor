@@ -21,7 +21,7 @@ function ns.NpcLevelColor(unitFrame)
 	local playerlevel = UnitEffectiveLevel("player")
 	local npclevel = inInstance and instanceType == "party" and UnitEffectiveLevel(unitFrame.unit) or 0
 
-	local IsLeader = UnitIsLieutenant(unitFrame.unit) or npclevel == playerlevel+1
+	local IsLeader = UnitIsLieutenant and UnitIsLieutenant(unitFrame.unit) or npclevel == playerlevel+1
 	local IsBoss =  UnitEffectiveLevel(unitFrame.unit) == -1 or npclevel == playerlevel+2
 	local class = UnitClassBase(unitFrame.unit)
 	local power = UnitPowerType(unitFrame.unit)
