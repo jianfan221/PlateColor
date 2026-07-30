@@ -1,4 +1,5 @@
 local _, ns = ...
+if not C_TooltipInfo or not C_TooltipInfo.GetUnit then return end
 
 --名字模式功能文本
 function ns.PlateOnlyName(unitFrame)
