@@ -128,7 +128,8 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
     end
     local onCancel = function()
         local r, g, b = ColorPickerFrame:GetPreviousValues()
-		ColorPickerFrame.Content.ColorPicker:SetColorRGB(r, g, b)
+        local picker = ColorPickerFrame.Content and ColorPickerFrame.Content.ColorPicker or ColorPickerFrame
+        picker:SetColorRGB(r, g, b)
         btn.color:SetColorTexture(r, g, b)
 
 		if setfun then--设置姓名版对应功能
@@ -143,7 +144,8 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
        ColorPickerFrame.swatchFunc = onUpdate
        ColorPickerFrame.previousValues = {r = PlateColorDB[DB]["r"], g = PlateColorDB[DB]["g"], b = PlateColorDB[DB]["b"]}
        ColorPickerFrame.cancelFunc = onCancel
-       ColorPickerFrame.Content.ColorPicker:SetColorRGB(ns.PlateColorDB[DB]["r"], ns.PlateColorDB[DB]["g"], ns.PlateColorDB[DB]["b"])
+       local picker = ColorPickerFrame.Content and ColorPickerFrame.Content.ColorPicker or ColorPickerFrame
+       picker:SetColorRGB(ns.PlateColorDB[DB]["r"], ns.PlateColorDB[DB]["g"], ns.PlateColorDB[DB]["b"])
        ColorPickerFrame:Show()
     end)
     btn:SetScript("OnEnter", function(self)
