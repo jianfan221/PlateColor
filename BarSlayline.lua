@@ -16,6 +16,7 @@ end
 --设置斩杀分割线
 local height,width = 0,0
 function ns.CreatSlayline(unitFrame)
+	if not unitFrame then return end
 	if not PlateColorDB.Slayline or not ns.SlaylineSpellID or not C_SpellBook.IsSpellKnown(ns.SlaylineSpellID) then 
 		if unitFrame.Slayline then
 			unitFrame.Slayline:Hide()
