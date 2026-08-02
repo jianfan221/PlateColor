@@ -227,4 +227,28 @@ if GameTooltip and GameTooltip.SetWorldCursor then
 			end
 		end)
 	end)
+else
+	-- 怀旧服无SetWorldCursor 时，UPDATE_MOUSEOVER_UNIT 触发刷新，
+	-- OnUpdate 只在鼠标指向期间轮询，兜底鼠标移开后刷新隐藏
+	local updater = CreateFrame("Frame")
+	updater:Hide()
+	updater:SetScript("OnUpdate", function(self, elapsed)
+		self.elapsed = (self.elapsed or 0) + elapsed
+		if self.elapsed < 0.1 then return end
+		self.elapsed = 0
+		if not UnitExists("mouseover") then
+			self:Hide()
+			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+				ns.UpdateMouseoverTexture(namePlate.UnitFrame)
+			end
+		end
+	end)
+	ns.event("UPDATE_MOUSEOVER_UNIT", function()
+		C_Timer.After(0,function()
+			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+				ns.UpdateMouseoverTexture(namePlate.UnitFrame)
+			end
+		end)
+		updater:Show()
+	end)
 end
