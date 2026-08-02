@@ -27,6 +27,7 @@ ns.PlateColorDB = {
 	castTextScale = 11,			--施法条文本大小
 	castTargetPoint = 4,		--施法目标名字位置
 	castTargetScale = 22,		--施法目标名字大小
+	castTargetAlways = false,	--始终显示施法目标名字(常驻显示单位当前目标)
 	nointerrupcolor = {r=0.6, g=0.6, b=0.6},    --不可打断颜色
 	castcolor = {r=0.9, g=0.9, b=0},         --读条颜色
 	channelcolor = {r=0, g=1, b=0},            --引导颜色
