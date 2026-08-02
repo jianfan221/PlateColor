@@ -117,6 +117,7 @@ ns.AddSetSlider(ConFrame1,1,L["施法条文本尺寸"],L["施法条文本尺寸"
 local castTargettable = {{L["右侧内部"],1},{L["右侧外部"],2},{L["右中"],3},{L["右上"],4}}
 ns.AddSetDropdM(ConFrame1,1,L["施法目标名字位置"],L["施法目标名字位置"],castTargettable,"castTargetPoint",ns.SetPoints)
 ns.AddSetSlider(ConFrame1,1,L["施法目标名字尺寸"],L["施法目标名字尺寸"],8,30,1,"%d","castTargetScale",ns.SetPoints)
+ns.AddSetClickB(ConFrame1,1,L["始终显示施法目标"],L["始终显示施法目标鼠标提示"],"castTargetAlways",ns.SetPoints)
 ns.AddSetColorF(ConFrame1,1,L["不可打断法术颜色"],L["不可打断法术颜色"],"nointerrupcolor",ns.SetCastBarInitColor)
 ns.AddSetColorF(ConFrame1,1,L["读条法术颜色"],L["读条法术颜色"],"castcolor",ns.SetCastBarInitColor)
 ns.AddSetColorF(ConFrame1,1,L["引导法术颜色"],L["引导法术颜色"],"channelcolor",ns.SetCastBarInitColor)
