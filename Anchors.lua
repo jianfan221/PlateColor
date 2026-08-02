@@ -242,6 +242,27 @@ function ns.SetPoints(self)
 		elseif PlateColorDB.castPoint == 2 then--中
 			PixelUtil.SetPoint(castBar.Text,"CENTER", castBar, "CENTER", 0, 0);--施法文本位置
 		end
+		if PlateColorDB.castTargetAlways then
+			--始终显示施法目标:父框体设为血条,常驻显示单位当前目标名
+			self.CastTargetNameText = castBar.CastTargetNameText
+			local hb = self.HealthBarsContainer.healthBar
+			self.CastTargetNameText:SetParent(hb)
+			if not hb.PC_TargetOnUpdate then
+				hb.PC_TargetOnUpdate = true
+				hb:HookScript("OnUpdate", function(f, elapsed)
+					f.PC_TargetTimer = (f.PC_TargetTimer or 0) + elapsed
+					if f.PC_TargetTimer < 0.25 or not self.unit then return end
+					f.PC_TargetTimer = 0
+					local target = self.unit .. "target"
+					local name = UnitName(target)
+					local text = self.CastTargetNameText
+					text:SetText(name ~= nil and name or "")
+					local color = UnitIsPlayer(target) and C_ClassColor.GetClassColor(UnitClassBase(target)) or UnitReaction(target, "player") and FACTION_BAR_COLORS[UnitReaction(target, "player")]
+					if color ~= nil then text:SetVertexColor(color.r, color.g, color.b) end
+					text:Show()
+				end)
+			end
+		end
 		if PlateColorDB.castTargetPoint == 1 then--右侧内部
 			PixelUtil.SetPoint(castBar.CastTargetNameText,"RIGHT", castBar, "RIGHT", 1, -1); --施法目标名字
 		elseif PlateColorDB.castTargetPoint == 2 then--右侧外部
