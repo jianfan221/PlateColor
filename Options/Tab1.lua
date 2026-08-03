@@ -115,12 +115,15 @@ ns.AddSetDropdM(ConFrame1,1,L["施法名称位置"],L["施法名称位置"],cast
 ns.AddSetClickB(ConFrame1,1,L["施法剩余时间"],L["施法剩余时间"],"castTime",ns.SetPoints)
 ns.AddSetSlider(ConFrame1,1,L["施法条文本尺寸"],L["施法条文本尺寸"],8,30,1,"%d","castTextScale",ns.SetPoints)
 local castTargettable = {{L["右侧内部"],1},{L["右侧外部"],2},{L["右中"],3},{L["右上"],4}}
-ns.AddSetDropdM(ConFrame1,1,L["施法目标名字位置"],L["施法目标名字位置"],castTargettable,"castTargetPoint",ns.SetPoints)
-ns.AddSetSlider(ConFrame1,1,L["施法目标名字尺寸"],L["施法目标名字尺寸"],8,30,1,"%d","castTargetScale",ns.SetPoints)
-ns.AddSetClickB(ConFrame1,1,L["始终显示施法目标"],L["始终显示施法目标鼠标提示"],"castTargetAlways",ns.SetPoints)
 ns.AddSetColorF(ConFrame1,1,L["不可打断法术颜色"],L["不可打断法术颜色"],"nointerrupcolor",ns.SetCastBarInitColor)
 ns.AddSetColorF(ConFrame1,1,L["读条法术颜色"],L["读条法术颜色"],"castcolor",ns.SetCastBarInitColor)
 ns.AddSetColorF(ConFrame1,1,L["引导法术颜色"],L["引导法术颜色"],"channelcolor",ns.SetCastBarInitColor)
+
+ns.AddSetTiText(ConFrame1,1,L["施法目标"])
+ns.AddCVarClickB(ConFrame1,1,L["显示施法目标"],L["显示施法目标"],"nameplateCastBarDisplay",Enum.NamePlateCastBarDisplay.SpellTarget)
+ns.AddSetClickB(ConFrame1,1,L["始终显示施法目标"],L["始终显示施法目标鼠标提示"],"castTargetAlways",ns.SetPoints)
+ns.AddSetDropdM(ConFrame1,1,L["施法目标名字位置"],L["施法目标名字位置"],castTargettable,"castTargetPoint",ns.SetPoints)
+ns.AddSetSlider(ConFrame1,1,L["施法目标名字尺寸"],L["施法目标名字尺寸"],8,30,1,"%d","castTargetScale",ns.SetPoints)
 
 ns.AddSetTiText(ConFrame1,1,L["生命值"])
 ns.AddSetClickB(ConFrame1,1,L["生命值数值"],L["生命值数值"],"hpValue")
@@ -149,6 +152,7 @@ ns.AddSetSlider(ConFrame1,1,L["左侧增益光环尺寸"],L["左侧增益光环�
 ns.AddSetSlider(ConFrame1,1,L["右侧控制光环尺寸"],L["右侧控制光环尺寸"],0.5,3,0.1,"%.1f","auraRScale")
 
 ns.AddSetTiText(ConFrame1,1,L["个人资源"])
+ns.AddCVarClickB(ConFrame1,1,DISPLAY_PERSONAL_RESOURCE,DISPLAY_PERSONAL_RESOURCE,"nameplateShowSelf")
 ns.AddSetClickB(ConFrame1,1,L["启用个人资源设置"],L["启用个人资源设置"],"myHPSetup",ns.AllmyPowerBar)
 ns.AddSetClickB(ConFrame1,1,L["编辑模式自动居中"],L["编辑模式自动居中"],"myHPEdit")
 ns.AddSetDropdTexture(ConFrame1,1,L["个人资源材质"],L["个人资源材质"],"myHPTexture",ns.HpTextures,ns.AllmyPowerBar)
