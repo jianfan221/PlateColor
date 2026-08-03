@@ -2,7 +2,7 @@ local addonName,ns = ...
 local L = ns.L
 local DB = ns.PlateColorDB
 
-ns.event("PLAYER_ENTERING_WORLD", function()
+ns.LazyBuild(ns.tabframe4, function()
 --分页4滚动框架
 local ConFramescrollFrame4 = CreateFrame("ScrollFrame", nil, ns.tabframe4, "ScrollFrameTemplate")
 ConFramescrollFrame4:SetPoint("TOPLEFT", ns.tabframe4, "TOPLEFT", 4, -5)
