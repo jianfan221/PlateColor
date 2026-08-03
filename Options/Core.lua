@@ -16,7 +16,15 @@ end
 SLASH_PLATECOLOR1 = "/pc"
 SLASH_PLATECOLOR2 = "/platecolor"
 
-ns.event("PLAYER_LOGIN", function(event)
+-- 懒构建：分页tab frame 首次显示时才执行 builder（只执行一次）
+function ns.LazyBuild(frame, builder)
+	local built = false
+	frame:HookScript("OnShow", function()
+		if built then return end
+		built = true
+		builder()
+	end)
+end
 
 --标题文本
 local TiText = PCGUI:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
@@ -162,6 +170,3 @@ if GetLocale() == "zhCN" then
         "https://afdian.com/a/jianfan", "Interface\\AddOns\\PlateColor\\texture\\Links\\aifadian2.png",1.5)
 
 end
-
-
-end)
