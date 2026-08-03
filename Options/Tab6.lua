@@ -1,7 +1,7 @@
 local addonName,ns = ...
 local L = ns.L
 
-ns.event("PLAYER_ENTERING_WORLD", function()
+ns.LazyBuild(ns.tabframe6, function()
 --分页6滚动框架
 local ConFramescrollFrame6 = CreateFrame("ScrollFrame", nil, ns.tabframe6, "ScrollFrameTemplate")
 ConFramescrollFrame6:SetPoint("TOPLEFT", ns.tabframe6, "TOPLEFT", 4, -5)
