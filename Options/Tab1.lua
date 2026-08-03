@@ -2,7 +2,7 @@ local addonName,ns = ...
 local L = ns.L
 local DB = ns.PlateColorDB
 
-ns.event("PLAYER_ENTERING_WORLD", function()
+ns.LazyBuild(ns.tabframe1, function()
 --检查LibSharedMedia插入所有LSM已注册的材质
 if LibStub and LibStub("LibSharedMedia-3.0",true) then
 	local LSMtextures = LibStub("LibSharedMedia-3.0"):HashTable("statusbar")
