@@ -21,8 +21,8 @@ local function SetPlateCastBar(self, event)
     --选择了原版材质就用默认的
     if PlateColorDB.castTexture == "Blizzard-default" then return end
 
-	--设定施法条材质和背景
-	self:SetStatusBarTexture(ns.HpTextures[PlateColorDB.castTexture])
+	--设定施法条材质和背景(材质名失效时回退默认,避免 SetStatusBarTexture(nil) 报错)
+	self:SetStatusBarTexture(ns.HpTextures[PlateColorDB.castTexture] or ns.HpTextures["PC-White"])
     self.Background:SetTexture(130937)
     self.Background:SetVertexColor(0.1, 0.1, 0.1, 0.9)
 
