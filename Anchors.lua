@@ -86,11 +86,7 @@ function ns.SetPoints(self)
 	if not self.unit then return end
 	if self:IsForbidden() then return end
 	--血条材质
-	if ns.HpTextures[PlateColorDB.hpbarTexture] then 
-		self.HealthBarsContainer.healthBar:SetStatusBarTexture(ns.HpTextures[PlateColorDB.hpbarTexture])
-	else
-		self.HealthBarsContainer.healthBar:SetStatusBarTexture(ns.HpTextures["PC-White"])
-	end
+	self.HealthBarsContainer.healthBar:SetStatusBarTexture(ns.HpTextures[PlateColorDB.hpbarTexture] or ns.HpTextures["PC-White"])
 	--边框和背景
 	
 	self.HealthBarsContainer.healthBar.bgTexture:SetTexture("Interface\\Addons\\PlateColor\\texture\\bgTexture.png")
