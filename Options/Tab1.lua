@@ -2,15 +2,17 @@ local addonName,ns = ...
 local L = ns.L
 local DB = ns.PlateColorDB
 
-ns.LazyBuild(ns.tabframe1, function()
---检查LibSharedMedia插入所有LSM已注册的材质
-if LibStub and LibStub("LibSharedMedia-3.0",true) then
-	local LSMtextures = LibStub("LibSharedMedia-3.0"):HashTable("statusbar")
-	for key, value in pairs(LSMtextures) do
-		ns.HpTextures[key] = value
+--检查LibSharedMedia插入所有LSM已注册的材质(进入游戏时加载)
+ns.event("PLAYER_ENTERING_WORLD", function()
+	if LibStub and LibStub("LibSharedMedia-3.0", true) then
+		local LSMtextures = LibStub("LibSharedMedia-3.0"):HashTable("statusbar")
+		for key, value in pairs(LSMtextures) do
+			ns.HpTextures[key] = value
+		end
 	end
-end
+end)
 
+ns.LazyBuild(ns.tabframe1, function()
 --分页1滚动框架
 local ConFramescrollFrame1 = CreateFrame("ScrollFrame", nil, ns.tabframe1, "ScrollFrameTemplate")
 ConFramescrollFrame1:SetPoint("TOPLEFT", ns.tabframe1, "TOPLEFT", 4, -5)
