@@ -72,78 +72,77 @@ end
 
 --12.1 AuraContainer 血条左侧仅显示敌方可驱散光环
 if DoesTemplateExist("CustomAuraContainerTemplate") then
-	local dispelPool
-	local dispelMap = {}
+
+	--先关闭自带的左侧增益光环,因为我们接下来自己创建
 	EventUtil.ContinueOnPlayerLogin(function()
-        --玩家登录后创建驱散光环容器,关闭自带的左侧增益光环
-        ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
-        ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
-		dispelPool = CreateFramePool("Frame", UIParent, nil, nil, false, function(frame)
-			frame.container = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
-			frame.container:Hide()
-			frame.container:AddAuraGroup("disBuff", "HELPFUL|DISPELLABLE", {
-				maxFrameCount = 2,
-				layout = { elementSpacingX = 2 },
-				initializeFrame = function(btn)
-					btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)--NamePlateConstants.AURA_ITEM_HEIGHT == 25
-					btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
-					local icon = btn:CreateTexture(nil, "ARTWORK")
-					icon:SetAllPoints(btn)
-					icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-					btn:SetIcon(icon)
-					local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
-					cooldown:SetAllPoints(btn)
-					cooldown:SetHideCountdownNumbers(false)
-					cooldown:SetReverse(true)--反转冷却动画方向
-					btn:SetDurationCooldown(cooldown)
-					--独立叠层/边框容器: 层级在冷却之上(+2), 不随冷却隐藏
-					local overlay = CreateFrame("Frame", nil, btn)
-					overlay:SetAllPoints(btn)
-					overlay:SetFrameLevel(btn:GetFrameLevel() + 2)
-					local count = overlay:CreateFontString(nil, "OVERLAY", "PC_FontOutline")
-					count:SetPoint("BOTTOMRIGHT", btn, 0, 0)
-                    count:SetVertexColor(1, 1, 1)
-					count:SetFontHeight(14)
-					btn:SetApplicationCount(count, {})
-					local border = overlay:CreateTexture(nil, "OVERLAY")
-					border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
-					border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
-					border:SetTexture("Interface\\AddOns\\PlateColor\\texture\\Border\\soft-square2.png")
-					btn:AddDispelTypeTexture(border, {
-						showWhenHelpful = true,
-						showWhenHarmful = false,
-						style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
-						customDispelColorCurve = ns.dispelColor,
-					})
-				end,
-			})
-			frame.container:AddAuraGroup("otherBuff", "HELPFUL|IMPORTANT|!DISPELLABLE", {
-				maxFrameCount = 2,
-				layout = { elementSpacingX = 2 },
-				initializeFrame = function(btn)
-					btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)
-					btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
-					local icon = btn:CreateTexture(nil, "ARTWORK")
-					icon:SetAllPoints(btn)
-					icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-					btn:SetIcon(icon)
-					local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
-					cooldown:SetAllPoints(btn)
-					cooldown:SetHideCountdownNumbers(false)
-					btn:SetDurationCooldown(cooldown)
-					--独立叠层容器: 层级在冷却之上(+2), 不随冷却隐藏
-					local overlay = CreateFrame("Frame", nil, btn)
-					overlay:SetAllPoints(btn)
-					overlay:SetFrameLevel(btn:GetFrameLevel() + 2)
-					local count = overlay:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-					count:SetPoint("BOTTOMRIGHT", btn, 0, 0)
-					count:SetVertexColor(1, 1, 1)
-					count:SetFontHeight(14)
-					btn:SetApplicationCount(count, {})
-				end,
-			})
-		end, 40)
+		ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
+		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
 	end)
+
+	-- 配置容器光环组（每个姓名板的容器首次创建时调用）
+	local function SetupDispelContainer(container)
+		container:AddAuraGroup("disBuff", "HELPFUL|DISPELLABLE", {
+			maxFrameCount = 2,
+			layout = { elementSpacingX = 2 },
+			initializeFrame = function(btn)
+				btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)--NamePlateConstants.AURA_ITEM_HEIGHT == 25
+				btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
+				local icon = btn:CreateTexture(nil, "ARTWORK")
+				icon:SetAllPoints(btn)
+				icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+				btn:SetIcon(icon)
+				local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
+				cooldown:SetAllPoints(btn)
+				cooldown:SetHideCountdownNumbers(false)
+				cooldown:SetReverse(true)--反转冷却动画方向
+				btn:SetDurationCooldown(cooldown)
+				--独立叠层/边框容器: 层级在冷却之上(+2), 不随冷却隐藏
+				local overlay = CreateFrame("Frame", nil, btn)
+				overlay:SetAllPoints(btn)
+				overlay:SetFrameLevel(btn:GetFrameLevel() + 2)
+				local count = overlay:CreateFontString(nil, "OVERLAY", "PC_FontOutline")
+				count:SetPoint("BOTTOMRIGHT", btn, 0, 0)
+				count:SetVertexColor(1, 1, 1)
+				count:SetFontHeight(14)
+				btn:SetApplicationCount(count, {})
+				local border = overlay:CreateTexture(nil, "OVERLAY")
+				border:SetPoint("TOPLEFT", btn, "TOPLEFT", -5, 5)
+				border:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", 5, -5)
+				border:SetTexture("Interface\\AddOns\\PlateColor\\texture\\Border\\soft-square2.png")
+				btn:AddDispelTypeTexture(border, {
+					showWhenHelpful = true,
+					showWhenHarmful = false,
+					style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
+					customDispelColorCurve = ns.dispelColor,
+				})
+			end,
+		})
+		container:AddAuraGroup("otherBuff", "HELPFUL|IMPORTANT|!DISPELLABLE", {
+			maxFrameCount = 2,
+			layout = { elementSpacingX = 2 },
+			initializeFrame = function(btn)
+				btn:SetSize(25*PlateColorDB.auraLScale, 25*PlateColorDB.auraLScale)
+				btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
+				local icon = btn:CreateTexture(nil, "ARTWORK")
+				icon:SetAllPoints(btn)
+				icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+				btn:SetIcon(icon)
+				local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
+				cooldown:SetAllPoints(btn)
+				cooldown:SetHideCountdownNumbers(false)
+				btn:SetDurationCooldown(cooldown)
+				--独立叠层容器: 层级在冷却之上(+2), 不随冷却隐藏
+				local overlay = CreateFrame("Frame", nil, btn)
+				overlay:SetAllPoints(btn)
+				overlay:SetFrameLevel(btn:GetFrameLevel() + 2)
+				local count = overlay:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+				count:SetPoint("BOTTOMRIGHT", btn, 0, 0)
+				count:SetVertexColor(1, 1, 1)
+				count:SetFontHeight(14)
+				btn:SetApplicationCount(count, {})
+			end,
+		})
+	end
 
 	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
@@ -151,42 +150,26 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		local unitFrame = namePlate.UnitFrame
 		if not unitFrame then return end
 
-		-- 统一清理旧状态：dispelMap 重复注册 + 姓名板复用残留
-		if dispelMap[unit] then
-			dispelPool:Release(dispelMap[unit])
-			dispelMap[unit] = nil
-		end
-		unitFrame.PC_DispelAuras = nil
-
 		if not UnitCanAttack("player", unit) then
+			if unitFrame.PC_DispelAuras then
+				unitFrame.PC_DispelAuras:Hide()
+			end
 			return
 		end
 
-		local dispelFrame = dispelPool:Acquire()
-		if not dispelFrame then return end
-
-		dispelMap[unit] = dispelFrame
-		unitFrame.PC_DispelAuras = dispelFrame.container
-		unitFrame.PC_DispelAuras:SetParent(unitFrame.healthBar)
-		unitFrame.PC_DispelAuras:Show()
+		-- 容器不存在则创建（作为 healthBar 子级，随血条显示/隐藏、继承框架层级）
+		if not unitFrame.PC_DispelAuras then
+			unitFrame.PC_DispelAuras = CreateFrame("AuraContainer", nil, unitFrame.healthBar, "CustomAuraContainerTemplate")
+			SetupDispelContainer(unitFrame.PC_DispelAuras)
+		end
 		unitFrame.PC_DispelAuras:SetUnit(unit)
+		unitFrame.PC_DispelAuras:Show()
 		C_Timer.After(0, function()
 			local anchor = unitFrame.abs or unitFrame.healthBar
-
+			if not anchor or not anchor:IsShown() then return end
 			unitFrame.PC_DispelAuras:ClearAllPoints()
 			unitFrame.PC_DispelAuras:SetPoint("RIGHT", anchor, "LEFT", -2, 0)
 		end)
-
-		if unitFrame.AurasFrame and unitFrame.AurasFrame.BuffListFrame then
-			unitFrame.AurasFrame.BuffListFrame:Hide()
-		end
-	end)
-
-	ns.event("NAME_PLATE_UNIT_REMOVED", function(event, unit)
-		if dispelMap[unit] then
-			dispelPool:Release(dispelMap[unit])
-			dispelMap[unit] = nil
-		end
 	end)
 end
 
