@@ -393,9 +393,10 @@ ns.hook(EditModeManagerFrame, "OnSystemPositionChange", function(edit,self)
 
 	local bottom = self:GetBottom()
 	local height = self:GetHeight() or 0
-	local X,Y = UIParent:GetWidth()/2, bottom + height
+	-- 用框体 CENTER 锚到 UIParent 底部水平中心，保证水平居中（不依赖框体宽度）
+	local Y = bottom + height / 2
 	self:ClearAllPoints()
-	self:SetPoint("TOP",UIParent,"BOTTOMLEFT",X,Y)
+	self:SetPoint("CENTER", UIParent, "BOTTOM", 0, Y)
 	if EditModeManagerFrame and EditModeManagerFrame.UpdateSystemAnchorInfo then
 		-- UpdateSystemAnchorInfo 会读取当前 SetPoint 的值并更新到 layoutInfo 缓存中
 		local hasChanged = EditModeManagerFrame:UpdateSystemAnchorInfo(self)
