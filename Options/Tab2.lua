@@ -32,8 +32,8 @@ ns.AddSetSlider(ConFrame2,2,L["箭头尺寸"],L["箭头尺寸"],5,50,1,"%d","arr
 ns.AddSetSlider(ConFrame2,2,L["箭头水平偏移"],L["箭头水平偏移"],-10,10,1,"%d","arrowHoffset",ns.UpdateHpTexture)
 
 ns.AddSetTiText(ConFrame2,2,L["交互"])
-local Slayline = ns.AddClickColor(ConFrame2,2,L["斩杀辅助线"],L["斩杀辅助线"],"Slayline","SlaylineColor",ns.CreatSlayline)
-Slayline.check:HookScript("OnEnter",function(self) 
+--斩杀技能列表提示
+local function ShowSlaylineTooltip()
 	local text = ""
 	for spell,value in pairs(ns.SlaylineSpell) do
 		if spell then
@@ -48,9 +48,12 @@ Slayline.check:HookScript("OnEnter",function(self)
 		end
 	end
 	GameTooltip:SetText(text)
-end)
+end
 
-ns.AddClickColor(ConFrame2,2,L["斩杀血条变色"],L["斩杀血条变色"],"SlayHp","SlayHpColor",ns.UpdateHpbarColor)
+local Slayline = ns.AddClickColor(ConFrame2,2,L["斩杀辅助线"],L["斩杀辅助线"],"Slayline","SlaylineColor",ns.CreatSlayline)
+Slayline.check:HookScript("OnEnter",ShowSlaylineTooltip)
+local SlayHp = ns.AddClickColor(ConFrame2,2,L["斩杀血条变色"],L["斩杀血条变色"],"SlayHp","SlayHpColor",ns.UpdateHpbarColor)
+SlayHp.check:HookScript("OnEnter",ShowSlaylineTooltip)
 ns.AddClickColor(ConFrame2,2,L["当前目标颜色"],L["当前目标颜色"],"myTarget","myTargetColor",ns.UpdateHpbarColor)
 ns.AddClickColor(ConFrame2,2,L["焦点血条颜色"],L["焦点血条颜色"],"myFocus","myFocusColor",ns.UpdateHpbarColor)
 ns.AddClickColor(ConFrame2,2,L["鼠标指向边框变色"],L["鼠标指向边框变色"],"mGlow","mGlowColor")
