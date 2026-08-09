@@ -23,6 +23,17 @@ ConFrame2:SetSize(670,480)
 ConFramescrollFrame2:SetScrollChild(ConFrame2)
 ns.Y[2] = 0	--设置起始位置
 
+--光环染色分类标题 + 设置按钮（置于最顶部，仅 12.1 有光环容器模板时显示）
+if DoesTemplateExist("CustomAuraContainerTemplate") then
+	ns.AddSetTiText(ConFrame2,2,L["光环染色"])
+	ns.AddSetClickB(ConFrame2,2,L["隐藏光环鼠标提示"],L["隐藏光环鼠标提示"],"hideAuraTooltip")
+	ns.AddSetClickB(ConFrame2,2,L["光环鼠标提示显示法术ID"],L["光环鼠标提示显示法术ID鼠标提示"],"auraTipID",ns.SetAuraTipID)
+	local dotBtn = ns.AddfuncButton(ConFrame2,2,L["光环血条染色设置"],L["光环血条染色设置鼠标提示"])
+	dotBtn:SetScript("OnClick", function()
+		if ns.OpenPlateDotList then ns.OpenPlateDotList() end
+	end)
+end
+
 ns.AddSetTiText(ConFrame2,2,L["箭头"])
 local arrowShowTable = {{L["不显示"],0},{L["左"],1},{L["右"],2},{L["左+右"],3}}
 ns.AddSetDropdM(ConFrame2,2,L["箭头显示方式"],L["箭头显示方式"],arrowShowTable,"arrowPoint",ns.UpdateHpTexture)
