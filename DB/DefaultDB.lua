@@ -54,6 +54,10 @@ ns.PlateColorDB = {
 	auraLScale = 1.5,			--左侧增益光环尺寸
 	auraRScale = 2,				--右侧控制光环尺寸
 
+	dotlist = {},				--光环染色监控的 debuff 列表
+	dotcolor1 = {r=1, g=0.35, b=0.75},	--任意 debuff 在场时的染色颜色
+	auraTipID = true,			--光环鼠标提示显示法术 ID（默认开启）
+
 	markScale = 1.2,				--标记尺寸
 	markHoffset = 0,			--标记水平偏移
 	markVoffset = 0,			--标记垂直偏移
