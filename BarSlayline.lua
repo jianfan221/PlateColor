@@ -28,7 +28,12 @@ function ns.CreatSlayline(unitFrame)
 			height = unitFrame.healthBar:GetHeight() * 0.94
 		end
 		if height == 0 then return end
-		unitFrame.Slayline = unitFrame.healthBar:CreateTexture(nil, "OVERLAY")
+		-- 斩杀线用独立 Frame 容器并抬高 frameLevel，避免被血条上的光环染色
+		-- （AuraContainer 是 healthBar 的子框架，默认 frameLevel 更高，会盖住其子纹理）
+		local slayFrame = CreateFrame("Frame", nil, unitFrame.healthBar)
+		slayFrame:SetAllPoints(unitFrame.healthBar)
+		slayFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 10)
+		unitFrame.Slayline = slayFrame:CreateTexture(nil, "OVERLAY")
 		unitFrame.Slayline:SetWidth(2)	
 		unitFrame.Slayline:SetHeight(height)	
 		unitFrame.Slayline:SetTexture("Interface\\Buttons\\WHITE8x8")
