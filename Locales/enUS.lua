@@ -169,6 +169,11 @@ ns.enUS = {
 ["等级文本鼠标提示"] = "Only shows when level difference is greater than 2",
 ["吸收盾数值"] = "Absorb Shield Value",
 ["吸收盾数值鼠标提示"] = "Show absorb shield value on left side of nameplate",
+["光环染色"] = "Aura Color",
+["光环鼠标提示显示法术ID"] = "Aura Tooltip Show Spell ID",
+["光环鼠标提示显示法术ID鼠标提示"] = "Whether aura tooltip shows monitored spell IDs",
+["光环血条染色设置"] = "Aura Healthbar Color Setting",
+["光环血条染色设置鼠标提示"] = "Open aura healthbar color setting (add/remove debuffs to monitor)",
 
 
 --tab NPC 使用的键
