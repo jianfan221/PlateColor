@@ -15,6 +15,11 @@ function ns.UpdateHpbarColor(unitFrame)
         return
     end
 
+    -- 默认先恢复 DOT 染色显示；紧急拦截分支触发时再隐藏
+    if ns.SetAuraColorEnabled then
+        ns.SetAuraColorEnabled(unitFrame, true)
+    end
+
     local DB = PlateColorDB
     local unit = unitFrame.unit
     local Threat = UnitThreatSituation("player", unit) or 0
@@ -24,23 +29,29 @@ function ns.UpdateHpbarColor(unitFrame)
 
     local hr, hg, hb
 
-    -- 【第一部分：紧急拦截】
+    -- 【第一部分：紧急拦截】（触发时隐藏 DOT 染色，避免叠加）
     if Threat == 0 and InCombat and IsTank then
+        if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.TANKnoThreatColor.r, DB.TANKnoThreatColor.g, DB.TANKnoThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 1 and IsTank then
+        if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.TANKhighThreatColor.r, DB.TANKhighThreatColor.g, DB.TANKhighThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 2 and IsTank then
+        if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.TANKlowThreatColor.r, DB.TANKlowThreatColor.g, DB.TANKlowThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 1 and NoTank then
+        if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.highThreatColor.r, DB.highThreatColor.g, DB.highThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 2 and NoTank then
+        if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.lowThreatColor.r, DB.lowThreatColor.g, DB.lowThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 3 and NoTank then
+        if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.myThreatColor.r, DB.myThreatColor.g, DB.myThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
 
