@@ -7,6 +7,8 @@
 ## Category-zhCN: 姓名板
 ## IconTexture: 135451
 ## X-ModUs-UID: 22
+## X-Curse-Project-ID: 307518
+## X-Wago-ID: BKpgPa6E
 ## SavedVariables: PlateColorDB
 ## Version: 20260809
 
