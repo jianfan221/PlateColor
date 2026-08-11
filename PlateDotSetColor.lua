@@ -10,7 +10,7 @@ local _, ns = ...
 --
 -- 即时生效：
 --   ns.UpdateAuraColor()  -- 颜色改动时调用，只更新已有纹理颜色
---   ns.RefreshAuraColor() -- dotlist 增减时调用，重建所有容器
+--   ns.RefreshAuraColor() -- dotlist 增减时调用，只更新 includeSpellIDs 过滤
 
 if not DoesTemplateExist("CustomAuraContainerTemplate") then return end
 
@@ -44,24 +44,25 @@ local function BuildContainer(unitFrame)
 		container.pcTextures = {}   -- 收集染色纹理，供颜色即时更新
 
 		local color = GetColor()
-		local index = 0
+		-- 单组即可：includeSpellIDs 塞入所有监控法术，任一在场即显示（OR 逻辑）
+		container:AddAuraGroup("auraColor", "HARMFUL|PLAYER", {
+			maxFrameCount = 1,
+			initializeFrame = function(btn)
+				local tex = btn:CreateTexture(nil, "OVERLAY")
+				local fill = healthBar:GetStatusBarTexture() or healthBar
+				tex:SetColorTexture(color.r, color.g, color.b, color.a)
+				tex:SetPoint("TOPLEFT", fill, "TOPLEFT", 1, -1)
+				tex:SetPoint("BOTTOMRIGHT", fill, "BOTTOMRIGHT", 0, 1)
+				container.pcTextures[#container.pcTextures + 1] = tex
+			end,
+		})
+
+		local spellMap = {}
 		for spellID in pairs(PlateColorDB.dotlist or {}) do
-			index = index + 1
-			local key = "auraColor" .. index
-			container:AddAuraGroup(key, "HARMFUL|PLAYER", {
-				maxFrameCount = 1,
-				initializeFrame = function(btn)
-					local tex = btn:CreateTexture(nil, "OVERLAY")
-					local fill = healthBar:GetStatusBarTexture() or healthBar
-					tex:SetColorTexture(color.r, color.g, color.b, color.a)
-					tex:SetPoint("TOPLEFT", fill, "TOPLEFT", 1, -1)
-					tex:SetPoint("BOTTOMRIGHT", fill, "BOTTOMRIGHT", 0, 1)
-					container.pcTextures[#container.pcTextures + 1] = tex
-				end,
-			})
-			container:SetAuraGroupCandidateFilters(key, { includeSpellIDs = { [spellID] = true } })
-			container:SetAuraGroupMaxFrameCount(key, 1)
+			spellMap[spellID] = true
 		end
+		container:SetAuraGroupCandidateFilters("auraColor", { includeSpellIDs = spellMap })
+		container:SetAuraGroupMaxFrameCount("auraColor", 1)
 
 		containers[unitFrame] = container
 	end
@@ -69,21 +70,6 @@ local function BuildContainer(unitFrame)
 	container:SetUnit(unitFrame.unit)
 	container:SetEnabled(true)
 	container:Show()
-end
-
--- 丢弃并重建某根血条的容器（仅设置变化时调用）
-local function RebuildContainer(unitFrame)
-	-- 单位已消失的血条跳过，避免对已回收血条创建 AuraContainer 触发断言
-	if not unitFrame.unit or unitFrame.unitExists == false then
-		return
-	end
-	local old = containers[unitFrame]
-	if old then
-		old:SetEnabled(false)
-		old:Hide()
-		containers[unitFrame] = nil
-	end
-	BuildContainer(unitFrame)
 end
 
 -- 颜色改动：只更新已有纹理颜色（无需重建，即时生效）
@@ -109,10 +95,14 @@ function ns.SetAuraColorEnabled(unitFrame, enabled)
 	end
 end
 
--- dotlist 增减：丢弃重建所有容器
+-- dotlist 增减：只需更新各容器的 includeSpellIDs 过滤，无需重建容器
 function ns.RefreshAuraColor()
-	for unitFrame in pairs(containers) do
-		RebuildContainer(unitFrame)
+	local spellMap = {}
+	for spellID in pairs(PlateColorDB.dotlist or {}) do
+		spellMap[spellID] = true
+	end
+	for _, container in pairs(containers) do
+		container:SetAuraGroupCandidateFilters("auraColor", { includeSpellIDs = spellMap })
 	end
 end
 
