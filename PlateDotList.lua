@@ -1,4 +1,5 @@
 local addonName, ns = ...
+local L = ns.L
 
 -- 光环染色设置：管理要监控的 debuff 列表 + 两种染色颜色。
 -- 列表存于 PlateColorDB.dotlist，颜色存于 dotcolor1（1 个）/dotcolor2（2 个及以上）。
@@ -99,22 +100,25 @@ local function EnsureWindow()
 
 	local singleLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	singleLabel:SetPoint("TOPLEFT", 16, -32)
-	singleLabel:SetText(" DOT " .. COLOR)
+	singleLabel:SetText(L["血条颜色"])
 	ns.AddColorFrame(frame, 95, -32, "", 96, 17, "dotcolor1", function()
 		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
 	end)
 
-	local title2text = "同时监控多种dot时,任意存在都会变色"
-	if GetLocale() ~= "zhCN" and GetLocale() ~= "zhTW" then
-		title2text = "When monitoring multiple dots, any one present will change color"
-	end
+	local nameColorLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	nameColorLabel:SetPoint("TOPLEFT", 240, -32)
+	nameColorLabel:SetText(L["名字颜色"])
+	ns.AddColorFrame(frame, 320, -32, "", 96, 17, "dotcolor2", function()
+		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
+	end)
+
 	local title2 = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-	title2:SetPoint("TOPLEFT", 10, -60)
-	title2:SetText(title2text)
+	title2:SetPoint("TOPLEFT", 10, -56)
+	title2:SetText(L["同时监控多种dot时,任意存在都会变色"])
 
 	local searchBox = CreateFrame("EditBox", nil, frame, "InputBoxTemplate")
 	searchBox:SetSize(240, 24)
-	searchBox:SetPoint("TOPLEFT", 16, -80)
+	searchBox:SetPoint("TOPLEFT", 16, -76)
 	searchBox:SetAutoFocus(false)
 	searchBox:SetTextInsets(8, 8, 4, 4)
 	searchBox:SetScript("OnEscapePressed", function(self)
@@ -129,7 +133,7 @@ local function EnsureWindow()
 		if spellId then
 			local spellName = GetSpellDisplayName(spellId)
 			if spellName then
-				PlateColorDB.dotlist[spellId] = spellName
+				PlateColorDB.dotlist[spellId] = { name = spellName, color = true, text = false }
 				self:SetText("")
 				parent:RefreshList()
 				if ns.RefreshAuraColor then ns.RefreshAuraColor() end
@@ -152,27 +156,41 @@ local function EnsureWindow()
 	closeButton:SetPoint("TOPRIGHT", 2, 2)
 
 	local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "ScrollFrameTemplate")
-	scrollFrame:SetPoint("TOPLEFT", 16, -114)
+	scrollFrame:SetPoint("TOPLEFT", 16, -110)
 	scrollFrame:SetPoint("BOTTOMRIGHT", -30, 16)
-
 	local content = CreateFrame("Frame", nil, scrollFrame)
 	content:SetSize(1, 1)
 	scrollFrame:SetScrollChild(content)
 
 	local header = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	header:SetPoint("TOPLEFT", 8, 0)
+	header:SetPoint("TOPLEFT", 20, 0)
 	header:SetText("ID")
-	header:SetWidth(90)
+	header:SetWidth(60)
+	header:SetJustifyH("LEFT")
 
 	local headerName = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	headerName:SetPoint("TOPLEFT", 120, 0)
+	headerName:SetPoint("TOPLEFT", 95, 0)
 	headerName:SetText(SPELLS .. NAME)
-	headerName:SetWidth(240)
+	headerName:SetWidth(130)
+	headerName:SetJustifyH("LEFT")
+
+	local headerColor = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	headerColor:SetPoint("TOPLEFT", 235, 0)
+	headerColor:SetText(L["血条"])
+	headerColor:SetWidth(55)
+	headerColor:SetJustifyH("LEFT")
+
+	local headerText = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	headerText:SetPoint("TOPLEFT", 305, 0)
+	headerText:SetText(L["名字"])
+	headerText:SetWidth(55)
+	headerText:SetJustifyH("LEFT")
 
 	local headerAction = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	headerAction:SetPoint("TOPLEFT", 378, 0)
+	headerAction:SetPoint("TOPLEFT", 400, 0)
 	headerAction:SetText(DELETE)
-	headerAction:SetWidth(70)
+	headerAction:SetWidth(60)
+	headerAction:SetJustifyH("LEFT")
 
 	frame.rows = {}
 	frame.searchBox = searchBox
@@ -198,7 +216,7 @@ local function EnsureWindow()
 			if MatchSearch(spellId, searchText) then
 				rowCount = rowCount + 1
 				local row = CreateFrame("Frame", nil, self.content)
-				row:SetSize(450, 24)
+				row:SetSize(460, 24)
 				if lastRow then
 					row:SetPoint("TOPLEFT", lastRow, "BOTTOMLEFT", 0, -4)
 				else
@@ -209,27 +227,69 @@ local function EnsureWindow()
 				bg:SetAllPoints(row)
 				bg:SetColorTexture(0.5, 0.5, 0.5, 1)
 
+				-- 悬停高亮：鼠标进入控件时整行背景变亮，移开恢复
+				local function SetRowHighlighted(highlighted)
+					if highlighted then
+						bg:SetColorTexture(0.75, 0.75, 0.75, 1)
+					else
+						bg:SetColorTexture(0.5, 0.5, 0.5, 1)
+					end
+				end
+
 				local idText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-				idText:SetPoint("LEFT", 30, 0)
-				idText:SetWidth(90)
+				idText:SetPoint("LEFT", 20, 0)
+				idText:SetWidth(60)
 				idText:SetJustifyH("LEFT")
 				idText:SetText(tostring(spellId))
 
 				local nameText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-				nameText:SetPoint("LEFT", 200, 0)
-				nameText:SetWidth(240)
+				nameText:SetPoint("LEFT", 95, 0)
+				nameText:SetWidth(130)
 				nameText:SetJustifyH("LEFT")
 				nameText:SetText(GetSpellDisplayName(spellId) or UNKNOWN)
 
+				local info = PlateColorDB.dotlist[spellId]
+				-- 兼容旧数据：值为纯字符串（法术名）时转成表，只启用血条染色
+				if type(info) ~= "table" then
+					info = { name = info, color = true, text = false }
+					PlateColorDB.dotlist[spellId] = info
+				end
+
+				-- 血条染色开关
+				local colorCheck = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
+				colorCheck:SetPoint("LEFT", 240, 0)
+				colorCheck:SetSize(24, 24)
+				colorCheck:SetChecked(info.color)
+				colorCheck:SetScript("OnClick", function(self)
+					info.color = self:GetChecked()
+					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
+				end)
+				colorCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
+				colorCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
+
+				-- 名字变色开关
+				local textCheck = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
+				textCheck:SetPoint("LEFT", 310, 0)
+				textCheck:SetSize(24, 24)
+				textCheck:SetChecked(info.text)
+				textCheck:SetScript("OnClick", function(self)
+					info.text = self:GetChecked()
+					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
+				end)
+				textCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
+				textCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
+
 				local deleteButton = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-				deleteButton:SetSize(70, 20)
-				deleteButton:SetPoint("LEFT", 372, 0)
+				deleteButton:SetSize(55, 20)
+				deleteButton:SetPoint("LEFT", 390, 0)
 				deleteButton:SetText(DELETE)
 				deleteButton:SetScript("OnClick", function()
 					PlateColorDB.dotlist[spellId] = nil
 					frame:RefreshList()
 					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
 				end)
+				deleteButton:SetScript("OnEnter", function() SetRowHighlighted(true) end)
+				deleteButton:SetScript("OnLeave", function() SetRowHighlighted(false) end)
 
 				frame.rows[#frame.rows + 1] = row
 				lastRow = row
@@ -257,7 +317,7 @@ local function EnsureWindow()
 			return
 		end
 
-		PlateColorDB.dotlist[spellId] = spellName
+		PlateColorDB.dotlist[spellId] = { name = spellName, color = true, text = false }
 		searchBox:SetText("")
 		frame:RefreshList()
 		if ns.RefreshAuraColor then ns.RefreshAuraColor() end
@@ -277,12 +337,4 @@ function ns.OpenPlateDotList()
 	local frame = EnsureWindow()
 	frame:Show()
 	frame:Raise()
-end
-
-if ns.event then
-	ns.event("PLAYER_LOGIN", function()
-		EnsureWindow()
-	end, true)
-else
-	EnsureWindow()
 end
