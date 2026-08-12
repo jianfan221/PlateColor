@@ -35,6 +35,9 @@ ns.enUS = {
 ["点击范围底部"] = "Click Range Bottom",
 
 ["名字"] = "Name",
+["名字颜色"] = "Name Color",
+["血条颜色"] = "Bar Color",
+["同时监控多种dot时,任意存在都会变色"] = "When monitoring multiple dots, any one present will change color",
 ["白色名字"] = "White Name",
 ["名字描边"] = "Name Outline",
 ["名字位置"] = "Name Position",
