@@ -150,6 +150,9 @@ ns.AddSetTiText(ConFrame1,1,AURAS)
 ns.AddSetClickB(ConFrame1,1,L["隐藏光环鼠标提示"],L["隐藏光环鼠标提示"],"hideAuraTooltip")
 ns.AddSetSlider(ConFrame1,1,L["光环冷却时间文本尺寸"],L["光环冷却时间文本尺寸"],0.5,1.5,0.1,"%.1f","auraText1")
 ns.AddSetSlider(ConFrame1,1,L["上方减益光环尺寸"],L["上方减益光环尺寸"],0.5,3,0.1,"%.1f","auraTopScale")
+if DoesTemplateExist("CustomAuraContainerTemplate") then
+	ns.AddSetClickB(ConFrame1,1,L["左侧增益光环"],L["左侧增益光环"],"auraLEnable")
+end
 ns.AddSetSlider(ConFrame1,1,L["左侧增益光环尺寸"],L["左侧增益光环尺寸"],0.5,3,0.1,"%.1f","auraLScale")
 ns.AddSetSlider(ConFrame1,1,L["右侧控制光环尺寸"],L["右侧控制光环尺寸"],0.5,3,0.1,"%.1f","auraRScale")
 
