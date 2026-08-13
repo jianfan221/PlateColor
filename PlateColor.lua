@@ -8,39 +8,39 @@
 -- 说明：这些 CVar 取值统一用 C_CVar.GetCVar 读取原始字符串存储（普通 CVar 为 "1"/"0"/数字，
 --       位域 CVar 为带版本字节的原始掩码字符串），恢复时用 C_CVar.SetCVar 原样写回即可。
 local BlizzCvarList = {
-	--名字
-    "UnitNameOwn",
-	"UnitNameNPC",
-	"UnitNameNonCombatCreatureName",
-	"UnitNameFriendlyPlayerName",
-	"UnitNameFriendlyMinionName",
-	"UnitNameEnemyPlayerName",
-	"UnitNameEnemyMinionName",
-	--姓名板
-	"nameplateShowAll",
-	"nameplateShowEnemies",
-	"nameplateShowEnemyMinions",
-	"nameplateShowEnemyMinus",
-	"nameplateShowFriendlyPlayers",
-	"nameplateShowFriendlyPlayerMinions",
-	"nameplateShowOnlyNameForFriendlyPlayerUnits",
-	"nameplateUseClassColorForFriendlyPlayerUnitNames",
-	"nameplateShowFriendlyRealmName",
-	"nameplateShowFriendlyNpcs",
-	"nameplateShowOffscreen",
-	"nameplateStackingTypes",
-	--尺寸
-	"nameplateSize",
-	"nameplateAuraScale",
-	"nameplateStyle",
-	"nameplateInfoDisplay",
-	"nameplateCastBarDisplay",
-	"nameplateThreatDisplay",
-	"nameplateEnemyNpcAuraDisplay",
-	"nameplateEnemyPlayerAuraDisplay",
-	"nameplateFriendlyPlayerAuraDisplay",
-	"nameplateDebuffPadding",
-	"nameplateSimplifiedTypes",
+	--名字（ESC→选项→姓名板→"名字"区）
+    "UnitNameOwn",                                    --我的名字
+	"UnitNameNPC",                                    --NPC名字（显示NPC名字下拉的总开关）
+	"UnitNameNonCombatCreatureName",                  --非战斗生物（小动物/宠物）
+	"UnitNameFriendlyPlayerName",                     --友方玩家
+	"UnitNameFriendlyMinionName",                     --友方随从
+	"UnitNameEnemyPlayerName",                        --敌方玩家
+	"UnitNameEnemyMinionName",                        --敌方随从
+	--姓名板（"姓名板"区）
+	"nameplateShowAll",                               --始终显示姓名板
+	"nameplateShowEnemies",                           --敌方单位
+	"nameplateShowEnemyMinions",                      --敌方随从
+	"nameplateShowEnemyMinus",                        --敌方次级单位
+	"nameplateShowFriendlyPlayers",                   --友方玩家
+	"nameplateShowFriendlyPlayerMinions",             --友方玩家随从
+	"nameplateShowOnlyNameForFriendlyPlayerUnits",    --友方玩家仅显示名字
+	"nameplateUseClassColorForFriendlyPlayerUnitNames",--友方玩家名字职业颜色
+	"nameplateShowFriendlyRealmName",                 --友方玩家显示服务器名
+	"nameplateShowFriendlyNpcs",                      --友方NPC
+	"nameplateShowOffscreen",                         --显示屏外姓名板
+	"nameplateStackingTypes",                         --堆叠类型（位域掩码）
+	--尺寸（"尺寸"区）
+	"nameplateSize",                                  --全局缩放
+	"nameplateAuraScale",                             --光环缩放
+	"nameplateStyle",                                 --姓名板样式
+	"nameplateInfoDisplay",                           --信息显示（位域掩码）
+	"nameplateCastBarDisplay",                        --施法条显示（位域掩码）
+	"nameplateThreatDisplay",                         --仇恨显示（位域掩码）
+	"nameplateEnemyNpcAuraDisplay",                   --敌方NPC光环显示（位域掩码）
+	"nameplateEnemyPlayerAuraDisplay",                --敌方玩家光环显示（位域掩码）
+	"nameplateFriendlyPlayerAuraDisplay",             --友方玩家光环显示（位域掩码）
+	"nameplateDebuffPadding",                         --减益图标间距
+	"nameplateSimplifiedTypes",                       --简化类型（位域掩码）
 }
 
 -- 读取某个 CVar 的当前值（原始字符串）
