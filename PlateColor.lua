@@ -11,6 +11,9 @@ local BlizzCvarList = {
 	--名字（ESC→选项→姓名板→"名字"区）
     "UnitNameOwn",                                    --我的名字
 	"UnitNameNPC",                                    --NPC名字（显示NPC名字下拉的总开关）
+	"UnitNameFriendlySpecialNPCName",                 --NPC名字下拉：特殊NPC
+	"UnitNameHostleNPC",                              --NPC名字下拉：敌对NPC
+	"UnitNameInteractiveNPC",                         --NPC名字下拉：可互动NPC
 	"UnitNameNonCombatCreatureName",                  --非战斗生物（小动物/宠物）
 	"UnitNameFriendlyPlayerName",                     --友方玩家
 	"UnitNameFriendlyMinionName",                     --友方随从
@@ -28,6 +31,8 @@ local BlizzCvarList = {
 	"nameplateShowFriendlyRealmName",                 --友方玩家显示服务器名
 	"nameplateShowFriendlyNpcs",                      --友方NPC
 	"nameplateShowOffscreen",                         --显示屏外姓名板
+	"nameplateShowClassColor",                        --姓名板颜色用职业色：敌方
+	"nameplateShowFriendlyClassColor",                --姓名板颜色用职业色：友方
 	"nameplateStackingTypes",                         --堆叠类型（位域掩码）
 	--尺寸（"尺寸"区）
 	"nameplateSize",                                  --全局缩放
