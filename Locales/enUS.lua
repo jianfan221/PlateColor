@@ -90,6 +90,7 @@ ns.enUS = {
 ["光环冷却时间文本尺寸"] = "Aura Cooldown Text Size",
 ["隐藏光环鼠标提示"] = "Hide Aura Tooltip",
 ["上方减益光环尺寸"] = "Top Debuff Aura Size",
+["左侧增益光环"] = "Left Buff Aura",
 ["左侧增益光环尺寸"] = "Left Buff Aura Size",
 ["右侧控制光环尺寸"] = "Right Control Aura Size",
 
