@@ -2,6 +2,7 @@
 
 ns.PlateColorDB = {
 	myVersion = 0,
+	BlizzCvar = {},				--暴雪姓名板 CVar 备份（记录/恢复这些 CVar 的取值）
 	HitTestShow = false,		--显示点击范围
 	HitWidth = 5,				--点击范围宽度
 	HitHeight = 12,				--点击范围顶部
