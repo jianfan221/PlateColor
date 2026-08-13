@@ -51,6 +51,7 @@ ns.PlateColorDB = {
 	auraText1 = 1,				--光环冷却时间文本尺寸
 	hideAuraTooltip = true,		--隐藏光环鼠标提示
 	auraTopScale = 1,			--上方减益光环尺寸
+	auraLEnable = true,			--左侧增益光环
 	auraLScale = 1.5,			--左侧增益光环尺寸
 	auraRScale = 2,				--右侧控制光环尺寸
 
