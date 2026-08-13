@@ -157,6 +157,14 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			return
 		end
 
+		-- 左侧增益光环开关关闭时隐藏
+		if not PlateColorDB.auraLEnable then
+			if unitFrame.PC_DispelAuras then
+				unitFrame.PC_DispelAuras:Hide()
+			end
+			return
+		end
+
 		-- 容器不存在则创建（作为 healthBar 子级，随血条显示/隐藏、继承框架层级）
 		if not unitFrame.PC_DispelAuras then
 			unitFrame.PC_DispelAuras = CreateFrame("AuraContainer", nil, unitFrame.healthBar, "CustomAuraContainerTemplate")
