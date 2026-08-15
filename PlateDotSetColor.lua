@@ -4,8 +4,7 @@ local _, ns = ...
 
 
 -- 任意一个监控的法术存在就变色（OR 逻辑）：
--- PlateColorDB.dotlist 里任意一个 spellID 在场，血条就染成 dotcolor1 的颜色、名字染成 dotcolor2。
--- 每个法术可通过 color / text 开关分别控制是否应用到血条 / 名字。
+-- PlateColorDB.dotlist 里任意一个 spellID 在场，血条就染成 dotcolor1 的颜色。
 -- 全部都不在则不变色。
 -- 全程不读取光环状态（12.x secrets 禁止），由安全容器判断。
 --
@@ -33,51 +32,37 @@ local function GetColor()
 	return PlateColorDB.dotcolor1 or { r = 1, g = 0.35, b = 0.75, a = 1 }
 end
 
--- 名字变色颜色
-local function GetTextColor()
-	return PlateColorDB.dotcolor2 or { r = 1, g = 1, b = 1, a = 1 }
-end
-
--- 由 dotlist 生成两个 map：colorMap（参与血条染色）、textMap（参与名字变色）
--- 兼容旧数据：旧值直接是法术名（字符串），只启用血条染色，不启用名字变色
+-- 由 dotlist 生成参与血条染色的 spellID 集合
 local function BuildSpellMaps()
-	local colorMap, textMap = {}, {}
-	for spellID, info in pairs(PlateColorDB.dotlist or {}) do
-		if type(info) == "table" then
-			if info.color then colorMap[spellID] = true end
-			if info.text then textMap[spellID] = true end
-		else
-			-- 旧格式：值为法术名，只启用血条染色
-			colorMap[spellID] = true
-		end
+	local colorMap = {}
+	for spellID in pairs(PlateColorDB.dotlist or {}) do
+		colorMap[spellID] = true
 	end
-	return colorMap, textMap
+	return colorMap
 end
 
--- 为某根血条建容器（含染色纹理 + 名字覆盖）。
--- 每次调用都销毁旧容器并重建：unitFrame 会被 Blizzard 池化复用，
--- 且 AuraButton 内对象属于 Forbidden Partition（外部无法 SetText），
--- 因此名字文本必须在 initializeFrame（信任上下文）里直接用当前 unitFrame 设置。
+-- 为某根血条建容器（含染色纹理）。unitFrame 会被 Blizzard 池化复用，
+-- 已有容器时直接切换追踪单位即可，无需销毁重建。
 local function BuildContainer(unitFrame)
 	local healthBar = unitFrame.healthBar
 	if not healthBar then return end
 
-	-- 销毁旧容器，避免复用导致残留/错乱
-	local old = containers[unitFrame]
-	if old then
-		pcall(old.SetUnit, old, nil)  -- 停止追踪光环
-		old:Hide()
-		containers[unitFrame] = nil
+	-- 复用已有容器：仅切换追踪单位并重新显示
+	local container = containers[unitFrame]
+	if container then
+		container:SetUnit(unitFrame.unit)
+		container:SetEnabled(true)
+		container:Show()
+		return
 	end
 
-	local container = CreateFrame("AuraContainer", nil, healthBar, "CustomAuraContainerTemplate")
+	container = CreateFrame("AuraContainer", nil, healthBar, "CustomAuraContainerTemplate")
 	container:SetFrameLevel(healthBar:GetFrameLevel() - 1)
 	container.pcTextures = {}   -- 收集染色纹理，供颜色即时更新
 
-	local colorMap, textMap = BuildSpellMaps()
+	local colorMap = BuildSpellMaps()
 
 	local color = GetColor()
-	local textColor = GetTextColor()
 	-- 单组即可：includeSpellIDs 塞入所有参与血条染色的法术，任一在场即显示（OR 逻辑）
 	container:AddAuraGroup("auraColor", "HARMFUL|PLAYER", {
 		maxFrameCount = 1,
@@ -91,29 +76,8 @@ local function BuildContainer(unitFrame)
 		end,
 	})
 
-	-- 名字分组：参与名字变色的 dot 在场时用同名字的覆盖文本盖住原名字（实现名字变色）
-	-- 文本在 initializeFrame 里直接设置，闭包捕获的 unitFrame 即当前单位
-	container:AddAuraGroup("nameText", "HARMFUL|PLAYER", {
-		maxFrameCount = 1,
-		initializeFrame = function(btn)
-			local fs = btn:CreateFontString(nil, "OVERLAY")
-			fs:SetTextColor(textColor.r, textColor.g, textColor.b)
-			local nameText = unitFrame.name
-			if nameText then
-				fs:SetFontObject(GameFontNormal)
-				local _, height = nameText:GetFont()
-				fs:SetFontHeight(height)
-				fs:SetAllPoints(nameText)
-				fs:SetText(UnitName(unitFrame.unit))
-			end
-		end,
-	})
-
 	container:SetAuraGroupCandidateFilters("auraColor", { includeSpellIDs = colorMap })
 	container:SetAuraGroupMaxFrameCount("auraColor", 1)
-	container:SetAuraGroupCandidateFilters("nameText", { includeSpellIDs = textMap })
-	container:SetAuraGroupMaxFrameCount("nameText", 1)
-
 	containers[unitFrame] = container
 	container:SetUnit(unitFrame.unit)
 	container:SetEnabled(true)
@@ -145,10 +109,9 @@ end
 
 -- dotlist 增减：只需更新各容器的 includeSpellIDs 过滤，无需重建容器
 function ns.RefreshAuraColor()
-	local colorMap, textMap = BuildSpellMaps()
+	local colorMap = BuildSpellMaps()
 	for _, container in pairs(containers) do
 		container:SetAuraGroupCandidateFilters("auraColor", { includeSpellIDs = colorMap })
-		container:SetAuraGroupCandidateFilters("nameText", { includeSpellIDs = textMap })
 	end
 end
 
@@ -159,6 +122,14 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(_, unit)
 	if not namePlate then return end
 	local unitFrame = namePlate.UnitFrame
 	if not unitFrame then return end
+
+	-- dotlist 为空表时不追踪（隐藏已有容器，避免残留）
+	if not next(PlateColorDB.dotlist or {}) then
+		if containers[unitFrame] then
+			containers[unitFrame]:Hide()
+		end
+		return
+	end
 
 	-- 非可攻击目标、或玩家目标（如敌方玩家）：隐藏已有容器并跳过，不给玩家血条染色
 	if not UnitCanAttack("player", unit) or UnitIsPlayer(unit) then

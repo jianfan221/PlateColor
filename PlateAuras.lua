@@ -73,8 +73,9 @@ end
 --12.1 AuraContainer 血条左侧仅显示敌方可驱散光环
 if DoesTemplateExist("CustomAuraContainerTemplate") then
 
-	--先关闭自带的左侧增益光环,因为我们接下来自己创建
+	--先关闭自带的左侧增益光环,因为我们接下来自己创建(仅在功能开启时接管)
 	EventUtil.ContinueOnPlayerLogin(function()
+		if not PlateColorDB.auraLEnable then return end
 		ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
 		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
 	end)
@@ -145,20 +146,15 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	end
 
 	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+		-- 左侧增益光环开关关闭时直接跳过
+		if not PlateColorDB.auraLEnable then return end
+
 		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
 		if not namePlate then return end
 		local unitFrame = namePlate.UnitFrame
 		if not unitFrame then return end
 
 		if not UnitCanAttack("player", unit) then
-			if unitFrame.PC_DispelAuras then
-				unitFrame.PC_DispelAuras:Hide()
-			end
-			return
-		end
-
-		-- 左侧增益光环开关关闭时隐藏
-		if not PlateColorDB.auraLEnable then
 			if unitFrame.PC_DispelAuras then
 				unitFrame.PC_DispelAuras:Hide()
 			end

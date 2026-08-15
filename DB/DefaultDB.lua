@@ -56,9 +56,8 @@ ns.PlateColorDB = {
 	auraLScale = 1.5,			--左侧增益光环尺寸
 	auraRScale = 2,				--右侧控制光环尺寸
 
-	dotlist = {},				--光环染色监控的 debuff 列表（值：{name=法术名, color=是否血条染色, text=是否名字变色}）
-	dotcolor1 = {r=1, g=0.35, b=0.75},	--血条染色颜色（dotlist 里 color=true 的法术在场时血条染此色）
-	dotcolor2 = {r=0, g=1, b=0.639},	--名字变色颜色（dotlist 里 text=true 的法术在场时名字染此色）
+	dotlist = {},				--光环染色监控的 debuff 列表（在场即血条变色）
+	dotcolor1 = {r=1, g=0.35, b=0.75},	--血条染色颜色（dotlist 里任一法术在场时血条染此色）
 	auraTipID = true,			--光环鼠标提示显示法术 ID（默认开启）
 
 	markScale = 1.2,				--标记尺寸
