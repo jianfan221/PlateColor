@@ -71,7 +71,7 @@ realltextRe:HookScript("OnClick", function()
 	C_CVar.SetCVar("nameplateThreatDisplay","B")--仇恨--仅闪光
 	local CustomAura = DoesTemplateExist("CustomAuraContainerTemplate")--是否有12.1新版光环
 	C_CVar.SetCVar("nameplateEnemyNpcAuraDisplay",CustomAura and "F" or "G")--敌方NPC的增减益状态
-	C_CVar.SetCVar("nameplateEnemyPlayerAuraDisplay",CustomAura and "F" or "G")--敌方玩家的增减益状态
+	C_CVar.SetCVar("nameplateEnemyPlayerAuraDisplay","G")--敌方玩家的增减益状态
 	C_CVar.SetCVar("nameplateFriendlyPlayerAuraDisplay","G")--友方玩家的增减益状态
 	C_CVar.SetCVar("nameplateDebuffPadding", 0)--姓名板增减益图标间距-0
 	C_CVar.SetCVar("nameplateSimplifiedTypes", "")--简化模式-无
