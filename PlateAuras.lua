@@ -168,7 +168,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		end
 		unitFrame.PC_DispelAuras:SetUnit(unit)
 		unitFrame.PC_DispelAuras:Show()
-		C_Timer.After(0, function()
+		C_Timer.After(0.5, function()
 			local anchor = unitFrame.abs or unitFrame.healthBar
 			if not anchor or not anchor:IsShown() then return end
 			unitFrame.PC_DispelAuras:ClearAllPoints()
