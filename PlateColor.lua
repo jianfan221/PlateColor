@@ -8,6 +8,7 @@
 -- 说明：这些 CVar 取值统一用 C_CVar.GetCVar 读取原始字符串存储（普通 CVar 为 "1"/"0"/数字，
 --       位域 CVar 为带版本字节的原始掩码字符串），恢复时用 C_CVar.SetCVar 原样写回即可。
 local BlizzCvarList = {
+	"nameplateShowSelf",                              --显示个人资源
 	--名字（ESC→选项→姓名板→"名字"区）
     "UnitNameOwn",                                    --我的名字
 	"UnitNameNPC",                                    --NPC名字（显示NPC名字下拉的总开关）
