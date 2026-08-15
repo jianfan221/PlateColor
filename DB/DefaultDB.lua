@@ -58,7 +58,6 @@ ns.PlateColorDB = {
 
 	dotlist = {},				--光环染色监控的 debuff 列表（在场即血条变色）
 	dotcolor1 = {r=1, g=0.35, b=0.75},	--血条染色颜色（dotlist 里任一法术在场时血条染此色）
-	auraTipID = true,			--光环鼠标提示显示法术 ID（默认开启）
 
 	markScale = 1.2,				--标记尺寸
 	markHoffset = 0,			--标记水平偏移
