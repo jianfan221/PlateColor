@@ -14,17 +14,6 @@ local _, ns = ...
 
 if not DoesTemplateExist("CustomAuraContainerTemplate") then return end
 
--- 设置光环提示显示法术 ID（由 AddSetClickB 的 setfun 无参调用，读取 DB 状态）
--- 使用 12.1 原生 CVar tooltipShowAuraSpellIDs（不会跨会话持久化，需登录时重新设置）
-function ns.SetAuraTipID()
-	C_CVar.SetCVar("tooltipShowAuraSpellIDs", PlateColorDB.auraTipID and "1" or "0")
-end
-
--- 进游戏时加载一次：将 DB 中的设置同步到 CVar（原生 CVar 登录后重置，需重新设置）
-ns.event("PLAYER_LOGIN", function()
-	if ns.SetAuraTipID then ns.SetAuraTipID() end
-end, true)
-
 local containers = {}   -- unitFrame -> container
 
 -- 血条染色颜色
