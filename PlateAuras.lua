@@ -76,7 +76,6 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	--先关闭自带的左侧增益光环,因为我们接下来自己创建(仅在功能开启时接管)
 	EventUtil.ContinueOnPlayerLogin(function()
 		if not PlateColorDB.auraLEnable then return end
-		ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
 		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
 	end)
 
@@ -154,7 +153,8 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		local unitFrame = namePlate.UnitFrame
 		if not unitFrame then return end
 
-		if not UnitCanAttack("player", unit) then
+		-- 玩家单位（含敌方玩家）不显示驱散光环，仅敌方 NPC 处理
+		if UnitIsPlayer(unit) or not UnitCanAttack("player", unit) then
 			if unitFrame.PC_DispelAuras then
 				unitFrame.PC_DispelAuras:Hide()
 			end
