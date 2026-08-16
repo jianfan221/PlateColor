@@ -58,9 +58,15 @@ local function BuildContainer(unitFrame)
 		initializeFrame = function(btn)
 			local tex = btn:CreateTexture(nil, "OVERLAY")
 			local fill = healthBar:GetStatusBarTexture() or healthBar
-			tex:SetColorTexture(color.r, color.g, color.b, color.a)
+			-- 使用血条材质纹理，并用染色颜色着色（与血条材质保持一致）
+			tex:SetTexture(ns.HpTextures[PlateColorDB.hpbarTexture] or ns.HpTextures["PC-White"])
+			tex:SetVertexColor(color.r, color.g, color.b, color.a)
 			tex:SetPoint("TOPLEFT", fill, "TOPLEFT", 1, -1)
 			tex:SetPoint("BOTTOMRIGHT", fill, "BOTTOMRIGHT", 0, 1)
+			-- 血条材质配置了遮罩时，复用同一遮罩，保证圆角/边框形状一致
+			if healthBar.customMask then
+				tex:AddMaskTexture(healthBar.customMask)
+			end
 			container.pcTextures[#container.pcTextures + 1] = tex
 		end,
 	})
@@ -78,7 +84,7 @@ function ns.UpdateAuraColor()
 	local color = GetColor()
 	for _, container in pairs(containers) do
 		for _, tex in ipairs(container.pcTextures or {}) do
-			tex:SetColorTexture(color.r, color.g, color.b, color.a)
+			tex:SetVertexColor(color.r, color.g, color.b, color.a)
 		end
 	end
 end
