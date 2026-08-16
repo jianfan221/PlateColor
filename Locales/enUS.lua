@@ -6,6 +6,7 @@ if GetLocale() == "zhTW" then return end
 ns.enUS = {
 -- Core.lua使用的键
 ["基础"] = "Basic",
+["暴雪默认值"] = "Blizzard Default",
 ["仇恨"] = "Threat",
 ["指示器"] = "Indicators",
 ["NPC颜色"] = "NPC Colors",
@@ -100,6 +101,7 @@ ns.enUS = {
 
 ["个人资源"] = "Personal Resource",
 ["启用个人资源设置"] = "Enable Personal Resource Settings",
+["启用个人资源设置鼠标提示"] = "Enable personal resource settings below\n|cffFF69B4Reload UI when disabled|r",
 ["个人资源数值"] = "Personal Resource Value",
 ["额外资源模式"] = "Extra Resource Mode",
 ["暴雪原版"] = "Blizzard Default",

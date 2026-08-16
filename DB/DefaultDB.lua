@@ -33,8 +33,6 @@ ns.PlateColorDB = {
 	castcolor = {r=0.9, g=0.9, b=0},         --读条颜色
 	channelcolor = {r=0, g=1, b=0},            --引导颜色
 	
-	onlyName = true,                        --友方玩家名字模式
-	onlyNameClassColor = true,              --友方玩家名字模式职业染色
 	onlyNameNpc = true,                     --友方NPC名字模式
 
 	helpNameScale = 15,                     --友方名字大小
@@ -105,12 +103,7 @@ ns.PlateColorDB = {
 	mGlowColor = {r=0, g=1, b=1},--鼠标指向边框颜色
 	focusTexture = true,		--焦点斜线材质
 	
-	SelectedScale = 1.2,				--当前目标尺寸
-	wallAlpha = 1,				--隔墙姓名板透明度
 	allNpAlpha = 1,				--姓名版透明度
-	npOverlapV = 1.1,			--姓名版垂直间距
-	npOverlapH = 0.8,			--姓名版水平间距
-	npRange = 60,				--姓名版可见范围
 	
 	questMark = true,			--显示任务标志
 	levelText = true,			--等级文本

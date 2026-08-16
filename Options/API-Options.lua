@@ -268,6 +268,8 @@ end
 --enumValue: (可选) 位域 CVar 的位索引，传此值则用 ns.GetCVar/ns.SetCVar 读写位域
 --setfun: (可选) 切换后回调
 function ns.AddCVarClickB(parent, y, name, tip, cvarName, enumValue, setfun)
+	-- 无效的 CVar 不创建控件
+	if not C_CVar.GetCVar(cvarName) then return end
 	local rowFrame = CreateFrame("Frame", nil, parent)
     rowFrame:SetSize(630, 26)
     rowFrame:SetPoint("TOPLEFT", 10, -10+ns.Y[y]*-35)
@@ -299,7 +301,21 @@ function ns.AddCVarClickB(parent, y, name, tip, cvarName, enumValue, setfun)
 		SliderBackground:SetColorTexture(0.5, 0.5, 0.5, .2)
 		if tip then
 			GameTooltip:SetOwner(self, "ANCHOR_TOP")
-			GameTooltip:AddLine("|cffFFFFFF"..tip.."|r") 
+			GameTooltip:AddLine("|cffFFFFFF"..tip.."|r")
+			-- 显示暴雪默认值（换行，值为浅蓝色）
+			local defaultStr = "?"
+			if enumValue then
+				local num = tonumber(C_CVar.GetCVarDefault(cvarName)) or 0
+				defaultStr = (bit.band(num, bit.lshift(1, enumValue - 1)) ~= 0) and "1" or "0"
+			else
+				defaultStr = C_CVar.GetCVarDefault(cvarName) or ""
+			end
+			if defaultStr == "1" then
+				defaultStr = ACTIVATE
+			elseif defaultStr == "0" then
+				defaultStr = DISABLE
+			end
+			GameTooltip:AddLine("|cffFFFFFF"..L["暴雪默认值"]..": |cff87CEEB"..defaultStr.."|r")
 			GameTooltip:Show()
 		end
 	end)
@@ -343,6 +359,94 @@ function ns.AddCVarClickB(parent, y, name, tip, cvarName, enumValue, setfun)
 	cleckandtext.text = lefttext
 	cleckandtext.check = check
 	return cleckandtext
+end
+
+--基于 CVar 的滑动条（不保存到 DB，初始值/当前值由 CVar 决定）
+--cvarName: CVar 名称
+--setfun: (可选) 值变化后回调，收到当前值（用于同步关联 CVar）
+function ns.AddCVarSlider(parent,y, name, tip, minValue, maxValue, valueStep, varformat, cvarName, setfun)
+	-- 无效的 CVar 不创建控件
+	if not C_CVar.GetCVar(cvarName) then return end
+	local rowFrame = CreateFrame("Frame", nil, parent)
+    rowFrame:SetSize(630, 26)
+    rowFrame:SetPoint("TOPLEFT", 10, -10+ns.Y[y]*-35)
+	local SliderBackground = rowFrame:CreateTexture(nil, "BACKGROUND")
+	SliderBackground:SetTexture(130937)
+	SliderBackground:SetColorTexture(0, 0, 0, 0) -- 设置背景颜色为黑色，透明度为0.5
+	SliderBackground:SetAllPoints(rowFrame)
+
+	local function GetCVarValue()
+		return tonumber(C_CVar.GetCVar(cvarName)) or minValue
+	end
+
+	local PCSlider = CreateFrame("Slider", nil, rowFrame, "MinimalSliderWithSteppersTemplate")
+	PCSlider:SetPoint("LEFT",SliderBackground,"LEFT", 300, 0)
+	PCSlider:SetSize(220,20)
+	PCSlider.lefttext = PCSlider:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	PCSlider.lefttext:SetPoint("LEFT", SliderBackground, "LEFT", 90, 0)
+	PCSlider.lefttext:SetText(name)
+	PCSlider.lefttext:SetFontObject("PC_FontOutline")
+	PCSlider.lefttext:SetFontHeight(14)
+	PCSlider.lefttext:SetTextColor(1,.82,0)
+	PCSlider.righttext = PCSlider:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	PCSlider.righttext:SetPoint("LEFT",PCSlider,"RIGHT",10, 0)
+	PCSlider.righttext:SetFontObject("PC_FontOutline")
+	PCSlider.righttext:SetFontHeight(17)
+	PCSlider.righttext:SetTextColor(0,1,0)
+	PCSlider.righttext:SetText(string.format(varformat, GetCVarValue()))
+
+	PCSlider:Init(GetCVarValue(), minValue, maxValue, (maxValue - minValue) / (valueStep or 1))
+	PCSlider:RegisterCallback("OnValueChanged", function(self, value)
+		value = tonumber(string.format(varformat, value))
+		PCSlider.righttext:SetText(string.format(varformat, value))
+		if InCombatLockdown() then return end
+		C_CVar.SetCVar(cvarName, value)
+		if setfun then setfun(value) end
+	end)
+	SliderBackground:SetScript("OnEnter", function(self)
+		self:SetColorTexture(0.5, 0.5, 0.5, .2)
+	end)
+	SliderBackground:SetScript("OnLeave", function(self)
+		self:SetColorTexture(0, 0, 0, 0)
+	end)
+	-- 简化的tooltip处理函数
+	local function setupTooltip(frame, background, tip)
+		frame:SetScript("OnEnter", function(self)
+			background:SetColorTexture(0.5, 0.5, 0.5, 0.2)
+			if tip then
+				GameTooltip:SetOwner(PCSlider, "ANCHOR_TOP")
+				GameTooltip:AddLine("|cffFFFFFF" .. tip .. "|r")
+				local defaultVal = tonumber(C_CVar.GetCVarDefault(cvarName) or "")
+				if defaultVal ~= nil then
+					GameTooltip:AddLine("|cffFFFFFF"..L["暴雪默认值"]..": |cff87CEEB"..string.format(varformat, defaultVal).."|r")
+				end
+				GameTooltip:Show()
+			end
+		end)
+		frame:SetScript("OnLeave", function(self)
+			background:SetColorTexture(0, 0, 0, 0)
+			if tip then
+				GameTooltip:Hide()
+			end
+		end)
+	end
+	setupTooltip(PCSlider.Slider, SliderBackground, tip)
+	setupTooltip(PCSlider.Back, SliderBackground, tip)
+	setupTooltip(PCSlider.Forward, SliderBackground, tip)
+
+	-- 监听 CVar 外部变化，自动同步 UI
+	ns.hookcvar(cvarName, function()
+		local v = GetCVarValue()
+		PCSlider:SetValue(v)
+		PCSlider.righttext:SetText(string.format(varformat, v))
+	end)
+
+	ns.Y[y] = ns.Y[y] + 1	--最后增加一次起始位置
+	local PCSliders = {}
+	PCSliders.check = PCSlider
+	PCSliders.text = PCSlider.lefttext
+	PCSliders.righttext = PCSlider.righttext
+	return PCSliders
 end
 
 --设置主页面滑动条

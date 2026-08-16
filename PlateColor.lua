@@ -47,6 +47,13 @@ local BlizzCvarList = {
 	"nameplateFriendlyPlayerAuraDisplay",             --友方玩家光环显示（位域掩码）
 	"nameplateDebuffPadding",                         --减益图标间距
 	"nameplateSimplifiedTypes",                       --简化类型（位域掩码）
+
+	--Tab2 选项可调的姓名板尺寸/透明度/间距 CVar
+	"nameplateSelectedScale",                         --目标尺寸
+	"nameplateOccludedAlphaMult",                     --隔墙透明度
+	"nameplateOverlapV",                              --垂直堆叠间距
+	"nameplateOverlapH",                              --水平堆叠间距
+	"nameplateMaxDistance",                           --姓名版可见范围
 }
 
 -- 读取某个 CVar 的当前值（原始字符串）

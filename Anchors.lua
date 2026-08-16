@@ -17,29 +17,11 @@ end
 
 function ns.SetSelectedScale()
 	if InCombatLockdown() then return end
-	C_CVar.SetCVar("nameplateLargerScale", 1.2)	--精英
-	C_CVar.SetCVar("namePlateMinScale", 1)	--距离缩放
-	C_CVar.SetCVar("namePlateMaxScale", 1)	--距离缩放
-	C_CVar.SetCVar("nameplateSelectedScale",PlateColorDB.SelectedScale)--目标尺寸
-	C_CVar.SetCVar("nameplateOccludedAlphaMult",PlateColorDB.wallAlpha)--隔墙透明度
-	C_CVar.SetCVar("nameplateMaxAlpha", PlateColorDB.allNpAlpha)--非当前目标透明度
-	C_CVar.SetCVar("nameplateMinAlpha", PlateColorDB.allNpAlpha)--非当前目标透明度
+	C_CVar.SetCVar("namePlateMinScale", 1)	--最小距离缩放
+	C_CVar.SetCVar("namePlateMaxScale", 1)	--最大距离缩放
+	C_CVar.SetCVar("nameplateMaxAlpha", PlateColorDB.allNpAlpha)--姓名板最大透明度
+	C_CVar.SetCVar("nameplateMinAlpha", PlateColorDB.allNpAlpha)--姓名板最小透明度
 	C_CVar.SetCVar("nameplateNotSelectedAlpha",PlateColorDB.allNpAlpha) --非当前目标透明度(怀旧)
-	C_CVar.SetCVar("nameplateOverlapV", PlateColorDB.npOverlapV)--垂直堆叠间距
-	C_CVar.SetCVar("nameplateOverlapH", PlateColorDB.npOverlapH)--水平堆叠间距
-	C_CVar.SetCVar("nameplateMaxDistance", PlateColorDB.npRange)--姓名版可见范围
-
-	--友方玩家名字模式
-	C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits", PlateColorDB.onlyName and "1" or "0")
-	--友方玩家名字模式职业颜色
-	C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames", PlateColorDB.onlyNameClassColor and "1" or "0")
-	--取消显示服务器名称
-	C_CVar.SetCVar("nameplateShowFriendlyRealmName", 0)
-
-	--取消服务器名称显示12.0.1 (66384)--12.1后可删除
-	if TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then
-		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
-	end
 
 	--启用NPC名字模式时,关闭友方NPC简化姓名板
 	if PlateColorDB.onlyNameNpc then

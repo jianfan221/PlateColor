@@ -70,17 +70,17 @@ ns.AddClickColor(ConFrame2,2,L["焦点血条颜色"],L["焦点血条颜色"],"my
 ns.AddClickColor(ConFrame2,2,L["鼠标指向边框变色"],L["鼠标指向边框变色"],"mGlow","mGlowColor")
 ns.AddSetClickB(ConFrame2,2,L["焦点斜线材质"],L["焦点斜线材质鼠标提示"],"focusTexture")
 
-ns.AddSetTiText(ConFrame2,2,"CVars")
-ns.AddSetSlider(ConFrame2,2,L["当前目标尺寸"],L["当前目标尺寸"],1,2,0.1,"%.1f","SelectedScale",ns.SetSelectedScale)
-ns.AddSetSlider(ConFrame2,2,L["隔墙姓名板透明度"],L["隔墙姓名板透明度"],0,1,0.1,"%.1f","wallAlpha",ns.SetSelectedScale)
-ns.AddSetSlider(ConFrame2,2,L["非当前目标透明度"],L["非当前目标透明度"],0,1,0.1,"%.1f","allNpAlpha",ns.SetSelectedScale)
-ns.AddSetSlider(ConFrame2,2,L["垂直堆叠间距"],L["垂直堆叠间距"],0.1,2,0.1,"%.1f","npOverlapV",ns.SetSelectedScale)
-ns.AddSetSlider(ConFrame2,2,L["水平堆叠间距"],L["水平堆叠间距"],0.1,2,0.1,"%.1f","npOverlapH",ns.SetSelectedScale)
-ns.AddSetSlider(ConFrame2,2,L["姓名版可见范围"],L["姓名版可见范围"],10,60,1,"%d","npRange",ns.SetSelectedScale)
-
 ns.AddSetTiText(ConFrame2,2,L["其他"])
 ns.AddSetClickB(ConFrame2,2,L["任务标志"],L["任务标志"],"questMark",ns.CreateNameQuest)
 ns.AddSetClickB(ConFrame2,2,L["等级文本"],L["等级文本鼠标提示"],"levelText")
 ns.AddSetClickB(ConFrame2,2,L["吸收盾数值"],L["吸收盾数值鼠标提示"],"absorbText")
+
+ns.AddSetTiText(ConFrame2,2,"CVars")
+ns.AddCVarSlider(ConFrame2,2,L["当前目标尺寸"],L["当前目标尺寸"],1,2,0.1,"%.1f","nameplateSelectedScale")
+ns.AddSetSlider(ConFrame2,2,L["非当前目标透明度"],L["非当前目标透明度"],0,1,0.1,"%.1f","allNpAlpha",ns.SetSelectedScale)
+ns.AddCVarSlider(ConFrame2,2,L["隔墙姓名板透明度"],L["隔墙姓名板透明度"],0,1,0.1,"%.1f","nameplateOccludedAlphaMult")
+ns.AddCVarSlider(ConFrame2,2,L["垂直堆叠间距"],L["垂直堆叠间距"],0.1,2,0.1,"%.1f","nameplateOverlapV")
+ns.AddCVarSlider(ConFrame2,2,L["水平堆叠间距"],L["水平堆叠间距"],0.1,2,0.1,"%.1f","nameplateOverlapH")
+ns.AddCVarSlider(ConFrame2,2,L["姓名版可见范围"],L["姓名版可见范围"],10,60,1,"%d","nameplateMaxDistance")
 
 end)

@@ -1,8 +1,14 @@
 local _, ns = ...
 
+-- 缓存"友方玩家仅显示名字"CVar 状态，避免每次读取
+local ShowOnlyNameEnabled = C_CVar.GetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits") == "1"
+ns.hookcvar("nameplateShowOnlyNameForFriendlyPlayerUnits", function()
+	ShowOnlyNameEnabled = C_CVar.GetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits") == "1"
+end)
+
 local function SetOnlyNameScale(self)
 	if not self.unit then return end
-	if not PlateColorDB.onlyName and not PlateColorDB.onlyNameNpc then return end
+	if not ShowOnlyNameEnabled and not PlateColorDB.onlyNameNpc then return end
 	if self:IsForbidden() then
 		SystemFont_NamePlate:CopyFontObject(PC_FontOutline)
 		SystemFont_NamePlate:SetFontHeight(PlateColorDB.helpNameScale)

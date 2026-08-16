@@ -101,8 +101,8 @@ ns.AddSetSlider(ConFrame1,1,L["名字垂直偏移"],L["名字垂直偏移"],-10,
 ns.AddSetSlider(ConFrame1,1,L["名字尺寸"],L["名字尺寸"],5,30,1,"%d","nameScale",ns.SetPoints)
 
 ns.AddSetTiText(ConFrame1,1,L["友方"])
-ns.AddSetClickB(ConFrame1,1,L["友方玩家名字模式"],L["友方玩家名字模式"],"onlyName",ns.SetSelectedScale)
-ns.AddSetClickB(ConFrame1,1,L["友方玩家名字模式职业染色"],L["友方玩家名字模式职业染色"],"onlyNameClassColor",ns.SetSelectedScale)
+ns.AddCVarClickB(ConFrame1,1,L["友方玩家名字模式"],L["友方玩家名字模式"],"nameplateShowOnlyNameForFriendlyPlayerUnits",nil,ns.SetSelectedScale)
+ns.AddCVarClickB(ConFrame1,1,L["友方玩家名字模式职业染色"],L["友方玩家名字模式职业染色"],"nameplateUseClassColorForFriendlyPlayerUnitNames",nil,ns.SetSelectedScale)
 ns.AddSetClickB(ConFrame1,1,L["友方玩家公会名称"],L["友方玩家公会名称"],"showGuildName",ns.SetOnlyNames)
 ns.AddSetClickB(ConFrame1,1,L["友方NPC名字模式"],L["友方NPC名字模式"],"onlyNameNpc",ns.SetOnlyNames)
 ns.AddSetSlider(ConFrame1,1,L["友方名字模式尺寸"],L["友方名字模式尺寸"],5,30,1,"%d","helpNameScale",ns.SetOnlyNames)
@@ -158,7 +158,7 @@ ns.AddSetSlider(ConFrame1,1,L["右侧控制光环尺寸"],L["右侧控制光环�
 
 ns.AddSetTiText(ConFrame1,1,L["个人资源"])
 ns.AddCVarClickB(ConFrame1,1,DISPLAY_PERSONAL_RESOURCE,DISPLAY_PERSONAL_RESOURCE,"nameplateShowSelf")
-ns.AddSetClickB(ConFrame1,1,L["启用个人资源设置"],L["启用个人资源设置"],"myHPSetup",ns.AllmyPowerBar)
+ns.AddSetClickB(ConFrame1,1,L["启用个人资源设置"],L["启用个人资源设置鼠标提示"],"myHPSetup",ns.AllmyPowerBar)
 ns.AddSetClickB(ConFrame1,1,L["编辑模式自动居中"],L["编辑模式自动居中"],"myHPEdit")
 ns.AddSetDropdTexture(ConFrame1,1,L["个人资源材质"],L["个人资源材质"],"myHPTexture",ns.HpTextures,ns.AllmyPowerBar)
 ns.AddSetSlider(ConFrame1,1,L["个人资源宽度"],L["个人资源宽度"],150,400,1,"%d","myHPwidth",ns.AllmyPowerBar)
