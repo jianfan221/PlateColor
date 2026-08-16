@@ -28,7 +28,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	ns.AddSetTiText(ConFrame2,2,L["光环染色"])
 	ns.AddSetClickB(ConFrame2,2,L["隐藏光环鼠标提示"],L["隐藏光环鼠标提示"],"hideAuraTooltip")
 	ns.AddCVarClickB(ConFrame2,2,L["光环鼠标提示显示法术ID"],L["光环鼠标提示显示法术ID鼠标提示"],"tooltipShowAuraSpellIDs")
-	local dotBtn = ns.AddfuncButton(ConFrame2,2,L["光环血条染色设置"],L["光环血条染色设置鼠标提示"])
+	local dotBtn = ns.AddfuncButton(ConFrame2,2,L["光环染色设置"],L["光环染色设置鼠标提示"])
 	dotBtn:SetScript("OnClick", function()
 		if ns.OpenPlateDotList then ns.OpenPlateDotList() end
 	end)

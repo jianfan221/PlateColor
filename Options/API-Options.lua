@@ -96,7 +96,9 @@ function ns.AddfuncButton(parent,y,name,tip)
 end
 
 --色块
-function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
+local defaultBtn		--挂在 ColorPickerFrame 左上角的"设为默认"按钮（本插件色块打开时显示）
+local defaultBtnHandler	--当前色块的默认设置回调
+function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun,texture)
 	local parent = parent or UIParent	--父框体
 	local x, y = x or 0, y or 0	--锚点坐标
 	local tip = tip or L["点击更改颜色"]
@@ -111,14 +113,46 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
 	btn.color = parent:CreateTexture(nil, "ARTWORK")
     btn.color:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
     btn.color:SetSize(width,height)
-    btn.color:SetColorTexture(PlateColorDB[DB]["r"], PlateColorDB[DB]["g"], PlateColorDB[DB]["b"])
+	-- 传入 texture 时用该材质代替纯色块，并用所选颜色着色
+	if texture then
+		btn.color:SetTexture(texture)
+		btn.color:SetVertexColor(PlateColorDB[DB]["r"], PlateColorDB[DB]["g"], PlateColorDB[DB]["b"], PlateColorDB[DB]["a"] or 1)
+	else
+		btn.color:SetColorTexture(PlateColorDB[DB]["r"], PlateColorDB[DB]["g"], PlateColorDB[DB]["b"], PlateColorDB[DB]["a"] or 1)
+	end
+
+	local savedColor = {}	--打开前存储的 DB 值快照（用于取消回退）
+
+	-- 懒创建 ColorPickerFrame 左上角外部的"设为默认"按钮（全局字符串 RETURN_TO_DEFAULT）
+	if not defaultBtn then
+		defaultBtn = CreateFrame("Button", nil, ColorPickerFrame, "UIPanelButtonTemplate")
+		defaultBtn:SetSize(90, 22)
+		defaultBtn:SetPoint("LEFT", ColorPickerFrame, "TOPLEFT", 9, -7)
+		defaultBtn:SetText(RETURN_TO_DEFAULT)
+		defaultBtn:SetScript("OnClick", function()
+			if defaultBtnHandler then defaultBtnHandler() end
+		end)
+		defaultBtn:Hide()
+		-- ColorPickerFrame 隐藏时同步隐藏按钮（其他插件打开时不会显示，仅本插件 OnClick 时 Show）
+		ColorPickerFrame:HookScript("OnHide", function()
+			defaultBtn:Hide()
+		end)
+	end
 	
     local onUpdate = function(restore)
         local r, g, b = ColorPickerFrame:GetColorRGB()
-        btn.color:SetColorTexture(r, g, b)
+        if texture then
+            btn.color:SetVertexColor(r, g, b, PlateColorDB[DB]["a"] or 1)
+        else
+            btn.color:SetColorTexture(r, g, b, PlateColorDB[DB]["a"] or 1)
+        end
 		PlateColorDB[DB]["r"] = r
 		PlateColorDB[DB]["g"] = g
 		PlateColorDB[DB]["b"] = b
+		-- 仅当默认 DB 中有 a 字段时才保存透明度
+		if ns.PlateColorDB[DB] and ns.PlateColorDB[DB].a ~= nil then
+			PlateColorDB[DB]["a"] = ColorPickerFrame:GetColorAlpha()
+		end
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
 			for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
@@ -127,10 +161,20 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
 		end
     end
     local onCancel = function()
-        local r, g, b = ColorPickerFrame:GetPreviousValues()
-        local picker = ColorPickerFrame.Content and ColorPickerFrame.Content.ColorPicker or ColorPickerFrame
-        picker:SetColorRGB(r, g, b)
-        btn.color:SetColorTexture(r, g, b)
+        local r, g, b, a = savedColor.r, savedColor.g, savedColor.b, savedColor.a or 1
+        -- 回退 DB 值（取消时不保存改动）
+        PlateColorDB[DB]["r"] = r
+        PlateColorDB[DB]["g"] = g
+        PlateColorDB[DB]["b"] = b
+        if ns.PlateColorDB[DB] and ns.PlateColorDB[DB].a ~= nil then
+            PlateColorDB[DB]["a"] = a
+        end
+        -- 恢复色块显示
+        if texture then
+            btn.color:SetVertexColor(r, g, b, a)
+        else
+            btn.color:SetColorTexture(r, g, b, a)
+        end
 
 		if setfun then--设置姓名版对应功能
 			setfun()--无参调用一次，确保无姓名板时也能触发全局回调
@@ -141,11 +185,61 @@ function ns.AddColorFrame(parent, x, y, tip,width,height,DB,setfun)
     end
 
     btn:SetScript("OnClick", function(self, button, down)
+       -- 仅当默认 DB 中存在 a 字段时才启用透明度滑动条
+       local hasOpacity = ns.PlateColorDB[DB] and ns.PlateColorDB[DB].a ~= nil
        ColorPickerFrame.swatchFunc = onUpdate
-       ColorPickerFrame.previousValues = {r = PlateColorDB[DB]["r"], g = PlateColorDB[DB]["g"], b = PlateColorDB[DB]["b"]}
+       ColorPickerFrame.opacityFunc = onUpdate
        ColorPickerFrame.cancelFunc = onCancel
+       ColorPickerFrame.hasOpacity = hasOpacity
+       -- 保存打开前的 DB 值（取消时回退到这里）
+       savedColor.r = PlateColorDB[DB]["r"]
+       savedColor.g = PlateColorDB[DB]["g"]
+       savedColor.b = PlateColorDB[DB]["b"]
+       savedColor.a = PlateColorDB[DB]["a"] or 1
+       -- 取消回退目标 = 存储的 DB 值
+       ColorPickerFrame.previousValues = {
+            r = PlateColorDB[DB]["r"],
+            g = PlateColorDB[DB]["g"],
+            b = PlateColorDB[DB]["b"],
+            a = PlateColorDB[DB]["a"] or 1,
+       }
+       -- 打开时正常显示存储值
+       if hasOpacity then
+            ColorPickerFrame.opacity = PlateColorDB[DB]["a"] or 1
+       end
        local picker = ColorPickerFrame.Content and ColorPickerFrame.Content.ColorPicker or ColorPickerFrame
-       picker:SetColorRGB(ns.PlateColorDB[DB]["r"], ns.PlateColorDB[DB]["g"], ns.PlateColorDB[DB]["b"])
+       picker:SetColorRGB(PlateColorDB[DB]["r"], PlateColorDB[DB]["g"], PlateColorDB[DB]["b"])
+       -- 设置"设为默认"按钮：点击时把当前色块设为默认值
+       if defaultBtn then
+            defaultBtnHandler = function()
+                local d = ns.PlateColorDB[DB]
+                -- 写回默认值
+                PlateColorDB[DB]["r"] = d.r
+                PlateColorDB[DB]["g"] = d.g
+                PlateColorDB[DB]["b"] = d.b
+                if ns.PlateColorDB[DB].a ~= nil then PlateColorDB[DB]["a"] = d.a or 1 end
+                -- 更新选择器显示为默认值（先设透明度再设 RGB，保证 onUpdate 正确保存 a）
+                if hasOpacity then
+                    ColorPickerFrame.opacity = d.a or 1
+                    picker:SetColorAlpha(d.a or 1)
+                end
+                picker:SetColorRGB(d.r, d.g, d.b)
+                -- 更新色块
+                if texture then
+                    btn.color:SetVertexColor(d.r, d.g, d.b, d.a or 1)
+                else
+                    btn.color:SetColorTexture(d.r, d.g, d.b, d.a or 1)
+                end
+                -- 刷新姓名板
+                if setfun then
+                    setfun()
+                    for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+                        if namePlate.UnitFrame then setfun(namePlate.UnitFrame) end
+                    end
+                end
+            end
+            defaultBtn:Show()
+       end
        ColorPickerFrame:Show()
     end)
     btn:SetScript("OnEnter", function(self)

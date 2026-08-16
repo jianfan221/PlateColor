@@ -1,9 +1,9 @@
 local addonName, ns = ...
 local L = ns.L
 
--- 光环染色设置：管理要监控的 debuff 列表 + 血条染色颜色。
--- 列表存于 PlateColorDB.dotlist，颜色存于 dotcolor1。
--- 实际染色逻辑见 PlateAurasColor.lua。
+-- 光环染色设置：管理要监控的 debuff 列表 + 血条/MM 两种染色颜色。
+-- 列表存于 PlateColorDB.mydotlist，颜色存于 mydotcolor1（血条）/mydotcolor2（MM）。
+-- 实际染色逻辑见 PlateDotSetColor.lua。
 
 local function GetSpellDisplayName(spellId)
 	if not spellId then
@@ -43,7 +43,7 @@ end
 
 local function BuildSpellRows()
 	local rows = {}
-	for spellId in pairs(PlateColorDB.dotlist) do
+	for spellId in pairs(PlateColorDB.mydotlist) do
 		rows[#rows + 1] = spellId
 	end
 
@@ -101,9 +101,16 @@ local function EnsureWindow()
 	local singleLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	singleLabel:SetPoint("TOPLEFT", 16, -32)
 	singleLabel:SetText(L["血条颜色"])
-	ns.AddColorFrame(frame, 95, -32, "", 96, 17, "dotcolor1", function()
+	ns.AddColorFrame(frame, 95, -32, "", 96, 17, "mydotcolor1", function()
 		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
 	end)
+
+	local mmColorLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	mmColorLabel:SetPoint("TOPLEFT", 240, -32)
+	mmColorLabel:SetText(L["MM颜色"])
+	ns.AddColorFrame(frame, 320, -32, "", 96, 17, "mydotcolor2", function()
+		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
+	end, "Interface\\Addons\\PlateColor\\texture\\Bar\\dotMM.png")
 
 	local title2 = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
 	title2:SetPoint("TOPLEFT", 10, -56)
@@ -126,7 +133,7 @@ local function EnsureWindow()
 		if spellId then
 			local spellName = GetSpellDisplayName(spellId)
 			if spellName then
-				PlateColorDB.dotlist[spellId] = { name = spellName }
+				PlateColorDB.mydotlist[spellId] = { name = spellName, bar = true, mm = false }
 				self:SetText("")
 				parent:RefreshList()
 				if ns.RefreshAuraColor then ns.RefreshAuraColor() end
@@ -162,10 +169,22 @@ local function EnsureWindow()
 	header:SetJustifyH("LEFT")
 
 	local headerName = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	headerName:SetPoint("TOPLEFT", 165, 0)
+	headerName:SetPoint("TOPLEFT", 95, 0)
 	headerName:SetText(SPELLS .. NAME)
 	headerName:SetWidth(130)
-	headerName:SetJustifyH("CENTER")
+	headerName:SetJustifyH("LEFT")
+
+	local headerColor = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	headerColor:SetPoint("TOPLEFT", 235, 0)
+	headerColor:SetText(L["血条"])
+	headerColor:SetWidth(55)
+	headerColor:SetJustifyH("LEFT")
+
+	local headerMM = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	headerMM:SetPoint("TOPLEFT", 305, 0)
+	headerMM:SetText("MM")
+	headerMM:SetWidth(55)
+	headerMM:SetJustifyH("LEFT")
 
 	local headerAction = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	headerAction:SetPoint("TOPLEFT", 400, 0)
@@ -224,24 +243,43 @@ local function EnsureWindow()
 				idText:SetText(tostring(spellId))
 
 				local nameText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-				nameText:SetPoint("LEFT", 165, 0)
+				nameText:SetPoint("LEFT", 95, 0)
 				nameText:SetWidth(130)
-				nameText:SetJustifyH("CENTER")
+				nameText:SetJustifyH("LEFT")
 				nameText:SetText(GetSpellDisplayName(spellId) or UNKNOWN)
 
-				local info = PlateColorDB.dotlist[spellId]
-				-- 兼容旧数据：值为纯字符串（法术名）时转成表
-				if type(info) ~= "table" then
-					info = { name = info }
-					PlateColorDB.dotlist[spellId] = info
-				end
+				local info = PlateColorDB.mydotlist[spellId]
+
+				-- 血条染色开关
+				local colorCheck = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
+				colorCheck:SetPoint("LEFT", 240, 0)
+				colorCheck:SetSize(24, 24)
+				colorCheck:SetChecked(info.bar)
+				colorCheck:SetScript("OnClick", function(self)
+					info.bar = self:GetChecked()
+					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
+				end)
+				colorCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
+				colorCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
+
+				-- MM 染色开关
+				local mmCheck = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
+				mmCheck:SetPoint("LEFT", 310, 0)
+				mmCheck:SetSize(24, 24)
+				mmCheck:SetChecked(info.mm)
+				mmCheck:SetScript("OnClick", function(self)
+					info.mm = self:GetChecked()
+					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
+				end)
+				mmCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
+				mmCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
 
 				local deleteButton = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
 				deleteButton:SetSize(55, 20)
 				deleteButton:SetPoint("LEFT", 390, 0)
 				deleteButton:SetText(DELETE)
 				deleteButton:SetScript("OnClick", function()
-					PlateColorDB.dotlist[spellId] = nil
+					PlateColorDB.mydotlist[spellId] = nil
 					frame:RefreshList()
 					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
 				end)
@@ -274,7 +312,7 @@ local function EnsureWindow()
 			return
 		end
 
-		PlateColorDB.dotlist[spellId] = { name = spellName }
+		PlateColorDB.mydotlist[spellId] = { name = spellName, bar = true, mm = false }
 		searchBox:SetText("")
 		frame:RefreshList()
 		if ns.RefreshAuraColor then ns.RefreshAuraColor() end

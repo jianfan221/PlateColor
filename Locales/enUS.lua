@@ -37,6 +37,7 @@ ns.enUS = {
 
 ["名字"] = "Name",
 ["血条颜色"] = "Bar Color",
+["MM颜色"] = "MM Color",
 ["同时监控多种dot时,任意存在都会变色"] = "When monitoring multiple dots, any one present will change color",
 ["白色名字"] = "White Name",
 ["名字描边"] = "Name Outline",
@@ -177,8 +178,8 @@ ns.enUS = {
 ["光环染色"] = "Aura Color",
 ["光环鼠标提示显示法术ID"] = "Aura Tooltip Show Spell ID",
 ["光环鼠标提示显示法术ID鼠标提示"] = "Whether aura tooltip shows monitored spell IDs",
-["光环血条染色设置"] = "Aura Healthbar Color Setting",
-["光环血条染色设置鼠标提示"] = "Open aura healthbar color setting (add/remove debuffs to monitor)",
+["光环染色设置"] = "Aura Color Setting",
+["光环染色设置鼠标提示"] = "Open aura color setting (add/remove debuffs to monitor)",
 
 
 --tab NPC 使用的键

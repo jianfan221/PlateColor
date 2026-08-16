@@ -54,8 +54,9 @@ ns.PlateColorDB = {
 	auraLScale = 1.5,			--左侧增益光环尺寸
 	auraRScale = 2,				--右侧控制光环尺寸
 
-	dotlist = {},				--光环染色监控的 debuff 列表（在场即血条变色）
-	dotcolor1 = {r=1, g=0.35, b=0.75},	--血条染色颜色（dotlist 里任一法术在场时血条染此色）
+	mydotlist = {},				--光环染色监控的 debuff 列表（在场即血条变色）
+	mydotcolor1 = {r=1, g=0.35, b=0.75, a=1},	--血条染色颜色（mydotlist 里 bar=true 的法术在场时血条染此色）
+	mydotcolor2 = {r=0, g=0, b=1, a=1},		--MM 染色颜色（mydotlist 里 mm=true 的法术在场时 MM 染此色）
 
 	markScale = 1.2,				--标记尺寸
 	markHoffset = 0,			--标记水平偏移

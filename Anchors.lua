@@ -274,7 +274,12 @@ function ns.SetPoints(self)
 	self.healthBar.RightText:ClearAllPoints();
 	self.healthBar.RightText:Hide()
 	if not self.healthBar.PCText then
-		self.healthBar.PCText = self.healthBar:CreateFontString(nil, "OVERLAY")
+		-- 生命值文本用独立 Frame 容器并抬高 frameLevel，避免被血条上的光环染色遮挡
+		-- （AuraContainer 是 healthBar 的子框架，默认 frameLevel 更高，会盖住其子纹理）
+		local textFrame = CreateFrame("Frame", nil, self.healthBar)
+		textFrame:SetAllPoints(self.healthBar)
+		textFrame:SetFrameLevel((self.healthBar:GetFrameLevel() or 0) + 10)
+		self.healthBar.PCText = textFrame:CreateFontString(nil, "OVERLAY")
 		self.healthBar.PCText:SetVertexColor(1,1,1)
 		self.healthBar.PCText:SetSmoothScaling(false)
 	end
