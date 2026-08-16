@@ -120,10 +120,15 @@ function ns.UpdateAuraColor()
 	local mmColor = GetMMColor()
 	for _, container in pairs(containers) do
 		for _, tex in ipairs(container.pcTextures or {}) do
-			tex:SetVertexColor(bar.r, bar.g, bar.b, bar.a or 1)
+			-- pcall 兜底：InCombatLockdown 无法覆盖 M+ 等秘密环境的 Forbidden 状态
+			pcall(function()
+				tex:SetVertexColor(bar.r, bar.g, bar.b, bar.a or 1)
+			end)
 		end
 		for _, tex in ipairs(container.pcMMTextures or {}) do
-			tex:SetVertexColor(mmColor.r, mmColor.g, mmColor.b, mmColor.a or 1)
+			pcall(function()
+				tex:SetVertexColor(mmColor.r, mmColor.g, mmColor.b, mmColor.a or 1)
+			end)
 		end
 	end
 end

@@ -210,6 +210,8 @@ ns.enUS = {
 
 ["点击更改颜色"] = "Click to change color",
 
+["战斗中/M+等秘密环境无法修改"] = "Cannot change in combat or secret environments (e.g. M+); changes apply after leaving combat or M+ ends",
+
 ["暴雪姓名板设置"] = "Blizzard Nameplate Settings",
 ["帮我设置暴雪姓名板"] = "Help me set Blizzard nameplates",
 ["点击自动设置ESC-选项-姓名板里的相关选项"] = "Click to auto set ESC-Options-Nameplate related options",

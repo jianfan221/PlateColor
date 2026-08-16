@@ -101,14 +101,14 @@ local function EnsureWindow()
 	local singleLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	singleLabel:SetPoint("TOPLEFT", 16, -32)
 	singleLabel:SetText(L["血条颜色"])
-	ns.AddColorFrame(frame, 95, -32, "", 96, 17, "mydotcolor1", function()
+	ns.AddColorFrame(frame, 95, -32, L["战斗中/M+等秘密环境无法修改"], 96, 17, "mydotcolor1", function()
 		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
 	end)
 
 	local mmColorLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	mmColorLabel:SetPoint("TOPLEFT", 240, -32)
 	mmColorLabel:SetText(L["MM颜色"])
-	ns.AddColorFrame(frame, 320, -32, "", 96, 17, "mydotcolor2", function()
+	ns.AddColorFrame(frame, 320, -32, L["战斗中/M+等秘密环境无法修改"], 96, 17, "mydotcolor2", function()
 		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
 	end, "Interface\\Addons\\PlateColor\\texture\\Bar\\dotMM.png")
 
