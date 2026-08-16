@@ -68,7 +68,10 @@ local function ApplyBlizzCvars()
 	for _, cvar in ipairs(BlizzCvarList) do
 		local val = saved[cvar]
 		if val ~= nil then
-			C_CVar.SetCVar(cvar, val)
+			local current = GetBlizzCvarValue(cvar)
+			if current ~= val then
+				C_CVar.SetCVar(cvar, val)
+			end
 		end
 	end
 end
