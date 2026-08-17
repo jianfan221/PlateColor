@@ -56,6 +56,12 @@ local BlizzCvarList = {
 	"nameplateMaxDistance",                           --姓名版可见范围
 }
 
+-- CVar 快速查找表（供 CVAR_UPDATE 直接比对，避免为每个 CVar 单独注册回调）
+local BlizzCvarMap = {}
+for _, cvar in ipairs(BlizzCvarList) do
+	BlizzCvarMap[cvar] = true
+end
+
 -- 读取某个 CVar 的当前值（原始字符串）
 local function GetBlizzCvarValue(cvar)
 	return C_CVar.GetCVar(cvar)
@@ -69,7 +75,10 @@ local function ApplyBlizzCvars()
 		local val = saved[cvar]
 		if val ~= nil then
 			local current = GetBlizzCvarValue(cvar)
-			if current ~= val then
+			if current == nil then
+				-- 当前 CVar 已被移除：清除存档残留
+				saved[cvar] = nil
+			elseif current ~= val then
 				C_CVar.SetCVar(cvar, val)
 			end
 		end
@@ -88,16 +97,13 @@ local function SaveBlizzCvars()
 	end
 end
 
--- 每个 CVar 注册变更回调：值变化时同步到 DB
-for _, cvar in ipairs(BlizzCvarList) do
-	ns.hookcvar(cvar, function()
-		if not PlateColorDB.BlizzCvar then return end
-		local val = GetBlizzCvarValue(cvar)
-		if val ~= nil then
-			PlateColorDB.BlizzCvar[cvar] = val
-		end
-	end)
-end
+-- 单个 CVAR_UPDATE 事件监听：值变化时同步到 DB（用 map 判断是否在本清单中）
+ns.event("CVAR_UPDATE", function(_, cvarName, value)
+	if not PlateColorDB.BlizzCvar or not BlizzCvarMap[cvarName] then return end
+	if value ~= nil then
+		PlateColorDB.BlizzCvar[cvarName] = value
+	end
+end)
 
 -- 战斗中则等待脱战后执行（某些姓名板 CVar 在战斗锁定期间无法修改）
 local function RunAfterCombat(func)
