@@ -107,29 +107,46 @@ local function BuildContainer(unitFrame)
 	container:Show()
 end
 
+-- 挂起重试：限制中 SetVertexColor 失败（如战斗/M+ 的 Forbidden）则挂起，解除限制时自动重试
+local retryHandle  -- 非 nil 即已挂起
+
 -- 颜色改动：只更新已有纹理颜色（无需重建，即时生效）
 function ns.UpdateAuraColor()
-	-- 战斗中 AuraButton 属 Forbidden Partition，被污染代码无法操作其纹理，脱战后执行一次
-	if InCombatLockdown() then
-		ns.event("PLAYER_REGEN_ENABLED", function()
-			ns.UpdateAuraColor()
-		end, true)
-		return
-	end
+	local failed = false
 	local bar = GetColor()
 	local mmColor = GetMMColor()
 	for _, container in pairs(containers) do
 		for _, tex in ipairs(container.pcTextures or {}) do
-			-- pcall 兜底：InCombatLockdown 无法覆盖 M+ 等秘密环境的 Forbidden 状态
-			pcall(function()
+			-- pcall 兜底：战斗/M+ 等秘密环境 AuraButton 纹理 Forbidden
+			local ok = pcall(function()
 				tex:SetVertexColor(bar.r, bar.g, bar.b, bar.a or 1)
 			end)
+			if not ok and not failed then
+				failed = true
+				local warnText = GetLocale():match("^zh") and "修改失败，环境受限" or "Modification failed, environment restricted"
+				UIErrorsFrame:AddExternalWarningMessage(warnText)
+			end
 		end
 		for _, tex in ipairs(container.pcMMTextures or {}) do
-			pcall(function()
+			local ok = pcall(function()
 				tex:SetVertexColor(mmColor.r, mmColor.g, mmColor.b, mmColor.a or 1)
 			end)
+			if not ok and not failed then
+				failed = true
+				local warnText = GetLocale():match("^zh") and "修改失败，环境受限" or "Modification failed, environment restricted"
+				UIErrorsFrame:AddExternalWarningMessage(warnText)
+			end
 		end
+	end
+	-- 有失败则挂起（未挂起时才注册），解除限制时自动重试
+	if failed and not retryHandle then
+		retryHandle = EventRegistry:RegisterFrameEventAndCallbackWithHandle("ADDON_RESTRICTION_STATE_CHANGED", function(_owner, type, state)
+			if state == Enum.AddOnRestrictionState.Inactive then
+				retryHandle:Unregister()
+				retryHandle = nil
+				ns.UpdateAuraColor()
+			end
+		end)
 	end
 end
 
