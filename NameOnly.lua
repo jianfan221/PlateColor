@@ -41,7 +41,9 @@ local function TrySetOnlyName(self)
 			end)
 		end
 		if castBar and (UnitCastingInfo(self.unit) ~= nil or UnitChannelInfo(self.unit) ~= nil) then
-			castBar:Show()
+			pcall(function()
+				castBar:Show()
+			end)
 		end
 	elseif not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player", self.unit)) then
 		TableUtil.TrySet(self, "showOnlyName")
