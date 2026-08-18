@@ -59,6 +59,7 @@ function ns.UpdateHpbarColor(unitFrame)
     elseif unitFrame.isTarget and DB.myTarget then
         hr, hg, hb = DB.myTargetColor.r, DB.myTargetColor.g, DB.myTargetColor.b
     elseif UnitIsUnit(unit, "focus") and DB.myFocus then
+        if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end--焦点也取消dot变色
         hr, hg, hb = DB.myFocusColor.r, DB.myFocusColor.g, DB.myFocusColor.b
     else
         local npcColor = (DB.UseNpc == 2 or DB.UseNpc == 3) and ns.NpcLevelColor(unitFrame)
