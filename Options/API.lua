@@ -349,14 +349,14 @@ local function filter(self, event,a, ...)
    -- a = ns.RCTexts(a)
     return false, ns.RCTexts(a),...
 end
-ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", filter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_SAY", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_GUILD", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_RAID", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_RAID_LEADER", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_PARTY", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", filter)
+ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", filter)
 
 -- 版本更新相关 ──────────────────────────────
 local myVersion = C_AddOns.GetAddOnMetadata(addonName,"Version")
