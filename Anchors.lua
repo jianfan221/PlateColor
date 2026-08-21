@@ -21,7 +21,7 @@ function ns.SetSelectedScale()
 	C_CVar.SetCVar("namePlateMaxScale", 1)	--最大距离缩放
 	C_CVar.SetCVar("nameplateMaxAlpha", PlateColorDB.allNpAlpha)--姓名板最大透明度
 	C_CVar.SetCVar("nameplateMinAlpha", PlateColorDB.allNpAlpha)--姓名板最小透明度
-	C_CVar.SetCVar("nameplateNotSelectedAlpha",PlateColorDB.allNpAlpha) --非当前目标透明度(怀旧)
+	C_CVar.SetCVar("nameplateNotSelectedAlpha",-1) --非当前目标透明度(怀旧)
 
 	--启用NPC名字模式时,关闭友方NPC简化姓名板
 	if PlateColorDB.onlyNameNpc then
