@@ -33,7 +33,6 @@ jobs:
 
           CHANGES=""
           MD_CHANGES=""
-          FIRST=1
           # 最多处理10个标签段
           for ((i = 0; i < 10 && i + 1 < TAG_COUNT; i++)); do
             CUR="${TAGS[i]}"
@@ -51,11 +50,6 @@ jobs:
               # CHANGELOG.md：markdown 版本块（版本链接 + 日期 + 变更链接）
               CUR_DATE=$(git show -s --format=%cs "$CUR")
               MD_CHANGES+="## **$CUR**"$'\n'
-              if [ "$FIRST" = "1" ]; then
-                # 最新版本额外加变更链接
-                MD_CHANGES+="[Full Changelog](https://github.com/$REPO/compare/$NEXT...$CUR) [Previous Releases](https://github.com/$REPO/releases)"$'\n'
-                FIRST=0
-              fi
               while IFS= read -r line; do
                 [ -z "$line" ] && continue
                 CHANGES+="* $line"$'\n'
