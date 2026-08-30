@@ -18,12 +18,12 @@ local containers = {}   -- unitFrame -> container
 
 -- 血条染色颜色
 local function GetColor()
-	return PlateColorDB.mydotcolor1 or ns.PlateColorDB.mydotcolor1
+	return PlateColorDB.mydotcolor1 or ns.Defaults.mydotcolor1
 end
 
 -- MM 染色颜色
 local function GetMMColor()
-	return PlateColorDB.mydotcolor2 or ns.PlateColorDB.mydotcolor2
+	return PlateColorDB.mydotcolor2 or ns.Defaults.mydotcolor2
 end
 
 -- 由 mydotlist 生成两个集合：colorMap（血条染色）、mmMap（MM 染色）

@@ -1,6 +1,6 @@
 ﻿local addonName,ns = ...
 
-ns.PlateColorDB = {
+ns.Defaults = {
 	myVersion = 0,
 	BlizzCvar = {},				--暴雪姓名板 CVar 备份（记录/恢复这些 CVar 的取值）
 	HitTestShow = false,		--显示点击范围
@@ -50,7 +50,10 @@ ns.PlateColorDB = {
 	auraText1 = 1,				--光环冷却时间文本尺寸
 	hideAuraTooltip = true,		--隐藏光环鼠标提示
 	auraTopScale = 1,			--上方减益光环尺寸
+	auraTopEnable = true,		--姓名板上方自定义减益容器
+	topDotList = {},			--姓名板上方 topMine 组监控的 dot 列表（{ [法术ID] = { name=..., show=true } }）
 	auraLEnable = true,			--左侧增益光环
+	auraLDispelOnly = false,	--仅显示队伍可驱散（仅显示队伍/团队可驱散的光环）
 	auraLScale = 1.5,			--左侧增益光环尺寸
 	auraRScale = 2,				--右侧控制光环尺寸
 
@@ -136,7 +139,7 @@ loadFrame:RegisterEvent("PLAYER_LOGOUT");
 loadFrame:SetScript("OnEvent", function(self, event, arg1)
 	if event == "ADDON_LOADED" and arg1 ~= "PlateColor" then return end
 	if type(PlateColorDB) ~= "table" then PlateColorDB = {} end
-	for i, j in pairs(ns.PlateColorDB) do
+	for i, j in pairs(ns.Defaults) do
 		if type(j) == "table" then
 			if PlateColorDB[i] == nil then PlateColorDB[i] = {} end
 			for k, v in pairs(j) do
@@ -150,8 +153,11 @@ loadFrame:SetScript("OnEvent", function(self, event, arg1)
 	end	
 
 	for key, value in pairs(PlateColorDB) do
-		if ns.PlateColorDB[key] == nil then--如果没有这个键，说明是多余的，删除它
+		if ns.Defaults[key] == nil then--如果没有这个键，说明是多余的，删除它
 			PlateColorDB[key] = nil
 		end
 	end
+
+	-- ADDON_LOADED 后保存变量已就绪，把实时 DB 引用挂到 ns（同 AddUI/AddUIDB.lua 的 ns.DB = AddUIDB）
+	ns.DB = PlateColorDB
 end)
