@@ -75,11 +75,11 @@ ns.AddTab(L["基础"], function()
 		C_CVar.SetCVar("nameplateCastBarDisplay","O")--施法条--不选最后一个
 		C_CVar.SetCVar("nameplateThreatDisplay","B")--仇恨--仅闪光
 		--根据DB值设置暴雪原生显示位（未启用自建光环时确保暴雪原生正常显示）
-		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, not PlateColorDB.auraLEnable)--敌方NPC增益：未启用左侧自建光环则显示
-		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Debuffs, not PlateColorDB.auraTopEnable)--敌方NPC减益：未启用上方自建光环则显示
+		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, not DoesTemplateExist("CustomAuraContainerTemplate") or not PlateColorDB.auraLEnable)--敌方NPC增益：未启用左侧自建光环则显示
+		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Debuffs, not DoesTemplateExist("CustomAuraContainerTemplate") or not PlateColorDB.auraTopEnable)--敌方NPC减益：未启用上方自建光环则显示
 		ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl, true)--敌方NPC控制：始终显示
 		ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, true)--敌方玩家增益：始终显示
-		ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs, not PlateColorDB.auraTopEnable)--敌方玩家减益：未启用上方自建光环则显示
+		ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs, not DoesTemplateExist("CustomAuraContainerTemplate") or not PlateColorDB.auraTopEnable)--敌方玩家减益：未启用上方自建光环则显示
 		ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl, true)--敌方玩家控制：始终显示
 		C_CVar.SetCVar("nameplateFriendlyPlayerAuraDisplay","G")--友方玩家的增减益状态
 		C_CVar.SetCVar("nameplateDebuffPadding", 0)--姓名板增减益图标间距-0
