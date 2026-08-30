@@ -28,7 +28,7 @@ ns.enUS = {
 ["中"] = "Center",
 ["右侧内部"] = "Right Inside", 
 ["右侧外部"] = "Right Outside",
--- Tab1.lua 使用的键
+-- Setting.lua 使用的键
 ["点击范围"] = "Click Range",
 ["显示点击范围"] = "Show Click Range",
 ["点击范围宽度"] = "Click Range Width",
@@ -90,9 +90,20 @@ ns.enUS = {
 
 ["光环冷却时间文本尺寸"] = "Aura Cooldown Text Size",
 ["隐藏光环鼠标提示"] = "Hide Aura Tooltip",
+["上方减益光环"] = "Top Debuff Aura",
+["自建光环容器鼠标提示"] = "Using custom aura container. To use Blizzard defaults, disable this\nThen re-enable the relevant options under Options-Nameplates\n"..UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY.."\n"..UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY,
+["修改后需要重载界面"] = "Reload UI after changing",
 ["上方减益光环尺寸"] = "Top Debuff Aura Size",
+["上方减益过滤器"] = "Top Debuff Filter",
+["上方减益过滤器鼠标提示"] = "Control aura show/hide by spell ID",
+["添加你需要显示或隐藏的dot法术ID"] = "Add dot spell IDs to show or hide",
+["显示"] = "Show",
+["隐藏"] = "Hide",
 ["左侧增益光环"] = "Left Buff Aura",
+["仅显示队伍可驱散"] = "Raid/Party Dispel Only",
+["仅显示队伍可驱散鼠标提示"] = "Only show auras that a party or raid member can dispel, such as Enrage or Magic",
 ["左侧增益光环尺寸"] = "Left Buff Aura Size",
+["右侧控制光环"] = "Right Control Aura",
 ["右侧控制光环尺寸"] = "Right Control Aura Size",
 
 ["标记"] = "Mark",
