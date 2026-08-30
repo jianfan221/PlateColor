@@ -15,7 +15,7 @@
 texture\TextureTable.lua
 DB\XML.xml
 Locales\XML.xml
-Options\XML.xml
+Setting\XML.xml
 Anchors.lua
 BarColor.lua
 BarSlayline.lua
@@ -29,6 +29,7 @@ NameColor.lua
 NameOnly.lua
 NpcColor.lua
 PlateAuras.lua
+PlateAurasList.lua
 Personal.lua
 PlateAbsorb.lua
 PlateColor.lua

@@ -1,0 +1,6 @@
+<Ui>
+	<Script file="API.lua"/>
+	<Script file="Setting-Core.lua"/>
+	<Script file="Links.lua"/>
+	<Script file="Setting.lua"/>
+</Ui>
