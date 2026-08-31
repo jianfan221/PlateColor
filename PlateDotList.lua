@@ -96,7 +96,37 @@ local function EnsureWindow()
 
 	local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
 	title:SetPoint("TOP", 0, -8)
-	title:SetText("PlateColorDotList")
+	title:SetText(L["光环染色设置"])
+
+	-- 左上角：鼠标提示显示法术ID开关（勾选状态由 cvar 决定，点击临时切换不持久）
+	local spellIDCheck = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsCheckButtonTemplate")
+	spellIDCheck:SetPoint("TOPLEFT", 8, -4)
+	spellIDCheck:SetSize(30, 30)
+	local function RefreshSpellIDCheck()
+		spellIDCheck:SetChecked(GetCVar("tooltipShowAuraSpellIDs") == "1")
+	end
+	RefreshSpellIDCheck()
+
+	-- cvar 变化时同步勾选状态（如通过其他入口/宏修改时保持显示一致）
+	ns.hookcvar("tooltipShowAuraSpellIDs", RefreshSpellIDCheck)
+
+	spellIDCheck:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:SetText("|cffFFFFFF"..L["鼠标提示显示法术ID"].."|r",1,1,1,1)
+		GameTooltip:Show()
+	end)
+	spellIDCheck:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+	spellIDCheck:SetScript("OnClick", function()
+		-- 点击后写入 cvar，控制"鼠标提示显示法术ID"
+		C_CVar.SetCVar("tooltipShowAuraSpellIDs", spellIDCheck:GetChecked() and "1" or "0")
+	end)
+
+	-- 按钮右侧文本
+	local spellIDLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	spellIDLabel:SetPoint("LEFT", spellIDCheck, "RIGHT", 2, 0)
+	spellIDLabel:SetText(L["显示法术ID"])
 
 	local singleLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	singleLabel:SetPoint("TOPLEFT", 16, -32)
