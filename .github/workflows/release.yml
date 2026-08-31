@@ -49,7 +49,7 @@ jobs:
               CHANGES+="|cff3cff00## $CUR|r"$'\n'
               # CHANGELOG.md：markdown 版本块（版本链接 + 日期 + 变更链接）
               CUR_DATE=$(git show -s --format=%cs "$CUR")
-              MD_CHANGES+="## **$CUR**"$'\n'
+              MD_CHANGES+="### **$CUR**"$'\n'
               while IFS= read -r line; do
                 [ -z "$line" ] && continue
                 CHANGES+="* $line"$'\n'
@@ -72,7 +72,7 @@ jobs:
 
           # 写入 CHANGELOG.md（markdown 格式，开头为插件名标题块；无论 Update.lua 是否存在都生成）
           {
-            echo "# $REPO_NAME"
+            echo "# **$REPO_NAME**"
             echo ""
             echo "$MD_CHANGES"
           } > CHANGELOG.md
