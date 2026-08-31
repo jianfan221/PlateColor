@@ -17,6 +17,16 @@ function ns.ApplyChange(setfun, value)
 	end
 end
 
+--检查LibSharedMedia插入所有LSM已注册的材质(进入游戏时加载)
+ns.event("PLAYER_ENTERING_WORLD", function()
+	if LibStub and LibStub("LibSharedMedia-3.0", true) then
+		local LSMtextures = LibStub("LibSharedMedia-3.0"):HashTable("statusbar")
+		for key, value in pairs(LSMtextures) do
+			ns.HpTextures[key] = value
+		end
+	end
+end)
+
 -- 打开设置界面的 slash 命令（由 Setting-Core.lua 末尾 C_Timer.After 动态注册）
 ns.opensetting1 = "/pc"
 ns.opensetting2 = "/platecolor"
