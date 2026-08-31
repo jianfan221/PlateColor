@@ -1361,10 +1361,9 @@ function ns.BuildCoreTabs()
 		ebox:SetAutoFocus(false)
 		ebox:SetFontObject("GameFontNormal")
 		ebox:SetTextColor(1, 1, 1)
+		-- 上限设 0 = 不限制输入长度；右下角保留暴雪字符计数（显示负数也无妨）
 		ebox:SetMaxLetters(0)
 		ebox:SetTextInsets(8, 8, 6, 6)
-		-- 隐藏字符计数（避免 SetMaxLetters(0) 显示成负数）
-		if box.CharCount then box.CharCount:Hide() end
 		-- 点击输入框内时全选文本（方便一键复制）
 		ebox:SetScript("OnEditFocusGained", function(self)
 			self:HighlightText()
