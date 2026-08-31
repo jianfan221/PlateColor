@@ -10,7 +10,7 @@
 ## X-Curse-Project-ID: 307518
 ## X-Wago-ID: BKpgPa6E
 ## SavedVariables: PlateColorDB
-## Version: 20260831.1
+## Version: 20260901
 
 texture\TextureTable.lua
 DB\XML.xml
