@@ -232,16 +232,16 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		local cdRegion = cooldown:GetRegions()
 		if cdRegion and type(cdRegion.SetFont) == "function" then
 			cdRegion:SetFontObject("PC_FontOutline")
-			cdRegion:SetFontHeight(size*PlateColorDB.auraTopScale/1.6)
+			cdRegion:SetFontHeight(size*PlateColorDB.auraTopScale/1.7)
 		end
 		--独立叠层容器: 层级在冷却之上(+2), 不随冷却隐藏
 		local overlay = CreateFrame("Frame", nil, btn)
 		overlay:SetAllPoints(btn)
 		overlay:SetFrameLevel(btn:GetFrameLevel() + 2)
 		local count = overlay:CreateFontString(nil, "OVERLAY", "PC_FontOutline")
-		count:SetPoint("BOTTOMRIGHT", btn, 2, -2)
+		count:SetPoint("BOTTOMRIGHT", btn, 3, -3)
 		count:SetVertexColor(1, 1, 1)
-		count:SetFontHeight(size/1.75)
+		count:SetFontHeight(size/2)
 		btn:SetApplicationCount(count, {})
 	end
 
