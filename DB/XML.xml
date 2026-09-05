@@ -1,4 +1,3 @@
 <Ui>
 	<Script file="DefaultDB.lua"/>
-	<Script file="Setting.lua"/>
 </Ui>
