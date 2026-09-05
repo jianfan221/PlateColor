@@ -106,6 +106,14 @@ local function NewScrollContent(tabFrame)
 	end)
 	local content = CreateFrame("Frame", nil, scroll)
 	scroll:SetScrollChild(content)
+	-- 内容宽度即时跟随滚动区可视宽度：canvas 首次显示时可能晚一帧才布局，
+	-- 尺寸一变就把 content 宽对齐到可视区，避免内容 0 宽被 ScrollFrame 裁剪成右侧空白
+	scroll:SetScript("OnSizeChanged", function(self)
+		local w = self:GetWidth()
+		if w and w > 10 then
+			content:SetWidth(w)
+		end
+	end)
 	return scroll, content
 end
 
