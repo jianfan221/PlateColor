@@ -64,11 +64,15 @@ local function BuildContainer(unitFrame)
 	container:AddAuraGroup("barColor", "HARMFUL|PLAYER", {
 		maxFrameCount = 1,
 		initializeFrame = function(btn)
-			btn:SetFrameLevel(healthBar:GetFrameLevel() + 1)
 			local tex = btn:CreateTexture(nil, "OVERLAY")
 			local fill = healthBar:GetStatusBarTexture() or healthBar
 			-- 使用血条材质纹理，并用染色颜色着色（与血条材质保持一致）
-			tex:SetTexture(ns.HpTextures[PlateColorDB.hpbarTexture] or ns.HpTextures["PC-White"])
+			local t = ns.HpTextures[PlateColorDB.hpbarTexture] or ns.HpTextures["PC-White"]
+			if string.match(t, "Interface\\") then
+				tex:SetTexture(t)
+			else
+				tex:SetAtlas(t)
+			end
 			tex:SetVertexColor(bar.r, bar.g, bar.b, bar.a or 1)
 			tex:SetPoint("TOPLEFT", fill, "TOPLEFT", 1, -1)
 			tex:SetPoint("BOTTOMRIGHT", fill, "BOTTOMRIGHT", 0, 1)
@@ -84,7 +88,7 @@ local function BuildContainer(unitFrame)
 	container:AddAuraGroup("dotMM", "HARMFUL|PLAYER", {
 		maxFrameCount = 1,
 		initializeFrame = function(btn)
-			btn:SetFrameLevel(healthBar:GetFrameLevel() + 2)
+			btn:SetFrameLevel(healthBar:GetFrameLevel() + 1)
 			local tex = btn:CreateTexture(nil, "OVERLAY")
 			tex:SetTexture("Interface\\Addons\\PlateColor\\texture\\Bar\\dotMM.png")
 			tex:SetVertexColor(mmColor.r, mmColor.g, mmColor.b, mmColor.a or 1)
