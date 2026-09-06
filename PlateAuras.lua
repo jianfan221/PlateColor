@@ -231,8 +231,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		--冷却倒数文本字号为光环尺寸的一半
 		local cdRegion = cooldown:GetRegions()
 		if cdRegion and type(cdRegion.SetFont) == "function" then
-			cdRegion:SetFontObject("PC_FontOutline")
-			cdRegion:SetFontHeight(size*PlateColorDB.auraTopScale/1.7)
+			cdRegion:SetFontHeight(size*PlateColorDB.auraTopScale/1.6)
 		end
 		--独立叠层容器: 层级在冷却之上(+2), 不随冷却隐藏
 		local overlay = CreateFrame("Frame", nil, btn)
@@ -241,7 +240,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		local count = overlay:CreateFontString(nil, "OVERLAY", "PC_FontOutline")
 		count:SetPoint("BOTTOMRIGHT", btn, 3, -3)
 		count:SetVertexColor(1, 1, 1)
-		count:SetFontHeight(size/2)
+		count:SetFontHeight(size/1.75)
 		btn:SetApplicationCount(count, {})
 	end
 
