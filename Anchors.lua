@@ -197,7 +197,10 @@ function ns.SetPoints(self)
 		PixelUtil.SetPoint(castBar, "BOTTOMLEFT", self, "BOTTOMLEFT", -hpWidht+50, 0);
 		PixelUtil.SetPoint(castBar, "TOPRIGHT", self, "BOTTOMRIGHT", hpWidht-50, castBarHeight);
 		PixelUtil.SetHeight(castBar.Spark,castBarHeight*2)--施法闪光高度
-		if PlateColorDB.castIconBig then
+		--施法图标放大仅对敌方生效（友方/宠物保持小图标）
+		local canAttack = self.unit and UnitCanAttack("player", self.unit)
+		local isEnemy = canAttack and not ns.MM(canAttack)
+		if PlateColorDB.castIconBig and isEnemy then
 			local bigsize = castBarHeight+hpHeight+2
 			PixelUtil.SetSize(castBar.Icon,bigsize,bigsize)--施法图标大
 			PixelUtil.SetSize(castBar.BorderShield,bigsize*0.9,bigsize)--不可打断的盾牌
