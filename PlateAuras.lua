@@ -213,7 +213,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		end)
 	end)
 
-	-- ═══ 姓名板上方自定义减益容器（两组）═══
+	-- ═══ 姓名板上方自定义减益容器（三组）═══
 	-- 按钮样式初始化（与左侧 otherBuff 组一致）
 	local function InitTopDebuffButton(btn)
 		local size = 20
@@ -244,11 +244,23 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		btn:SetApplicationCount(count, {})
 	end
 
+	-- ══ 单独显示的特殊减益法术（每个仅显示1个，取值为 true）══
+	-- 在此扩展：新增 [法术ID] = true 即可，自动从 topShown / topMine 组排除
+	local TOP_SINGLE_SPELLS = {
+		[55078] = true, -- 血之疫病
+	}
+
+	-- 该法术是否归 topSingle 组单独显示
+	local function IsTopSingleSpell(spellID)
+		return TOP_SINGLE_SPELLS[spellID] == true
+	end
+
 	-- 由 topDotList 生成 topMine 组应显示的 dot 法术集合（show=true 的）
 	local function GetTopMineSpellMap()
 		local spellMap = {}
 		for spellID, info in pairs(PlateColorDB.topDotList or {}) do
-			if info and info.show then
+			-- 单独显示的特殊减益由 topSingle 组负责，此处排除
+			if info and info.show and not IsTopSingleSpell(spellID) then
 				spellMap[spellID] = true
 			end
 		end
@@ -259,7 +271,11 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 已配置的法术（无论显示/隐藏）都从 topShown 排除，避免与 topMine 重复；
 	-- show 的再由 topMine 显示一次，hide 的不进 topMine（完全隐藏）
 	local function GetTopShownExcludeMap()
+		-- 单独显示的特殊减益由 topSingle 组负责，从姓名板默认显示中排除
 		local excludeMap = {}
+		for spellID in pairs(TOP_SINGLE_SPELLS) do
+			excludeMap[spellID] = true
+		end
 		for spellID, info in pairs(PlateColorDB.topDotList or {}) do
 			if info then
 				excludeMap[spellID] = true
@@ -284,13 +300,22 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 配置姓名板上方减益容器（每个姓名板的容器首次创建时调用）
 	-- 数量无限（不设 maxFrameCount，默认即 math.huge）；组内元素间距 elementSpacing；组间间距 groupSpacing
 	local function SetupTopDebuffContainer(container)
-		-- 组1：敌对 + 应显示在姓名板（暴雪同款 INCLUDE_NAME_PLATE_ONLY + nameplateShowPersonal）+ 排除控制 + 排除隐藏的 dot
+		-- 组1：敌对 + 我释放的 + 排除应显示在姓名板 + 排除控制 + 仅监控指定法术，且只显示剩余时间最长的1个
+		container:AddAuraGroup("topSingle", "HARMFUL|PLAYER|!INCLUDE_NAME_PLATE_ONLY|!CROWD_CONTROL", {
+			maxFrameCount = 1,
+			sortMethod = AuraContainerSortMethod.ExpirationOnly,--按到期时间排序
+			sortDirection = AuraContainerSortDirection.Reverse,--反向 => 剩余时间最长的排在首位
+			layout = { elementSpacing = 1, groupSpacing = 1 },
+			candidateFilters = { includeSpellIDs = CopyTable(TOP_SINGLE_SPELLS) },
+			initializeFrame = InitTopDebuffButton,
+		})
+		-- 组2：敌对 + 应显示在姓名板（暴雪同款 INCLUDE_NAME_PLATE_ONLY + nameplateShowPersonal）+ 排除控制 + 排除隐藏的 dot
 		container:AddAuraGroup("topShown", "HARMFUL|PLAYER|INCLUDE_NAME_PLATE_ONLY|!CROWD_CONTROL", {
 			layout = { elementSpacing = 1, groupSpacing = 1},
 			candidateFilters = { excludeSpellIDs = GetTopShownExcludeMap(), nameplateShowPersonal = true },
 			initializeFrame = InitTopDebuffButton,
 		})
-		-- 组2：敌对 + 我释放的 + 排除应显示在姓名板 + 排除控制 + 仅监控指定法术
+		-- 组3：敌对 + 我释放的 + 排除应显示在姓名板 + 排除控制 + 仅监控指定法术
 		container:AddAuraGroup("topMine", "HARMFUL|PLAYER|!INCLUDE_NAME_PLATE_ONLY|!CROWD_CONTROL", {
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			candidateFilters = { includeSpellIDs = GetTopMineSpellMap() }, -- 由 topDotList 生成，空则只显示勾选的法术
