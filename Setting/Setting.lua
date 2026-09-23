@@ -271,6 +271,8 @@ ns.AddTab(AURAS, function()
 		auraBtn:SetScript("OnClick", function()
 			if ns.OpenPlateAurasList then ns.OpenPlateAurasList() end
 		end)
+		ns.AddCheck(L["血之疫病仅显示一个"], "|cffFF69B4"..L["修改后需要重载界面"].."|r", "auraTopSingle")
+		ns.AddDep("auraTopEnable", {"auraTopSingle"})
 	end
 	ns.AddSlider(L["上方减益光环尺寸"], "|cffFF69B4"..L["修改后需要重载界面"].."|r", 0.5, 3, 0.1, "%.1f", "auraTopScale")
 	ns.AddSection(L["左侧增益光环"])

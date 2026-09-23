@@ -51,6 +51,7 @@ ns.Defaults = {
 	hideAuraTooltip = true,		--隐藏光环鼠标提示
 	auraTopScale = 1,			--上方减益光环尺寸
 	auraTopEnable = true,		--姓名板上方自定义减益容器
+	auraTopSingle = true,		--血之疫病仅显示一个（关闭后按普通减益显示多个）
 	topDotList = {},			--姓名板上方 topMine 组监控的 dot 列表（{ [法术ID] = { name=..., show=true } }）
 	auraLEnable = true,			--左侧增益光环
 	auraLDispelOnly = false,	--仅显示队伍可驱散（仅显示队伍/团队可驱散的光环）

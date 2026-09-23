@@ -251,8 +251,9 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	}
 
 	-- 该法术是否归 topSingle 组单独显示
+	-- 开关关闭时不再单独显示，回归普通减益（由 topShown / topMine 组按常规显示多个）
 	local function IsTopSingleSpell(spellID)
-		return TOP_SINGLE_SPELLS[spellID] == true
+		return PlateColorDB.auraTopSingle ~= false and TOP_SINGLE_SPELLS[spellID] == true
 	end
 
 	-- 由 topDotList 生成 topMine 组应显示的 dot 法术集合（show=true 的）
@@ -272,9 +273,12 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- show 的再由 topMine 显示一次，hide 的不进 topMine（完全隐藏）
 	local function GetTopShownExcludeMap()
 		-- 单独显示的特殊减益由 topSingle 组负责，从姓名板默认显示中排除
+		-- 开关关闭时不再排除，让血之疫病回归姓名板普通减益显示
 		local excludeMap = {}
 		for spellID in pairs(TOP_SINGLE_SPELLS) do
-			excludeMap[spellID] = true
+			if IsTopSingleSpell(spellID) then
+				excludeMap[spellID] = true
+			end
 		end
 		for spellID, info in pairs(PlateColorDB.topDotList or {}) do
 			if info then
@@ -306,7 +310,8 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			sortMethod = AuraContainerSortMethod.ExpirationOnly,--按到期时间排序
 			sortDirection = AuraContainerSortDirection.Reverse,--反向 => 剩余时间最长的排在首位
 			layout = { elementSpacing = 1, groupSpacing = 1 },
-			candidateFilters = { includeSpellIDs = CopyTable(TOP_SINGLE_SPELLS) },
+			-- 开关关闭时传空表 => topSingle 一个都不显示（血之疫病回归普通减益显示）
+			candidateFilters = { includeSpellIDs = PlateColorDB.auraTopSingle ~= false and CopyTable(TOP_SINGLE_SPELLS) or {} },
 			initializeFrame = InitTopDebuffButton,
 		})
 		-- 组2：敌对 + 应显示在姓名板（暴雪同款 INCLUDE_NAME_PLATE_ONLY + nameplateShowPersonal）+ 排除控制 + 排除隐藏的 dot
