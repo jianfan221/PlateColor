@@ -99,6 +99,7 @@ ns.enUS = {
 ["上方减益光环尺寸"] = "Top Debuff Aura Size",
 ["上方减益过滤器"] = "Top Debuff Filter",
 ["上方减益过滤器鼠标提示"] = "Control aura show/hide by spell ID",
+["血之疫病仅显示一个"] = "Show Only One Blood Plague",
 ["添加你需要显示或隐藏的dot法术ID"] = "Add dot spell IDs to show or hide",
 ["显示"] = "Show",
 ["隐藏"] = "Hide",
