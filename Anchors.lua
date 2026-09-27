@@ -32,6 +32,12 @@ function ns.SetSelectedScale()
 		ns.SetCVar("nameplateSimplifiedTypes",Enum.NamePlateSimplifiedType.FriendlyPlayer, false)
 	end
 
+	--取消服务器名称显示12.0.1 (66384) 12.1有cvar但是会导致名字后面带(*)
+	local realmName = C_CVar.GetCVar("nameplateShowFriendlyRealmName")
+	if realmName == "0" and TextureLoadingGroupMixin and NamePlateFriendlyFrameOptions then
+		TextureLoadingGroupMixin.RemoveTexture({ textures = NamePlateFriendlyFrameOptions }, "updateNameUsesGetUnitName")
+	end
+
 	--去掉血量百分比因为我们自己创建了
 	ns.SetCVar("nameplateInfoDisplay",Enum.NamePlateInfoDisplay.CurrentHealthPercent, false)
 	--去掉血量数值因为我们自己创建了
@@ -42,6 +48,7 @@ function ns.SetSelectedScale()
 end
 ns.event("PLAYER_ENTERING_WORLD", ns.SetSelectedScale)
 ns.hookcvar("nameplateShowOnlyNameForFriendlyPlayerUnits", ns.SetSelectedScale)
+ns.hookcvar("nameplateShowFriendlyRealmName", ns.SetSelectedScale)
 
 -- 全局姓名板点击范围（只设一次即可）
 function ns.UpdateGlobalHitInsets()
