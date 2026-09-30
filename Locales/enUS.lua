@@ -50,6 +50,7 @@ ns.enUS = {
 ["血条"] = "Health Bar",
 ["血条材质选择"] = "Health Bar Texture",
 ["血条边框材质选择"] = "Health Bar Border Texture",
+["边框颜色"] = "Border Color",
 ["背景透明度"] = "Background Transparency",
 ["姓名版宽度"] = "Nameplate Width",
 ["姓名版高度"] = "Nameplate Height",

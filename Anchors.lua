@@ -84,7 +84,8 @@ function ns.SetPoints(self)
 	self.HealthBarsContainer.healthBar.bgTexture:SetAlpha(PlateColorDB.hpbgAlpha)
 	ns.BorderSetting(self.HealthBarsContainer,self.HealthBarsContainer.healthBar.selectedBorder)
 	ns.BorderSetting(self.HealthBarsContainer,self.HealthBarsContainer.healthBar.deselectedOverlay)
-	self.HealthBarsContainer.healthBar.deselectedOverlay:SetVertexColor(0, 0, 0, 1)
+	local borderColor = PlateColorDB.borderColor or ns.Defaults.borderColor
+	self.HealthBarsContainer.healthBar.deselectedOverlay:SetVertexColor(borderColor.r, borderColor.g, borderColor.b, borderColor.a or 1)
 	
 
 	local namePlateFrame = self:GetNamePlateFrame()

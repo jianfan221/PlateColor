@@ -46,6 +46,7 @@ ns.AddTab(L["基础"], function()
 	ns.AddTexture(L["血条材质选择"], L["血条材质选择"], "hpbarTexture", ns.HpTextures, ns.TextureSetting)
 	ns.AddSlider(L["背景透明度"], L["背景透明度"], 0, 1, 0.01, "%.2f", "hpbgAlpha", ns.TextureSetting)
 	ns.AddTextureIcon(L["血条边框材质选择"], L["血条边框材质选择"], "hpBorderTexture", ns.HPBorderTexture, ns.TextureSetting)
+	ns.AddColor(L["边框颜色"], L["边框颜色"], "borderColor", ns.SetPoints)
 	ns.AddSlider(L["姓名版宽度"], L["姓名版宽度"], 5, 50, 1, "%d", "hpWidht", ns.SetPoints)
 	ns.AddSlider(L["姓名版高度"], L["姓名版高度"], 5, 30, 1, "%d", "hpHeight", ns.SetPoints)
 
