@@ -135,7 +135,6 @@ function ns.SetPoints(self)
 		else
 			PixelUtil.SetPoint(self.name, "BOTTOM", self, "BOTTOM", 0, 0);
 		end
-		PixelUtil.SetPoint(self.name, "BOTTOM", self, "BOTTOM", 0, 10);
 	elseif PlateColorDB.namePoint == 1 then--中上
 		PixelUtil.SetPoint(self.name, "BOTTOM", self.HealthBarsContainer, "TOP", 0, PlateColorDB.nameVoffset+2);
 	elseif PlateColorDB.namePoint == 2 then--左上
