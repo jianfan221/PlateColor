@@ -47,6 +47,8 @@ local BlizzCvarList = {
 	"nameplateFriendlyPlayerAuraDisplay",             --友方玩家光环显示（位域掩码）
 	"nameplateDebuffPadding",                         --减益图标间距
 	"nameplateSimplifiedTypes",                       --简化类型（位域掩码）
+	--光环（姓名板光环相关）
+	"tooltipShowAuraSpellIDs",                        --光环鼠标提示显示法术ID
 
 	--Tab2 选项可调的姓名板尺寸/透明度/间距 CVar
 	"nameplateSelectedScale",                         --目标尺寸
