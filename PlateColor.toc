@@ -35,4 +35,6 @@ PlateAbsorb.lua
 PlateColor.lua
 PlateDotList.lua
 PlateDotSetColor.lua
+PlateDoubleDotList.lua
+PlateDoubleDotSetColor.lua
 Update.lua

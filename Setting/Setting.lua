@@ -295,6 +295,10 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		dotBtn:SetScript("OnClick", function()
 			if ns.OpenPlateDotList then ns.OpenPlateDotList() end
 		end)
+		local doubleDotBtn = ns.AddFuncButton(L["双dot染色设置"], L["双dot染色设置鼠标提示"])
+		doubleDotBtn:SetScript("OnClick", function()
+			if ns.OpenPlateDoubleDotList then ns.OpenPlateDoubleDotList() end
+		end)
 	end)
 end
 
