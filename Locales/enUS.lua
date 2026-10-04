@@ -196,6 +196,18 @@ ns.enUS = {
 ["光环鼠标提示显示法术ID鼠标提示"] = "Whether aura tooltip shows monitored spell IDs",
 ["光环染色设置"] = "Aura Color Setting",
 ["光环染色设置鼠标提示"] = "Open aura color setting (add/remove debuffs to monitor)",
+["双dot染色设置"] = "Double Dot Color Setting",
+["双dot染色设置鼠标提示"] = "Open double dot color setting (color only when both dots are present, per specialization)",
+["双dot染色说明"] = "Colors only when both dots are present; applies only to the specialization used when added",
+["减益1"] = "Debuff 1",
+["减益2"] = "Debuff 2",
+["专精"] = "Spec",
+["操作"] = "Action",
+["请填写两个dot的法术ID"] = "Please fill in both dot spell IDs",
+["无法识别法术ID"] = "Unrecognized spell ID",
+["该组合已存在"] = "This combination already exists",
+["两个减益不能填同一个法术"] = "The two debuffs cannot be the same spell",
+["无法获取当前专精"] = "Cannot get current specialization",
 
 
 --tab NPC 使用的键
