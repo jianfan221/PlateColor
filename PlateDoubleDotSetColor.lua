@@ -156,6 +156,19 @@ function ns.UpdateDoubleDotColor()
 	end
 end
 
+-- 启用/禁用某单位的双dot染色（供 UpdateHpbarColor 在血条变色时隐藏双dot染色）
+function ns.SetDoubleDotColorEnabled(unitFrame, enabled)
+	local container = containers[unitFrame]
+	if not container then return end
+	if enabled then
+		container:SetEnabled(true)
+		container:Show()
+	else
+		container:SetEnabled(false)
+		container:Hide()
+	end
+end
+
 -- 列表 / 专精变化：重算记录并刷新所有姓名板
 function ns.RefreshDoubleDotColor()
 	RefreshActiveSpells()

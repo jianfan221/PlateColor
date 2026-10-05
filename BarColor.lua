@@ -19,6 +19,9 @@ function ns.UpdateHpbarColor(unitFrame)
     if ns.SetAuraColorEnabled then
         ns.SetAuraColorEnabled(unitFrame, true)
     end
+    if ns.SetDoubleDotColorEnabled then
+        ns.SetDoubleDotColorEnabled(unitFrame, true)
+    end
 
     local DB = PlateColorDB
     local unit = unitFrame.unit
@@ -32,26 +35,32 @@ function ns.UpdateHpbarColor(unitFrame)
     -- 【第一部分：紧急拦截】（触发时隐藏 DOT 染色，避免叠加）
     if Threat == 0 and InCombat and IsTank then
         if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
+        if ns.SetDoubleDotColorEnabled then ns.SetDoubleDotColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.TANKnoThreatColor.r, DB.TANKnoThreatColor.g, DB.TANKnoThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 1 and IsTank then
         if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
+        if ns.SetDoubleDotColorEnabled then ns.SetDoubleDotColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.TANKhighThreatColor.r, DB.TANKhighThreatColor.g, DB.TANKhighThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 2 and IsTank then
         if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
+        if ns.SetDoubleDotColorEnabled then ns.SetDoubleDotColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.TANKlowThreatColor.r, DB.TANKlowThreatColor.g, DB.TANKlowThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 1 and NoTank then
         if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
+        if ns.SetDoubleDotColorEnabled then ns.SetDoubleDotColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.highThreatColor.r, DB.highThreatColor.g, DB.highThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 2 and NoTank then
         if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
+        if ns.SetDoubleDotColorEnabled then ns.SetDoubleDotColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.lowThreatColor.r, DB.lowThreatColor.g, DB.lowThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
     elseif Threat == 3 and NoTank then
         if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end
+        if ns.SetDoubleDotColorEnabled then ns.SetDoubleDotColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.myThreatColor.r, DB.myThreatColor.g, DB.myThreatColor.b
         unitFrame.healthBar:GetStatusBarTexture():SetVertexColor(hr, hg, hb); return
 
@@ -60,6 +69,7 @@ function ns.UpdateHpbarColor(unitFrame)
         hr, hg, hb = DB.myTargetColor.r, DB.myTargetColor.g, DB.myTargetColor.b
     elseif UnitIsUnit(unit, "focus") and DB.myFocus then
         if ns.SetAuraColorEnabled then ns.SetAuraColorEnabled(unitFrame, false) end--焦点也取消dot变色
+        if ns.SetDoubleDotColorEnabled then ns.SetDoubleDotColorEnabled(unitFrame, false) end
         hr, hg, hb = DB.myFocusColor.r, DB.myFocusColor.g, DB.myFocusColor.b
     else
         local npcColor = (DB.UseNpc == 2 or DB.UseNpc == 3) and ns.NpcLevelColor(unitFrame)
