@@ -119,14 +119,6 @@ function ns.SetPoints(self)
 
 	self.name:ClearAllPoints();
 	self.HealthBarsContainer:ClearAllPoints();
-	local castBar = ns.GetCastBar(self)
-	if castBar then
-		castBar:ClearAllPoints();
-		castBar.Text:ClearAllPoints();
-		castBar.Icon:ClearAllPoints();
-		castBar.BorderShield:ClearAllPoints();
-		castBar.CastTargetNameText:ClearAllPoints();
-	end
 
 	--名字位置
 	if not self.healthBar:IsShown() then
@@ -196,11 +188,16 @@ function ns.SetPoints(self)
 	end
 	self.name:SetSmoothScaling(false)
 
-	local castBar = ns.GetCastBar(self)
 	-- 血条左下对准左下、右上对准右下。Y 偏移已加施法条高度,1+是让血条和施法条有间隙,保持施法条底部在UnitFrame底部
 	PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMLEFT", self, "BOTTOMLEFT", -hpWidht+50, 1+castBarHeight);
 	PixelUtil.SetPoint(self.HealthBarsContainer, "TOPRIGHT", self, "BOTTOMRIGHT", hpWidht-50, 1+castBarHeight + hpHeight);
+	local castBar = ns.GetCastBar(self)
 	if castBar then
+		castBar:ClearAllPoints();
+		castBar.Text:ClearAllPoints();
+		castBar.Icon:ClearAllPoints();
+		castBar.BorderShield:ClearAllPoints();
+		castBar.CastTargetNameText:ClearAllPoints();
 		PixelUtil.SetPoint(castBar, "BOTTOMLEFT", self, "BOTTOMLEFT", -hpWidht+50, 0);
 		PixelUtil.SetPoint(castBar, "TOPRIGHT", self, "BOTTOMRIGHT", hpWidht-50, castBarHeight);
 		PixelUtil.SetHeight(castBar.Spark,castBarHeight*2)--施法闪光高度
