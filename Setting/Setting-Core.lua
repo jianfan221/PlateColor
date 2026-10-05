@@ -998,8 +998,8 @@ local defaultBtnHandler -- 当前色块的默认设置回调
 -- 创建色块按钮（不创建行，由调用方传入 rowFrame；pc 原 AddColorFrame 的块逻辑）
 -- 参数：rowFrame 所在行框架，tip 提示，width/height 色块尺寸，DB 颜色 DB 字段，setfun 回调，texture 可选纹理
 local function CreateColorBlock(rowFrame, tip, width, height, DB, setfun, texture)
-	local tip = tip or L["点击更改颜色"]
-	local width, height = width or 75, height or 15
+	tip = tip or L["点击更改颜色"]
+	width, height = width or 75, height or 15
 
 	local btn = CreateFrame("Button", nil, rowFrame, "GameMenuButtonTemplate")
 	btn:SetPoint("RIGHT", rowFrame, "RIGHT", -8, 0)
