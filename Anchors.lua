@@ -285,7 +285,7 @@ function ns.SetPoints(self)
 		-- （AuraContainer 是 healthBar 的子框架，默认 frameLevel 更高，会盖住其子纹理）
 		local textFrame = CreateFrame("Frame", nil, self.healthBar)
 		textFrame:SetAllPoints(self.healthBar)
-		textFrame:SetFrameLevel((self.healthBar:GetFrameLevel() or 0) + 10)
+		textFrame:SetFrameLevel((self.healthBar:GetFrameLevel() or 0) + 20)
 		self.healthBar.PCText = textFrame:CreateFontString(nil, "OVERLAY")
 		self.healthBar.PCText:SetVertexColor(1,1,1)
 		self.healthBar.PCText:SetSmoothScaling(false)

@@ -54,7 +54,7 @@ function ns.CreatSlayline(unitFrame)
 		-- （AuraContainer 是 healthBar 的子框架，默认 frameLevel 更高，会盖住其子纹理）
 		local slayFrame = CreateFrame("Frame", nil, unitFrame.healthBar)
 		slayFrame:SetAllPoints(unitFrame.healthBar)
-		slayFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 10)
+		slayFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 20)
 		unitFrame.Slayline = slayFrame:CreateTexture(nil, "OVERLAY")
 		unitFrame.Slayline:SetWidth(2)	
 		unitFrame.Slayline:SetHeight(height)	

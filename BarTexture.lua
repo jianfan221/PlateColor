@@ -68,9 +68,13 @@ function ns.UpdateHpTexture(unitFrame)
 		ns.BorderSetting(unitFrame, unitFrame.MouseoverTexture,2)
 		unitFrame.MouseoverTexture:Hide()
 	end
-	--焦点材质
+	--焦点材质（用独立 Frame 抬高 frameLevel，避免被血条上的光环染色/DOT 染色盖住，
+	--与 Anchors 的血量文本、BarSlayline 的斩杀线同一处理方式）
 	if not unitFrame.FocusTexture then
-		unitFrame.FocusTexture = unitFrame.healthBar:CreateTexture(nil, "OVERLAY")
+		local focusFrame = CreateFrame("Frame", nil, unitFrame.healthBar)
+		focusFrame:SetAllPoints(unitFrame.healthBar)
+		focusFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 10)
+		unitFrame.FocusTexture = focusFrame:CreateTexture(nil, "OVERLAY")
 		unitFrame.FocusTexture:SetTexture("Interface\\Addons\\PlateColor\\texture\\FocusTexture.png")
 		unitFrame.FocusTexture:SetVertexColor(0, 0, 0, 1)
 		unitFrame.FocusTexture:SetAllPoints(unitFrame.healthBar)
