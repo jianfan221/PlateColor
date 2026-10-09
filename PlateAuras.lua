@@ -1,14 +1,12 @@
 ﻿local _, ns = ...
 
 local function SetCooldownText(self)
-    local success, region = pcall(function() 
-        return self.Cooldown:GetRegions()
+    local success, cdText = pcall(function()
+        return self.Cooldown:GetCountdownFontString()
     end)
-    if success and region then
-        if type(region.SetFont) == "function" then
-            region:SetFontObject("PC_FontOutline")
-            region:SetFontHeight(self:GetHeight()/1.5 * PlateColorDB.auraText1)
-        end
+    if success and cdText then
+        cdText:SetFontObject("PC_FontOutline")
+        cdText:SetFontHeight(self:GetHeight()/1.5 * PlateColorDB.auraText1)
     end
 end
 ns.hook(NamePlateAuraItemMixin,"OnLoad",SetCooldownText)
@@ -95,9 +93,11 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		end
 		btn:SetDurationCooldown(cooldown)
 		--冷却倒数文本只设字号（为光环尺寸的比例）
-		local cdRegion = cooldown:GetRegions()
-		if cdRegion and type(cdRegion.SetFont) == "function" then
-			cdRegion:SetFontHeight(shownSize/1.6)
+		--用 GetCountdownFontString() 精确取倒计时 FontString；不能用 GetRegions()[1]：第一项可能是 cooldown 自带贴图，
+		--类型判断会静默跳过导致设置不生效，该按钮就一直用引擎默认字号
+		local cdText = cooldown:GetCountdownFontString()
+		if cdText then
+			cdText:SetFontHeight(shownSize/1.6)
 		end
 		--独立叠层/边框容器: 层级在冷却之上(+2), 不随冷却隐藏
 		local overlay = CreateFrame("Frame", nil, btn)
@@ -106,7 +106,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		local count = overlay:CreateFontString(nil, "OVERLAY", "PC_FontOutline")
 		count:SetPoint("BOTTOMRIGHT", btn, 3, -3)
 		count:SetVertexColor(1, 1, 1)
-		count:SetFontHeight(size/1.75)
+		count:SetFontHeight(shownSize/1.8)
 		btn:SetApplicationCount(count, {})
 		if needBorder then
 			local border = overlay:CreateTexture(nil, "OVERLAY")
