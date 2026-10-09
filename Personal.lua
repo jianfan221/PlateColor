@@ -175,7 +175,22 @@ function ns.AddNewPowerBar()
 		NewPowerBar = PersonalResourceDisplayFrame.NewPowerBar
 	end
 	NewPowerBar:SetSize(PlateColorDB.myHPwidth, PlateColorDB.myHPheight)
-	
+
+	-- 中间显示当前资源数量的文本（放在高层级容器里，避免被资源条挡住）
+	if not NewPowerBar.TextFrame then
+		NewPowerBar.TextFrame = CreateFrame("Frame", nil, NewPowerBar)
+		NewPowerBar.TextFrame:SetAllPoints(NewPowerBar)
+		-- 资源条是 NewPowerBar 的子框架（level = 父级 + 1），这里要更高
+		NewPowerBar.TextFrame:SetFrameLevel(NewPowerBar:GetFrameLevel() + 5)
+		NewPowerBar.Text = NewPowerBar.TextFrame:CreateFontString(nil, "OVERLAY")
+		NewPowerBar.Text:SetPoint("CENTER", NewPowerBar.TextFrame, "CENTER", 0, 0)
+		NewPowerBar.Text:SetFontObject("PC_FontOutline")
+		NewPowerBar.Text:SetSmoothScaling(false)
+	end
+	NewPowerBar.Text:SetFontHeight(PlateColorDB.myHPheight*1.3)
+	NewPowerBar.Text:SetText("")
+	NewPowerBar.lastText = nil
+
 	-- 统一设置个人资源每个条位置
 	local AA = PersonalResourceDisplayFrame
 	local HB = PersonalResourceDisplayFrame.HealthBarsContainer
@@ -306,10 +321,23 @@ function ns.AddNewPowerBar()
 			end
 		end
 		
+		-- 中间显示已就绪的符文数量
+		local function UpdateRuneText()
+			if not NewPowerBar:IsShown() then return end
+			local ready = 0
+			for i = 1, maxPower do
+				if select(3, GetRuneCooldown(i)) then ready = ready + 1 end
+			end
+			NewPowerBar.Text:SetText(tostring(ready))
+		end
+
 		UpdateRuneOrder()
+		UpdateRuneText()
 		NewPowerBar:RegisterEvent("RUNE_POWER_UPDATE")
 		NewPowerBar:SetScript("OnEvent", function()
-			if NewPowerBar:IsShown() then UpdateRuneOrder() end
+			if not NewPowerBar:IsShown() then return end
+			UpdateRuneOrder()
+			UpdateRuneText()
 		end)
 		
 	elseif classFrame.powerType then
@@ -348,6 +376,12 @@ function ns.AddNewPowerBar()
 						NewPowerBar[i]:SetStatusBarColor(0, 0, 0, 0)
 					end
 				end
+			end
+			-- 中间显示当前资源数量
+			local text = tostring(math.floor(power + 0.5))
+			if NewPowerBar.lastText ~= text then
+				NewPowerBar.lastText = text
+				NewPowerBar.Text:SetText(text)
 			end
 		end)
 	end
