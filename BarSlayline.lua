@@ -52,9 +52,10 @@ function ns.CreatSlayline(unitFrame)
 		if height == 0 then return end
 		-- 斩杀线用独立 Frame 容器并抬高 frameLevel，避免被血条上的光环染色
 		-- （AuraContainer 是 healthBar 的子框架，默认 frameLevel 更高，会盖住其子纹理）
+		-- +4：压过染色(+1/+2)与焦点材质(+3)，见 BarTexture 的层级阶梯
 		local slayFrame = CreateFrame("Frame", nil, unitFrame.healthBar)
 		slayFrame:SetAllPoints(unitFrame.healthBar)
-		slayFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 20)
+		slayFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 4)
 		unitFrame.Slayline = slayFrame:CreateTexture(nil, "OVERLAY")
 		unitFrame.Slayline:SetWidth(2)	
 		unitFrame.Slayline:SetHeight(height)	

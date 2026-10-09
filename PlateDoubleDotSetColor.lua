@@ -20,11 +20,6 @@ if not DoesTemplateExist("CustomAuraContainerTemplate") then return end
 local containers = {}     -- unitFrame -> 外层 AuraContainer
 local activeDot1, activeDot2   -- 当前专精生效的两个 dot（多条时只取第 1 条）
 
--- 血条染色颜色
-local function GetColor()
-	return PlateColorDB.doubledotcolor1 or ns.Defaults.doubledotcolor1
-end
-
 -- 重算当前专精生效的法术（多条时只取第 1 条）
 local function RefreshActiveSpells()
 	activeDot1, activeDot2 = nil, nil
@@ -74,26 +69,11 @@ local function DestroyContainer(unitFrame)
 	container:SetParent(UIParent)
 end
 
--- 血条染色纹理：挂在 dd2 的按钮上（显隐由按钮决定），位置锚到血条的填充纹理
-local function MakeBarTexture(btn, fill)
-	local color = GetColor()
-	local tex = btn:CreateTexture(nil, "OVERLAY")
-	local path = ns.HpTextures[PlateColorDB.hpbarTexture] or ns.HpTextures["PC-White"]
-	if string.match(path, "Interface\\") then
-		tex:SetTexture(path)
-	else
-		tex:SetAtlas(path)
-	end
-	tex:SetVertexColor(color.r, color.g, color.b, color.a or 1)
-	tex:SetPoint("TOPLEFT", fill, "TOPLEFT", 1, -1)
-	tex:SetPoint("BOTTOMRIGHT", fill, "BOTTOMRIGHT", 0, 1)
-	return tex
-end
-
 local function BuildContainer(unitFrame, unit)
 	local healthBar = unitFrame.healthBar
 	if not healthBar then return end
 	local fill = healthBar:GetStatusBarTexture() or healthBar
+	local color = PlateColorDB.doubledotcolor1 or ns.Defaults.doubledotcolor1
 
 	-- 复用已有容器（unitFrame 会被暴雪池化复用，切单位即可）
 	local container = containers[unitFrame]
@@ -105,7 +85,6 @@ local function BuildContainer(unitFrame, unit)
 	end
 
 	container = CreateFrame("AuraContainer", nil, healthBar, "CustomAuraContainerTemplate")
-	container:SetFrameLevel(healthBar:GetFrameLevel() - 1)
 	container.pcDDInners = {}
 	container.pcDDTextures = {}
 
@@ -121,6 +100,7 @@ local function BuildContainer(unitFrame, unit)
 			-- 内层：追 dot2，父级 = 外层按钮
 			-- 外层按钮隐藏（dot1 不在）时内层整棵不渲染 → 两个 dot 同时存在才染色
 			local inner = CreateFrame("AuraContainer", nil, btn, "CustomAuraContainerTemplate")
+			inner:SetFrameLevel(healthBar:GetFrameLevel())
 			inner:SetAllPoints(healthBar)
 			inner:EnableMouse(false)
 			inner:AddAuraGroup("dd2", "HARMFUL|PLAYER", {
@@ -130,7 +110,18 @@ local function BuildContainer(unitFrame, unit)
 				initializeFrame = function(btn2)
 					btn2:SetSize(1, 1)
 					btn2:EnableMouse(false)
-					container.pcDDTextures[#container.pcDDTextures + 1] = MakeBarTexture(btn2, fill)
+					-- 血条染色纹理：挂在 dd2 的按钮上（显隐由按钮决定），位置锚到血条的填充纹理
+					local tex = btn2:CreateTexture(nil, "OVERLAY")
+					local path = ns.HpTextures[PlateColorDB.hpbarTexture] or ns.HpTextures["PC-White"]
+					if string.match(path, "Interface\\") then
+						tex:SetTexture(path)
+					else
+						tex:SetAtlas(path)
+					end
+					tex:SetVertexColor(color.r, color.g, color.b, color.a or 1)
+					tex:SetPoint("TOPLEFT", fill, "TOPLEFT", 1, -1)
+					tex:SetPoint("BOTTOMRIGHT", fill, "BOTTOMRIGHT", 0, 1)
+					container.pcDDTextures[#container.pcDDTextures + 1] = tex
 				end,
 			})
 			-- 外层容器可能还没设单位（SetUnit 在 AddAuraGroup 之后才调），有才设
@@ -148,7 +139,7 @@ end
 
 -- 颜色改动：只更新已有纹理颜色
 function ns.UpdateDoubleDotColor()
-	local color = GetColor()
+	local color = PlateColorDB.doubledotcolor1 or ns.Defaults.doubledotcolor1
 	for _, container in pairs(containers) do
 		for _, tex in ipairs(container.pcDDTextures or {}) do
 			tex:SetVertexColor(color.r, color.g, color.b, color.a or 1)

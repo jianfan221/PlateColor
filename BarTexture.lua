@@ -70,10 +70,11 @@ function ns.UpdateHpTexture(unitFrame)
 	end
 	--焦点材质（用独立 Frame 抬高 frameLevel，避免被血条上的光环染色/DOT 染色盖住，
 	--与 Anchors 的血量文本、BarSlayline 的斩杀线同一处理方式）
+	--血条下的层级阶梯：-1 单dot染色 / 0 双dot染色 / +3 焦点 / +4 斩杀线 / +5 血量文本
 	if not unitFrame.FocusTexture then
 		local focusFrame = CreateFrame("Frame", nil, unitFrame.healthBar)
 		focusFrame:SetAllPoints(unitFrame.healthBar)
-		focusFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 10)
+		focusFrame:SetFrameLevel((unitFrame.healthBar:GetFrameLevel() or 0) + 3)
 		unitFrame.FocusTexture = focusFrame:CreateTexture(nil, "OVERLAY")
 		unitFrame.FocusTexture:SetTexture("Interface\\Addons\\PlateColor\\texture\\FocusTexture.png")
 		unitFrame.FocusTexture:SetVertexColor(0, 0, 0, 1)

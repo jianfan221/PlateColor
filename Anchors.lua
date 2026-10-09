@@ -141,6 +141,8 @@ function ns.SetPoints(self)
 	--标记位置
 	if self.RaidTargetFrame then
 		self.RaidTargetFrame:SetScale(PlateColorDB.markScale)
+		--标记固定 50 层级，避免被任务图标、光环等其它元素盖住
+		self.RaidTargetFrame:SetFrameLevel(50)
 		self.RaidTargetFrame:ClearAllPoints();
 		if self:IsShowOnlyName() then
 			PixelUtil.SetPoint(self.RaidTargetFrame, "BOTTOM", self.name, "TOP", 0, 10);
@@ -283,9 +285,10 @@ function ns.SetPoints(self)
 	if not self.healthBar.PCText then
 		-- 生命值文本用独立 Frame 容器并抬高 frameLevel，避免被血条上的光环染色遮挡
 		-- （AuraContainer 是 healthBar 的子框架，默认 frameLevel 更高，会盖住其子纹理）
+		-- +5：最上层，压过染色(+1/+2)、焦点材质(+3)、斩杀线(+4)，见 BarTexture 的层级阶梯
 		local textFrame = CreateFrame("Frame", nil, self.healthBar)
 		textFrame:SetAllPoints(self.healthBar)
-		textFrame:SetFrameLevel((self.healthBar:GetFrameLevel() or 0) + 20)
+		textFrame:SetFrameLevel((self.healthBar:GetFrameLevel() or 0) + 5)
 		self.healthBar.PCText = textFrame:CreateFontString(nil, "OVERLAY")
 		self.healthBar.PCText:SetVertexColor(1,1,1)
 		self.healthBar.PCText:SetSmoothScaling(false)
