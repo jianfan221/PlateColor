@@ -1,8 +1,8 @@
 local addonName, ns = ...
 local L = ns.L
 
--- 光环染色设置：管理要监控的 debuff 列表 + 血条染色颜色。
--- 列表存于 PlateColorDB.mydotlist，颜色存于 mydotcolor1。
+-- 光环染色设置：管理要监控的 debuff 列表 + 血条/MM 两种染色颜色。
+-- 列表存于 PlateColorDB.mydotlist，颜色存于 mydotcolor1（血条）/mydotcolor2（MM）。
 -- 实际染色逻辑见 PlateDotSetColor.lua。
 
 local function GetSpellDisplayName(spellId)
@@ -65,39 +65,8 @@ local function MatchSearch(spellId, searchText)
 	return string.find(string.lower(spellIdText), needle, 1, true) or string.find(string.lower(spellName), needle, 1, true)
 end
 
-local function EnsureWindow()
-	if _G.PlateDotListFrame then
-		return _G.PlateDotListFrame
-	end
-
-	local frame = CreateFrame("Frame", "PlateDotListFrame", UIParent, "BackdropTemplate")
-	frame:SetSize(520, 430)
-	frame:SetPoint("CENTER")
-	frame:SetFrameStrata("DIALOG")
-	frame:SetMovable(true)
-	frame:EnableMouse(true)
-	frame:RegisterForDrag("LeftButton")
-	frame:SetScript("OnDragStart", frame.StartMoving)
-	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-	frame:SetClampedToScreen(true)
-	frame:Hide()
-	frame:SetBackdrop({
-		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-		edgeSize = 16,
-		insets = { left = 4, right = 4, top = 4, bottom = 4 },
-	})
-	frame:SetBackdropColor(0.08, 0.08, 0.08, 1)
-	frame:SetAlpha(1)
-
-	local background = frame:CreateTexture(nil, "BACKGROUND")
-	background:SetAllPoints(frame)
-	background:SetColorTexture(0.08, 0.08, 0.08, 1)
-
-	local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-	title:SetPoint("TOP", 0, -8)
-	title:SetText(L["光环染色设置"])
-
+-- 页构建器（窗口外壳与页框由 PlateAurasWindow.lua 的共用窗口提供；页框与窗口同尺寸，故下面沿用原坐标）
+local function BuildDotColorPage(frame)
 	-- 左上角：鼠标提示显示法术ID开关（勾选状态由 cvar 决定，点击临时切换不持久）
 	local spellIDCheck = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsCheckButtonTemplate")
 	spellIDCheck:SetPoint("TOPLEFT", 8, -4)
@@ -135,6 +104,13 @@ local function EnsureWindow()
 		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
 	end)
 
+	local mmColorLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	mmColorLabel:SetPoint("TOPLEFT", 240, -32)
+	mmColorLabel:SetText(L["MM颜色"])
+	ns.AddColorFrame(frame, 320, -32, L["战斗中/M+等秘密环境无法修改"], 96, 17, "mydotcolor2", function()
+		if ns.UpdateAuraColor then ns.UpdateAuraColor() end
+	end, "Interface\\Addons\\PlateColor\\texture\\Bar\\dotMM.png")
+
 	local title2 = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
 	title2:SetPoint("TOPLEFT", 10, -56)
 	title2:SetText(L["同时监控多种dot时,任意存在都会变色"])
@@ -156,7 +132,7 @@ local function EnsureWindow()
 		if spellId then
 			local spellName = GetSpellDisplayName(spellId)
 			if spellName then
-				PlateColorDB.mydotlist[spellId] = { name = spellName, bar = true }
+				PlateColorDB.mydotlist[spellId] = { name = spellName, bar = true, mm = false }
 				self:SetText("")
 				parent:RefreshList()
 				if ns.RefreshAuraColor then ns.RefreshAuraColor() end
@@ -192,10 +168,22 @@ local function EnsureWindow()
 	header:SetJustifyH("LEFT")
 
 	local headerName = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	headerName:SetPoint("TOPLEFT", 150, 0)
+	headerName:SetPoint("TOPLEFT", 95, 0)
 	headerName:SetText(SPELLS .. NAME)
-	headerName:SetWidth(300)
+	headerName:SetWidth(130)
 	headerName:SetJustifyH("LEFT")
+
+	local headerColor = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	headerColor:SetPoint("TOPLEFT", 235, 0)
+	headerColor:SetText(L["血条"])
+	headerColor:SetWidth(55)
+	headerColor:SetJustifyH("LEFT")
+
+	local headerMM = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	headerMM:SetPoint("TOPLEFT", 305, 0)
+	headerMM:SetText("MM")
+	headerMM:SetWidth(55)
+	headerMM:SetJustifyH("LEFT")
 
 	local headerAction = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	headerAction:SetPoint("TOPLEFT", 400, 0)
@@ -254,10 +242,36 @@ local function EnsureWindow()
 				idText:SetText(tostring(spellId))
 
 				local nameText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-				nameText:SetPoint("LEFT", 150, 0)
-				nameText:SetWidth(230)
+				nameText:SetPoint("LEFT", 95, 0)
+				nameText:SetWidth(130)
 				nameText:SetJustifyH("LEFT")
 				nameText:SetText(GetSpellDisplayName(spellId) or UNKNOWN)
+
+				local info = PlateColorDB.mydotlist[spellId]
+
+				-- 血条染色开关
+				local colorCheck = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
+				colorCheck:SetPoint("LEFT", 240, 0)
+				colorCheck:SetSize(24, 24)
+				colorCheck:SetChecked(info.bar)
+				colorCheck:SetScript("OnClick", function(self)
+					info.bar = self:GetChecked()
+					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
+				end)
+				colorCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
+				colorCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
+
+				-- MM 染色开关
+				local mmCheck = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
+				mmCheck:SetPoint("LEFT", 310, 0)
+				mmCheck:SetSize(24, 24)
+				mmCheck:SetChecked(info.mm)
+				mmCheck:SetScript("OnClick", function(self)
+					info.mm = self:GetChecked()
+					if ns.RefreshAuraColor then ns.RefreshAuraColor() end
+				end)
+				mmCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
+				mmCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
 
 				local deleteButton = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
 				deleteButton:SetSize(55, 20)
@@ -297,7 +311,7 @@ local function EnsureWindow()
 			return
 		end
 
-		PlateColorDB.mydotlist[spellId] = { name = spellName, bar = true }
+		PlateColorDB.mydotlist[spellId] = { name = spellName, bar = true, mm = false }
 		searchBox:SetText("")
 		frame:RefreshList()
 		if ns.RefreshAuraColor then ns.RefreshAuraColor() end
@@ -308,13 +322,15 @@ local function EnsureWindow()
 	end)
 
 	frame:RefreshList()
-
-	_G.PlateDotListFrame = frame
-	return frame
 end
 
+ns.RegisterAuraPage("dotColor", {
+	title = L["光环染色设置"],
+	width = 520,
+	height = 430,
+	build = BuildDotColorPage,
+})
+
 function ns.OpenPlateDotList()
-	local frame = EnsureWindow()
-	frame:Show()
-	frame:Raise()
+	ns.OpenAuraPage("dotColor")
 end
