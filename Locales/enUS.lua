@@ -110,6 +110,8 @@ ns.enUS = {
 ["左侧增益光环尺寸"] = "Left Buff Aura Size",
 ["右侧控制光环"] = "Right Control Aura",
 ["右侧控制光环尺寸"] = "Right Control Aura Size",
+["右侧减益过滤器"] = "Right Debuff Filter",
+["右侧减益过滤器鼠标提示"] = "Control show/hide of right control auras and extra debuffs by spell ID",
 
 ["标记"] = "Mark",
 ["标记尺寸"] = "Mark Size",

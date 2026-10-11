@@ -29,6 +29,7 @@ NameColor.lua
 NameOnly.lua
 NpcColor.lua
 PlateAuras.lua
+PlateAurasWindow.lua
 PlateAurasList.lua
 Personal.lua
 PlateAbsorb.lua

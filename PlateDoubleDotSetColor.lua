@@ -17,7 +17,8 @@ local _, ns = ...
 -- 依赖 12.x 光环容器，与"光环染色"标签页保持同一开关条件
 if not DoesTemplateExist("CustomAuraContainerTemplate") then return end
 
-local containers = {}     -- unitFrame -> 外层 AuraContainer
+local containers = {}     -- unitFrame -> 外层 AuraContainer（与 healthBar 绑定，同一根血条复用）
+local owners = {}         -- unit -> unitFrame（NAME_PLATE_UNIT_REMOVED 时找回容器）
 local activeDot1, activeDot2   -- 当前专精生效的两个 dot（多条时只取第 1 条）
 
 -- 重算当前专精生效的法术（多条时只取第 1 条）
@@ -59,14 +60,13 @@ local function SetUnits(container, unit)
 	end
 end
 
--- 销毁某姓名板的双dot容器（当前专精没有配置 / 单位不再需要时用）
-local function DestroyContainer(unitFrame)
+-- 挂起某姓名板的双dot容器（当前专精没有配置 / 单位不再需要时用）
+-- 容器不销毁、不脱离父级：与 healthBar 绑定，保留在表中供同一根血条复用时复用
+local function HideContainer(unitFrame)
 	local container = containers[unitFrame]
 	if not container then return end
-	containers[unitFrame] = nil
-	container:SetUnit("none")
-	container:Hide()
-	container:SetParent(UIParent)
+	container:Hide()--不可见即解绑光环事件，故必须先 Hide
+	SetUnits(container, "none")
 end
 
 local function BuildContainer(unitFrame, unit)
@@ -164,10 +164,10 @@ end
 function ns.RefreshDoubleDotColor()
 	RefreshActiveSpells()
 
-	-- 当前专精没有双dot配置：销毁所有已建容器
+	-- 当前专精没有双dot配置：停止所有容器的追踪（保留容器供复用）
 	if not activeDot1 then
 		for unitFrame in pairs(containers) do
-			DestroyContainer(unitFrame)
+			HideContainer(unitFrame)
 		end
 		return
 	end
@@ -186,12 +186,13 @@ ns.event("PLAYER_LOGIN", function()
 	ns.RefreshDoubleDotColor()
 end)
 
--- 姓名板出现就创建（与光环染色一致），不处理移除
+-- 姓名板出现：复用同一根血条的容器（没有才建），并切换追踪单位
 ns.event("NAME_PLATE_UNIT_ADDED", function(_, unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
 	if not namePlate then return end
 	local unitFrame = namePlate.UnitFrame
 	if not unitFrame then return end
+	owners[unit] = unitFrame
 
 	-- 没有配置 / 非可攻击目标 / 玩家目标：隐藏已有容器并跳过
 	if not activeDot1 or not UnitCanAttack("player", unit) or UnitIsPlayer(unit) then
@@ -201,6 +202,14 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(_, unit)
 	end
 
 	BuildContainer(unitFrame, unit)
+end)
+
+-- 姓名板移除：停止追踪（容器不销毁，留给同一根血条被复用时复用；否则会继续绑着已失效的旧令牌）
+ns.event("NAME_PLATE_UNIT_REMOVED", function(_, unit)
+	local unitFrame = owners[unit]
+	owners[unit] = nil
+	if not unitFrame then return end
+	HideContainer(unitFrame)
 end)
 
 ns.event("PLAYER_SPECIALIZATION_CHANGED", function(_, unit)

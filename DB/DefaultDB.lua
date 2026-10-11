@@ -57,10 +57,13 @@ ns.Defaults = {
 	auraLEnable = true,			--左侧增益光环
 	auraLDispelOnly = false,	--仅显示队伍可驱散（仅显示队伍/团队可驱散的光环）
 	auraLScale = 1.5,			--左侧增益光环尺寸
-	auraRScale = 2,				--右侧控制光环尺寸
+	auraREnable = true,			--右侧控制光环
+	auraRScale = 1.5,			--右侧控制光环尺寸
+	rightDotList = {},			--右侧额外监控/隐藏的减益列表（{ [法术ID] = { name=..., show=true, hide=false } }）
 
 	mydotlist = {},				--光环染色监控的 debuff 列表（在场即血条变色）
-	mydotcolor1 = {r=1, g=0.35, b=0.75, a=1},	--血条染色颜色（mydotlist 里的法术在场时血条染此色）
+	mydotcolor1 = {r=1, g=0.35, b=0.75, a=1},	--血条染色颜色（mydotlist 里 bar=true 的法术在场时血条染此色）
+	mydotcolor2 = {r=0, g=0, b=1, a=1},	--MM 染色颜色（mydotlist 里 mm=true 的法术在场时 MM 染此色）
 	doubledotlist = {},				--双dot染色列表（两个 dot 同时存在才变色），键 = 专精..dot1..dot2
 	doubledotcolor1 = {r=1, g=1, b=1, a=1},	--双dot血条染色颜色（doubledotlist 记录命中时血条染此色，默认白色）
 

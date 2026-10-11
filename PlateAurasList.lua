@@ -1,10 +1,13 @@
 local addonName, ns = ...
 local L = ns.L
 
--- 姓名板上方 topMine 组的 dot 法术监控列表设置窗口。
--- 列表存于 PlateColorDB.topDotList，结构为 { [spellID] = { name=..., show=true } }。
--- 仅 show=true 的法术会加入 topMine 组的 includeSpellIDs 过滤（显示在姓名板上方）。
--- 增删/切换显示时调用 ns.RebuildTopMineFilter() 更新各姓名板容器（定义见 PlateAuras.lua）。
+-- 光环过滤列表窗口（两个功能页共用一套列表实现，外壳见 PlateAurasWindow.lua）：
+--   上方减益过滤器 → ns.OpenPlateAurasList()      列表 PlateColorDB.topDotList
+--   右侧减益过滤器 → ns.OpenRightDebuffList()     列表 PlateColorDB.rightDotList
+-- 列表结构 { [spellID] = { name=..., show=true, hide=false } }，语义与所在容器一致：
+--   show=true → 交给「自建」组额外显示（上方 topMine / 右侧 mine——右侧那组只显示自己施放的）
+--   hide=true → 从默认显示里排除（上方 topShown / 右侧 control）
+-- 增删/切换后调用 cfg.onChange（定义见 PlateAuras.lua）刷新各姓名板容器的 candidateFilters。
 
 local function GetSpellDisplayName(spellId)
 	if not spellId then
@@ -42,9 +45,9 @@ local function NormalizeSpellId(text)
 	return nil
 end
 
-local function BuildSpellRows()
+local function BuildSpellRows(db)
 	local rows = {}
-	for spellId in pairs(PlateColorDB.topDotList or {}) do
+	for spellId in pairs(db or {}) do
 		rows[#rows + 1] = spellId
 	end
 
@@ -66,38 +69,10 @@ local function MatchSearch(spellId, searchText)
 	return string.find(string.lower(spellIdText), needle, 1, true) or string.find(string.lower(spellName), needle, 1, true)
 end
 
-local function EnsureWindow()
-	if _G.PlateAurasListFrame then
-		return _G.PlateAurasListFrame
-	end
-
-	local frame = CreateFrame("Frame", "PlateAurasListFrame", UIParent, "BackdropTemplate")
-	frame:SetSize(440, 430)
-	frame:SetPoint("CENTER")
-	frame:SetFrameStrata("DIALOG")
-	frame:SetMovable(true)
-	frame:EnableMouse(true)
-	frame:RegisterForDrag("LeftButton")
-	frame:SetScript("OnDragStart", frame.StartMoving)
-	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-	frame:SetClampedToScreen(true)
-	frame:Hide()
-	frame:SetBackdrop({
-		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-		edgeSize = 16,
-		insets = { left = 4, right = 4, top = 4, bottom = 4 },
-	})
-	frame:SetBackdropColor(0.08, 0.08, 0.08, 1)
-	frame:SetAlpha(1)
-
-	local background = frame:CreateTexture(nil, "BACKGROUND")
-	background:SetAllPoints(frame)
-	background:SetColorTexture(0.08, 0.08, 0.08, 1)
-
-	local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-	title:SetPoint("TOP", 0, -8)
-	title:SetText(L["上方减益过滤器"])
+-- 过滤列表页构建器（窗口外壳与页框由 PlateAurasWindow.lua 的共用窗口提供）
+-- cfg = { dbKey, onChange }；⚠️ 列表按 dbKey 每次现取（导入/恢复默认会整表替换 PlateColorDB[key]，不能缓存表引用）
+local function BuildFilterPage(frame, cfg)
+	local dbKey = cfg.dbKey
 
 	-- 左上角：鼠标提示显示法术ID开关（勾选状态由 cvar 决定，点击临时切换不持久）
 	local spellIDCheck = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsCheckButtonTemplate")
@@ -150,10 +125,10 @@ local function EnsureWindow()
 		if spellId then
 			local spellName = GetSpellDisplayName(spellId)
 			if spellName then
-				PlateColorDB.topDotList[spellId] = { name = spellName, show = true, hide = false }
+				PlateColorDB[dbKey][spellId] = { name = spellName, show = true, hide = false }
 				self:SetText("")
 				parent:RefreshList()
-				if ns.RebuildTopDotFilters then ns.RebuildTopDotFilters() end
+				if cfg.onChange then cfg.onChange() end
 				return
 			end
 		end
@@ -229,7 +204,7 @@ local function EnsureWindow()
 		local rowCount = 0
 		local lastRow
 
-		for _, spellId in ipairs(BuildSpellRows()) do
+		for _, spellId in ipairs(BuildSpellRows(PlateColorDB[dbKey])) do
 			if MatchSearch(spellId, searchText) then
 				rowCount = rowCount + 1
 				local row = CreateFrame("Frame", nil, self.content)
@@ -264,7 +239,7 @@ local function EnsureWindow()
 				nameText:SetJustifyH("LEFT")
 				nameText:SetText(GetSpellDisplayName(spellId) or UNKNOWN)
 
-				local info = PlateColorDB.topDotList[spellId]
+				local info = PlateColorDB[dbKey][spellId]
 
 				-- 显示/隐藏完全互斥：显示→topMine，隐藏→从topShown排除，勾选其一必取消另一
 				-- 先声明两个局部变量再赋值，否则闭包中引用后声明的 hideCheck 会是全局 nil（Lua 5.1 作用域）
@@ -279,7 +254,7 @@ local function EnsureWindow()
 						info.hide = false
 						hideCheck:SetChecked(false)
 					end
-					if ns.RebuildTopDotFilters then ns.RebuildTopDotFilters() end
+					if cfg.onChange then cfg.onChange() end
 				end)
 				showCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
 				showCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
@@ -294,7 +269,7 @@ local function EnsureWindow()
 						info.show = false
 						showCheck:SetChecked(false)
 					end
-					if ns.RebuildTopDotFilters then ns.RebuildTopDotFilters() end
+					if cfg.onChange then cfg.onChange() end
 				end)
 				hideCheck:SetScript("OnEnter", function() SetRowHighlighted(true) end)
 				hideCheck:SetScript("OnLeave", function() SetRowHighlighted(false) end)
@@ -304,9 +279,9 @@ local function EnsureWindow()
 				deleteButton:SetPoint("LEFT", 330, 0)
 				deleteButton:SetText(DELETE)
 				deleteButton:SetScript("OnClick", function()
-					PlateColorDB.topDotList[spellId] = nil
+					PlateColorDB[dbKey][spellId] = nil
 					frame:RefreshList()
-					if ns.RebuildTopDotFilters then ns.RebuildTopDotFilters() end
+					if cfg.onChange then cfg.onChange() end
 				end)
 				deleteButton:SetScript("OnEnter", function() SetRowHighlighted(true) end)
 				deleteButton:SetScript("OnLeave", function() SetRowHighlighted(false) end)
@@ -337,10 +312,10 @@ local function EnsureWindow()
 			return
 		end
 
-		PlateColorDB.topDotList[spellId] = { name = spellName, show = true, hide = false }
+		PlateColorDB[dbKey][spellId] = { name = spellName, show = true, hide = false }
 		searchBox:SetText("")
 		frame:RefreshList()
-		if ns.RebuildTopDotFilters then ns.RebuildTopDotFilters() end
+		if cfg.onChange then cfg.onChange() end
 	end)
 
 	frame:SetScript("OnShow", function(self)
@@ -348,13 +323,39 @@ local function EnsureWindow()
 	end)
 
 	frame:RefreshList()
-
-	_G.PlateAurasListFrame = frame
-	return frame
 end
 
+-- ═══ 注册为共用窗口的两页（标题/尺寸在这里给，窗口外壳见 PlateAurasWindow.lua）═══
+ns.RegisterAuraPage("topFilter", {
+	title = L["上方减益过滤器"],
+	width = 440,
+	height = 430,
+	-- PlateColorDB.topDotList → 上方容器 topMine / topShown
+	build = function(frame)
+		BuildFilterPage(frame, {
+			dbKey = "topDotList",
+			onChange = function() if ns.RebuildTopDotFilters then ns.RebuildTopDotFilters() end end,
+		})
+	end,
+})
+
+ns.RegisterAuraPage("rightFilter", {
+	title = L["右侧减益过滤器"],
+	width = 440,
+	height = 430,
+	-- PlateColorDB.rightDotList → 右侧容器 mine（show=true 的，只显示自己施放的）/ control（排除）
+	build = function(frame)
+		BuildFilterPage(frame, {
+			dbKey = "rightDotList",
+			onChange = function() if ns.RebuildControlFilters then ns.RebuildControlFilters() end end,
+		})
+	end,
+})
+
 function ns.OpenPlateAurasList()
-	local frame = EnsureWindow()
-	frame:Show()
-	frame:Raise()
+	ns.OpenAuraPage("topFilter")
+end
+
+function ns.OpenRightDebuffList()
+	ns.OpenAuraPage("rightFilter")
 end

@@ -96,39 +96,8 @@ local function BuildRows()
 	return rows
 end
 
-local function EnsureWindow()
-	if _G.PlateDoubleDotListFrame then
-		return _G.PlateDoubleDotListFrame
-	end
-
-	local frame = CreateFrame("Frame", "PlateDoubleDotListFrame", UIParent, "BackdropTemplate")
-	frame:SetSize(560, 460)
-	frame:SetPoint("CENTER")
-	frame:SetFrameStrata("DIALOG")
-	frame:SetMovable(true)
-	frame:EnableMouse(true)
-	frame:RegisterForDrag("LeftButton")
-	frame:SetScript("OnDragStart", frame.StartMoving)
-	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-	frame:SetClampedToScreen(true)
-	frame:Hide()
-	frame:SetBackdrop({
-		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-		edgeSize = 16,
-		insets = { left = 4, right = 4, top = 4, bottom = 4 },
-	})
-	frame:SetBackdropColor(0.08, 0.08, 0.08, 1)
-	frame:SetAlpha(1)
-
-	local background = frame:CreateTexture(nil, "BACKGROUND")
-	background:SetAllPoints(frame)
-	background:SetColorTexture(0.08, 0.08, 0.08, 1)
-
-	local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-	title:SetPoint("TOP", 0, -8)
-	title:SetText(L["双dot染色设置"])
-
+-- 页构建器（窗口外壳与页框由 PlateAurasWindow.lua 的共用窗口提供；页框与窗口同尺寸，故下面沿用原坐标）
+local function BuildDoubleDotPage(frame)
 	-- 左上角：鼠标提示显示法术ID开关（勾选状态由 cvar 决定，点击临时切换不持久）
 	local spellIDCheck = CreateFrame("CheckButton", nil, frame, "InterfaceOptionsCheckButtonTemplate")
 	spellIDCheck:SetPoint("TOPLEFT", 8, -4)
@@ -414,13 +383,15 @@ local function EnsureWindow()
 	end)
 
 	frame:RefreshList()
-
-	_G.PlateDoubleDotListFrame = frame
-	return frame
 end
 
+ns.RegisterAuraPage("doubleDot", {
+	title = L["双dot染色设置"],
+	width = 560,
+	height = 460,
+	build = BuildDoubleDotPage,
+})
+
 function ns.OpenPlateDoubleDotList()
-	local frame = EnsureWindow()
-	frame:Show()
-	frame:Raise()
+	ns.OpenAuraPage("doubleDot")
 end
