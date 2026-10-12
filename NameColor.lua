@@ -17,11 +17,11 @@ function ns.SetNameColor(unitFrame)
 
     -- 2. 获取仇恨与角色状态
     local Threat = UnitThreatSituation("player", unit) or 0
-    local role = UnitGroupRolesAssigned("player")
+    local isTank = ns.PlayerIsTank -- 职责缓存由 BarColor.lua 统一刷新
     local InCombat = not ns.MM(UnitAffectingCombat(unit)) and UnitAffectingCombat(unit)
 
     -- 坦克仇恨逻辑优化 (DB.TankthreatUse 1或3)
-    if role == "TANK" and (DB.TankthreatUse == 1 or DB.TankthreatUse == 3) then
+    if isTank and (DB.TankthreatUse == 1 or DB.TankthreatUse == 3) then
         if Threat == 0 and InCombat then
             local c = DB.TANKnoThreatColor
             name:SetVertexColor(c.r, c.g, c.b); return
@@ -33,7 +33,7 @@ function ns.SetNameColor(unitFrame)
             name:SetVertexColor(c.r, c.g, c.b); return
         end
     -- 非坦克仇恨逻辑优化 (DB.threatUse 1或3)
-    elseif role ~= "TANK" and (DB.threatUse == 1 or DB.threatUse == 3) then
+    elseif not isTank and (DB.threatUse == 1 or DB.threatUse == 3) then
         if Threat == 1 then
             local c = DB.highThreatColor
             name:SetVertexColor(c.r, c.g, c.b); return

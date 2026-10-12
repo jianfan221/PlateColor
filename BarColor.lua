@@ -4,6 +4,28 @@ LinePointColor:SetType(Enum.LuaCurveType.Step)
 local slayColorObj = CreateColor(0, 0, 0, 1)
 local healthColorObj = CreateColor(0, 0, 0, 1)
 
+-- 玩家职责缓存（是否坦克），由事件刷新，避免每次染色都读取；NameColor.lua 共用
+ns.PlayerIsTank = false
+
+-- 读取玩家职责：正式服优先用当前专精职责；怀旧服无专精 API，回退到队伍职责
+local function UpdatePlayerRole()
+	local role
+	if C_SpecializationInfo and C_SpecializationInfo.GetSpecialization and GetSpecializationRole then
+		local specIndex = C_SpecializationInfo.GetSpecialization()
+		role = specIndex and GetSpecializationRole(specIndex)
+	end
+	role = role or UnitGroupRolesAssigned("player")
+	ns.PlayerIsTank = role == "TANK"
+end
+UpdatePlayerRole()
+
+-- 职责 / 专精变化时刷新缓存
+if C_SpecializationInfo and C_SpecializationInfo.GetSpecialization and GetSpecializationRole then
+	ns.event("PLAYER_SPECIALIZATION_CHANGED", UpdatePlayerRole)
+end
+ns.event("PLAYER_ROLES_ASSIGNED", UpdatePlayerRole)
+ns.event("PLAYER_LOGIN", UpdatePlayerRole)
+
 -- 血条变色
 function ns.UpdateHpbarColor(unitFrame)
     if not unitFrame or unitFrame:IsForbidden() or not unitFrame.unit then return end
@@ -26,8 +48,8 @@ function ns.UpdateHpbarColor(unitFrame)
     local DB = PlateColorDB
     local unit = unitFrame.unit
     local Threat = UnitThreatSituation("player", unit) or 0
-    local IsTank = UnitGroupRolesAssigned("player") == "TANK" and (DB.TankthreatUse == 2 or DB.TankthreatUse == 3)
-    local NoTank = UnitGroupRolesAssigned("player") ~= "TANK" and (DB.threatUse == 2 or DB.threatUse == 3)
+    local IsTank = ns.PlayerIsTank and (DB.TankthreatUse == 2 or DB.TankthreatUse == 3)
+    local NoTank = not ns.PlayerIsTank and (DB.threatUse == 2 or DB.threatUse == 3)
     local InCombat = UnitAffectingCombat(unit)
 
     local hr, hg, hb
