@@ -190,6 +190,8 @@ function ns.AddNewPowerBar()
 	NewPowerBar.Text:SetFontHeight(PlateColorDB.myHPheight*1.3)
 	NewPowerBar.Text:SetText("")
 	NewPowerBar.lastText = nil
+	-- 跟随“额外资源数值”开关
+	NewPowerBar.Text:SetShown(PlateColorDB.myHPExtraValue and true or false)
 
 	-- 统一设置个人资源每个条位置
 	local AA = PersonalResourceDisplayFrame
@@ -275,7 +277,10 @@ function ns.AddNewPowerBar()
 		NewPowerBar[i]:SetSize(chargeWidth, PlateColorDB.myHPheight)
 	end
 	
-	-- 根据职业设置更新逻辑
+	-- 根据职业设置更新逻辑（先清掉上一次 setup 留下的脚本/事件，避免分支切换后互相覆盖）
+	NewPowerBar:SetScript("OnUpdate", nil)
+	NewPowerBar:SetScript("OnEvent", nil)
+	NewPowerBar:UnregisterAllEvents()
 	if classID == 6 then
 		-- 死亡骑士：符文冷却处理
 		for i = 1, maxPower do
@@ -340,6 +345,72 @@ function ns.AddNewPowerBar()
 			UpdateRuneText()
 		end)
 		
+	elseif C_SpellBook.IsSpellKnown(470347) then
+		-- 潜行者「超荷充能」：没有连击点 = 青蓝色 50%，有连击点 = 蓝色 100%
+		for i = 1, maxPower do
+			NewPowerBar[i]:SetMinMaxValues(0, 1)
+			NewPowerBar[i]:SetPoint("LEFT", i == 1 and NewPowerBar or NewPowerBar[i-1], i == 1 and "LEFT" or "RIGHT", i == 1 and 1 or 2, 0)
+		end
+		local function UpdateChargedPoints()
+			if not NewPowerBar:IsShown() then return end
+			local cf = PersonalResourceDisplayFrame and PersonalResourceDisplayFrame.classFrame
+			if not cf or not cf:IsShown() or not cf.powerType then return end
+			local power = UnitPower("player", cf.powerType, true)
+			local maxPoints = UnitPowerMax("player", cf.powerType)
+			if not power or ns.MM(power) or not maxPoints or ns.MM(maxPoints) then return end
+			local charged = GetUnitChargedPowerPoints("player")
+			if charged and ns.MM(charged) then charged = nil end
+			for i = 1, maxPoints do
+				local point = NewPowerBar[i]
+				if point then
+					-- 判断第 i 个连击点是否被充能
+					local isCharged = false
+					if charged then
+						for _, v in ipairs(charged) do
+							if not issecretvalue(v) and v == i then
+								isCharged = true
+								break
+							end
+						end
+					end
+					if isCharged then
+						-- 充能点：没有连击点 = 青蓝色 50%，有连击点 = 蓝色 100%
+						point:SetValue(1)
+						if power >= i then
+							point:SetStatusBarColor(0, 0.5, 1, 1)
+						else
+							point:SetStatusBarColor(0, 1, 1, 0.5)
+						end
+					else
+						local fill = power - (i - 1)
+						if fill >= 1 then
+							point:SetValue(1)
+							point:SetStatusBarColor(r, g, b, 1)
+						elseif fill > 0 then
+							point:SetValue(fill)
+							point:SetStatusBarColor(1, 0.7, 0, 1)
+						else
+							point:SetValue(0)
+							point:SetStatusBarColor(0, 0, 0, 0)
+						end
+					end
+				end
+			end
+			-- 中间显示当前连击点数量（全舍）
+			local text = tostring(math.floor(power))
+			if NewPowerBar.lastText ~= text then
+				NewPowerBar.lastText = text
+				NewPowerBar.Text:SetText(text)
+			end
+		end
+		NewPowerBar:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
+		NewPowerBar:RegisterUnitEvent("UNIT_POWER_POINT_CHARGE", "player")
+		NewPowerBar:RegisterUnitEvent("UNIT_MAXPOWER", "player")
+		NewPowerBar:SetScript("OnEvent", function()
+			UpdateChargedPoints()
+		end)
+		UpdateChargedPoints()
+		
 	elseif classFrame.powerType then
 		-- 其他职业：统一设置位置
 		for i = 1, maxPower do
@@ -377,8 +448,8 @@ function ns.AddNewPowerBar()
 					end
 				end
 			end
-			-- 中间显示当前资源数量
-			local text = tostring(math.floor(power + 0.5))
+			-- 中间显示当前资源数量（全舍，直接丢弃小数）
+			local text = tostring(math.floor(power))
 			if NewPowerBar.lastText ~= text then
 				NewPowerBar.lastText = text
 				NewPowerBar.Text:SetText(text)
