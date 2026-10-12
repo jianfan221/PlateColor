@@ -385,6 +385,7 @@ ns.AddTab(L["个人资源"], function()
 	ns.AddCheck(L["个人资源数值"], L["个人资源数值"], "myHPValue", ns.AllmyPowerBar)
 	local ShowModeTable = {{L["暴雪原版"],0},{L["新版资源条"],1},{L["精简2行"],2}}
 	ns.AddDropdown(L["额外资源模式"], L["额外资源模式"], ShowModeTable, "myHPShowMode", ns.AllmyPowerBar)
+	ns.AddCheck(L["额外资源数值"], L["额外资源数值"], "myHPExtraValue", ns.AllmyPowerBar)
 	ns.AddCheckColor(L["新版资源条自定义颜色"], L["新版资源条自定义颜色"], "newClassBarSetColor", "newClassBarColor", ns.AllmyPowerBar)
 	ns.AddCheck(L["武僧坦克酒池使用数值"], L["武僧坦克酒池使用数值"], "myHPStaggerUseValue", ns.AllmyPowerBar)
 

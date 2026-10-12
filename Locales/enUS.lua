@@ -123,6 +123,7 @@ ns.enUS = {
 ["启用个人资源设置鼠标提示"] = "Enable personal resource settings below\n|cffFF69B4Reload UI when disabled|r",
 ["个人资源数值"] = "Personal Resource Value",
 ["额外资源模式"] = "Extra Resource Mode",
+["额外资源数值"] = "Extra Resource Value",
 ["暴雪原版"] = "Blizzard Default",
 ["新版资源条"] = "New Resource Bar",
 ["精简2行"] = "Compact 2 Lines",
