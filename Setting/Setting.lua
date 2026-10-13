@@ -195,7 +195,25 @@ ns.AddTab(L["生命值"], function()
 end)
 
 -- ═══════════════════════════════════════════════════════════════════
--- 指示器：箭头 / 交互 / 其他 / CVars
+-- CVars
+-- ═══════════════════════════════════════════════════════════════════
+ns.AddTab("CVars", function()
+
+	ns.AddSection("CVars")
+	ns.AddCVarSlider(L["当前目标尺寸"], L["当前目标尺寸"], 1, 2, 0.1, "%.1f", "nameplateSelectedScale")
+	ns.AddSlider(L["非当前目标透明度"], L["非当前目标透明度"], 0, 1, 0.1, "%.1f", "allNpAlpha", ns.SetSelectedScale)
+	ns.AddCVarSlider(L["隔墙姓名板透明度"], L["隔墙姓名板透明度"], 0, 1, 0.1, "%.1f", "nameplateOccludedAlphaMult")
+	ns.AddCVarSlider(L["垂直堆叠间距"], L["垂直堆叠间距"], 0.1, 2, 0.1, "%.1f", "nameplateOverlapV")
+	ns.AddCVarSlider(L["水平堆叠间距"], L["水平堆叠间距"], 0.1, 2, 0.1, "%.1f", "nameplateOverlapH")
+	ns.AddCVarSlider(L["姓名版可见范围"], L["姓名版可见范围"], 10, 60, 1, "%d", "nameplateMaxDistance")
+	ns.AddCVarSlider(L["姓名版移动速度"], L["姓名版移动速度"], 0, 1, 0.005, "%.3f", "nameplateMotionSpeed")
+	ns.AddCVarSlider(L["姓名版顶部边距"], L["姓名版顶部边距"], 0, 0.5, 0.01, "%.2f", "nameplateTopInset")
+	ns.AddCVarSlider(L["姓名版底部边距"], L["姓名版底部边距"], 0, 0.5, 0.01, "%.2f", "nameplateBottomInset")
+
+end)
+
+-- ═══════════════════════════════════════════════════════════════════
+-- 指示器：箭头 / 交互 / 其他
 -- ═══════════════════════════════════════════════════════════════════
 ns.AddTab(L["指示器"], function()
 
@@ -238,14 +256,6 @@ ns.AddTab(L["指示器"], function()
 	ns.AddCheck(L["任务标志"], L["任务标志"], "questMark", ns.CreateNameQuest)
 	ns.AddCheck(L["等级文本"], L["等级文本鼠标提示"], "levelText")
 	ns.AddCheck(L["吸收盾数值"], L["吸收盾数值鼠标提示"], "absorbText")
-
-	ns.AddSection("CVars")
-	ns.AddCVarSlider(L["当前目标尺寸"], L["当前目标尺寸"], 1, 2, 0.1, "%.1f", "nameplateSelectedScale")
-	ns.AddSlider(L["非当前目标透明度"], L["非当前目标透明度"], 0, 1, 0.1, "%.1f", "allNpAlpha", ns.SetSelectedScale)
-	ns.AddCVarSlider(L["隔墙姓名板透明度"], L["隔墙姓名板透明度"], 0, 1, 0.1, "%.1f", "nameplateOccludedAlphaMult")
-	ns.AddCVarSlider(L["垂直堆叠间距"], L["垂直堆叠间距"], 0.1, 2, 0.1, "%.1f", "nameplateOverlapV")
-	ns.AddCVarSlider(L["水平堆叠间距"], L["水平堆叠间距"], 0.1, 2, 0.1, "%.1f", "nameplateOverlapH")
-	ns.AddCVarSlider(L["姓名版可见范围"], L["姓名版可见范围"], 10, 60, 1, "%d", "nameplateMaxDistance")
 
 end)
 
