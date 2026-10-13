@@ -185,6 +185,9 @@ ns.enUS = {
 ["垂直堆叠间距"] = "Vertical Stack Spacing",
 ["水平堆叠间距"] = "Horizontal Stack Spacing",
 ["姓名版可见范围"] = "Nameplate Visibility Range",
+["姓名版移动速度"] = "Nameplate Motion Speed",
+["姓名版顶部边距"] = "Nameplate Top Inset",
+["姓名版底部边距"] = "Nameplate Bottom Inset",
 
 ["其他"] = "Other",
 ["任务标志"] = "Quest Marker",
