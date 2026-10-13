@@ -7,10 +7,10 @@ local healthColorObj = CreateColor(0, 0, 0, 1)
 -- 玩家职责缓存（是否坦克），由事件刷新，避免每次染色都读取；NameColor.lua 共用
 ns.PlayerIsTank = false
 
--- 读取玩家职责：正式服优先用当前专精职责；怀旧服无专精 API，回退到队伍职责
+-- 读取玩家职责：仅正式服有专精职责 API，其余（怀旧服 / 时光服）直接用队伍职责
 local function UpdatePlayerRole()
 	local role
-	if C_SpecializationInfo and C_SpecializationInfo.GetSpecialization and GetSpecializationRole then
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		local specIndex = C_SpecializationInfo.GetSpecialization()
 		role = specIndex and GetSpecializationRole(specIndex)
 	end
@@ -20,7 +20,7 @@ end
 UpdatePlayerRole()
 
 -- 职责 / 专精变化时刷新缓存
-if C_SpecializationInfo and C_SpecializationInfo.GetSpecialization and GetSpecializationRole then
+if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 	ns.event("PLAYER_SPECIALIZATION_CHANGED", UpdatePlayerRole)
 end
 ns.event("PLAYER_ROLES_ASSIGNED", UpdatePlayerRole)
