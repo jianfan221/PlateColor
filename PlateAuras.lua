@@ -75,6 +75,8 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- size: 基础尺寸(不含缩放); tooltip: true=保留鼠标提示(不填则完全鼠标穿透，二者互斥)
 	-- reverse: 冷却是否反向; needBorder: 是否加驱散边框(含驱散类型染色，不填则不加)
 	-- 缩放不烘进按钮尺寸（AuraButton 是 forbidden 对象、创建后改不了它的尺寸），改由容器 SetScale 施加 → 可实时调整
+	local cooldownTextEntries = {}
+
 	local function InitAuraButton(btn, size, tooltip, reverse, needBorder)
 		btn:SetSize(size, size)
 		if tooltip then
@@ -97,7 +99,8 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		--类型判断会静默跳过导致设置不生效，该按钮就一直用引擎默认字号
 		local cdText = cooldown:GetCountdownFontString()
 		if cdText then
-			cdText:SetFontHeight(size/1.6)
+			cooldownTextEntries[#cooldownTextEntries + 1] = { fontString = cdText, size = size }
+			cdText:SetFontHeight(size/1.6 * PlateColorDB.auraText1)
 		end
 		--独立叠层/边框容器: 层级在冷却之上(+2), 不随冷却隐藏
 		local overlay = CreateFrame("Frame", nil, btn)
@@ -138,6 +141,12 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 实时套用当前光环尺寸到某姓名板（unitFrame=nil 则全部）；返回 true=全部成功
 	function ns.ApplyAuraScale(unitFrame)
 		local failed = false
+		if not unitFrame then
+			for _, entry in ipairs(cooldownTextEntries) do
+				local ok = pcall(entry.fontString.SetFontHeight, entry.fontString, entry.size / 1.6 * PlateColorDB.auraText1)
+				if not ok then failed = true end
+			end
+		end
 		local function one(uf)
 			if not SetContainerScale(uf.PC_DispelAuras, PlateColorDB.auraLScale) then failed = true end
 			if not SetContainerScale(uf.PC_TopDebuffAuras, PlateColorDB.auraTopScale) then failed = true end

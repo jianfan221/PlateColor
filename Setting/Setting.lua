@@ -267,7 +267,9 @@ ns.AddTab(AURAS, function()
 	ns.AddSection(AURAS)
 	ns.AddCVarCheck(L["光环鼠标提示显示法术ID"], L["光环鼠标提示显示法术ID鼠标提示"], "tooltipShowAuraSpellIDs")
 	ns.AddCheck(L["隐藏光环鼠标提示"], L["隐藏光环鼠标提示"], "hideAuraTooltip")
-	ns.AddSlider(L["光环冷却时间文本尺寸"], L["光环冷却时间文本尺寸"], 0.5, 1.5, 0.1, "%.1f", "auraText1")
+	ns.AddSlider(L["光环冷却时间文本尺寸"], L["光环冷却时间文本尺寸"], 0.5, 1.5, 0.1, "%.1f", "auraText1", function(unitFrame)
+		if ns.ApplyAuraScale then ns.ApplyAuraScale(unitFrame) end
+	end)
 	ns.AddSection(L["上方减益光环"])
 	if DoesTemplateExist("CustomAuraContainerTemplate") then
 		-- auraBtn 在 AddCheck 之后创建，故先声明；勾选状态变化时同步启用/禁用该按钮
