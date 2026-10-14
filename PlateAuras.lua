@@ -269,11 +269,14 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		local unitFrame = namePlate.UnitFrame
 		if not unitFrame then return end
 
-		-- 只对敌对单位建容器：可驱散/重要增益只对敌方有战术意义（友方的原生光环列表仍归暴雪管）
+		-- 只对敌对单位建容器（显示什么由光环组过滤决定）
 		if unitFrame:IsFriend() then return end
 
 		-- 从池取容器（池空则新建），作为 healthBar 子级，随血条显示/隐藏、继承框架层级
 		local container = AcquireDispel(unitFrame)
+		-- 玩家及其他玩家的宠物保留 otherBuff，只禁用 disBuff
+		local playerOrPet = UnitIsPlayer(unit) or UnitIsOtherPlayersPet(unit)
+		pcall(container.SetAuraGroupEnabled, container, "disBuff", not playerOrPet)
 		dispelOwner[unit] = unitFrame
 		container:SetUnit(unit)
 		container:Show()
