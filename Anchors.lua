@@ -244,7 +244,7 @@ function ns.SetPoints(self)
 					local name = UnitName(target)
 					local text = self.CastTargetNameText
 					text:SetText(name ~= nil and name or "")
-					local color = UnitIsPlayer(target) and C_ClassColor.GetClassColor(UnitClassBase(target)) or UnitReaction(target, "player") and FACTION_BAR_COLORS[UnitReaction(target, "player")]
+					local color = UnitIsPlayer(target) and C_ClassColor.GetClassColor((UnitClassBase(target))) or UnitReaction(target, "player") and FACTION_BAR_COLORS[UnitReaction(target, "player")]
 					if color ~= nil then text:SetVertexColor(color.r, color.g, color.b) end
 					text:Show()
 				end)
