@@ -206,7 +206,7 @@ ns.AddTab("CVars", function()
 	ns.AddCVarSlider(L["垂直堆叠间距"], L["垂直堆叠间距"], 0.1, 2, 0.1, "%.1f", "nameplateOverlapV")
 	ns.AddCVarSlider(L["水平堆叠间距"], L["水平堆叠间距"], 0.1, 2, 0.1, "%.1f", "nameplateOverlapH")
 	ns.AddCVarSlider(L["姓名版可见范围"], L["姓名版可见范围"], 10, 60, 1, "%d", "nameplateMaxDistance")
-	ns.AddCVarSlider(L["姓名版移动速度"], L["姓名版移动速度"], 0, 1, 0.005, "%.3f", "nameplateMotionSpeed")
+	ns.AddCVarSlider(L["姓名版移动速度"], L["姓名版移动速度"], 0.005, 0.3, 0.005, "%.3f", "nameplateMotionSpeed")
 	ns.AddCVarSlider(L["姓名版顶部边距"], L["姓名版顶部边距"], 0, 0.5, 0.01, "%.2f", "nameplateTopInset")
 	ns.AddCVarSlider(L["姓名版底部边距"], L["姓名版底部边距"], 0, 0.5, 0.01, "%.2f", "nameplateBottomInset")
 
