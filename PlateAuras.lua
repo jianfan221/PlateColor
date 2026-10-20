@@ -485,7 +485,8 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 在此添加 [法术ID] = true 即可，自动排除出控制组；
 	-- 设置窗口「右侧减益过滤器」里增删的法术另存于 PlateColorDB.rightDotList，走组3（只显示自己施放的）
 	local RIGHT_EXTRA_SPELLS = {
-		[1217960] = true, -- 装弹手枪
+		[1217960] = true, -- 装弹手枪｜流血期间易伤20%｜密谋小径
+		[1250023] = true, -- 受保护｜充满保护欲的乌龟｜虚空之痕竞技场
 	}
 
 	-- 组2 应包含的法术：文件内置表（不限来源）
