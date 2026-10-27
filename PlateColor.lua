@@ -2,15 +2,14 @@
 
 -- ================= 暴雪姓名板 CVar 备份/恢复 =================
 -- 功能：备份并恢复以下暴雪姓名板 CVar 的取值。
---   - 每次上线：若 DB(PlateColorDB.BlizzCvar) 里已有存档 → 应用到游戏；
---                 若无存档 → 把当前所有取值存入 DB。
---   - 每个 CVar 都注册了变更回调：游戏中该 CVar 一旦变化，自动更新 DB，保持存档同步。
+--   - 每次上线：用 DB(PlateColorDB.BlizzCvar) 的存档覆盖游戏；
+--                 存档里还没有的 CVar → 把当前取值补录进 DB。
+--   - 监听 CVAR_UPDATE：游戏中该 CVar 一旦变化，自动更新 DB，保持存档同步。
 -- 说明：这些 CVar 取值统一用 C_CVar.GetCVar 读取原始字符串存储（普通 CVar 为 "1"/"0"/数字，
 --       位域 CVar 为带版本字节的原始掩码字符串），恢复时用 C_CVar.SetCVar 原样写回即可。
 local BlizzCvarList = {
-	--"nameplateShowSelf",                              --显示个人资源
 	--名字（ESC→选项→姓名板→"名字"区）
-    "UnitNameOwn",                                    --我的名字
+	"UnitNameOwn",                                    --我的名字
 	"UnitNameNPC",                                    --NPC名字（显示NPC名字下拉的总开关）
 	"UnitNameFriendlySpecialNPCName",                 --NPC名字下拉：特殊NPC
 	"UnitNameHostleNPC",                              --NPC名字下拉：敌对NPC
@@ -56,6 +55,9 @@ local BlizzCvarList = {
 	"nameplateOverlapV",                              --垂直堆叠间距
 	"nameplateOverlapH",                              --水平堆叠间距
 	"nameplateMaxDistance",                           --姓名版可见范围
+	"nameplateMotionSpeed",                           --姓名板运动速度
+	"nameplateTopInset",                              --姓名板顶部内边距
+	"nameplateBottomInset",                           --姓名板底部内边距
 }
 
 -- CVar 快速查找表（供 CVAR_UPDATE 直接比对，避免为每个 CVar 单独注册回调）
@@ -64,39 +66,27 @@ for _, cvar in ipairs(BlizzCvarList) do
 	BlizzCvarMap[cvar] = true
 end
 
--- 读取某个 CVar 的当前值（原始字符串）
-local function GetBlizzCvarValue(cvar)
-	return C_CVar.GetCVar(cvar)
-end
-
--- 把 DB 里的存档应用到游戏
+-- 把 DB 存档应用到游戏；存档里缺的 CVar 顺手补录当前值（须脱战调用）。返回 true = 全部成功
 local function ApplyBlizzCvars()
 	local saved = PlateColorDB.BlizzCvar
-	if not saved then return end
+	if not saved then return true end
+	if InCombatLockdown() then return false end
+	local failed = false
 	for _, cvar in ipairs(BlizzCvarList) do
-		local val = saved[cvar]
-		if val ~= nil then
-			local current = GetBlizzCvarValue(cvar)
-			if current == nil then
-				-- 当前 CVar 已被移除：清除存档残留
-				saved[cvar] = nil
-			elseif current ~= val then
-				C_CVar.SetCVar(cvar, val)
-			end
+		local current = C_CVar.GetCVar(cvar)
+		if current == nil then
+			-- 当前 CVar 已被移除：清除存档残留
+			saved[cvar] = nil
+		elseif saved[cvar] == nil then
+			-- 首次运行 / 清单新增的 CVar：把当前值补录进存档
+			saved[cvar] = current
+		elseif current ~= saved[cvar] then
+			-- SetCVar 返回 success，受限时给 false；pcall 防 taint 抛错
+			local ok, success = pcall(C_CVar.SetCVar, cvar, saved[cvar])
+			if not ok or not success then failed = true end
 		end
 	end
-end
-
--- 把当前所有 CVar 取值存入 DB
-local function SaveBlizzCvars()
-	local saved = PlateColorDB.BlizzCvar
-	if not saved then return end
-	for _, cvar in ipairs(BlizzCvarList) do
-		local val = GetBlizzCvarValue(cvar)
-		if val ~= nil then
-			saved[cvar] = val
-		end
-	end
+	return not failed
 end
 
 -- 单个 CVAR_UPDATE 事件监听：值变化时同步到 DB（用 map 判断是否在本清单中）
@@ -107,23 +97,21 @@ ns.event("CVAR_UPDATE", function(_, cvarName, value)
 	end
 end)
 
--- 战斗中则等待脱战后执行（某些姓名板 CVar 在战斗锁定期间无法修改）
-local function RunAfterCombat(func)
-	if not InCombatLockdown() then
-		func()
-		return
-	end
-	ns.event("PLAYER_REGEN_ENABLED", function()
-		func()
-	end, true)
+-- 脱战安全入口：战斗中或受限时挂起，限制解除后自动重试，成功才注销
+local retryHandle  -- 非 nil 即已挂起
+local function ApplyBlizzCvarsSafely()
+	if ApplyBlizzCvars() then return end
+	if retryHandle then return end
+	retryHandle = EventRegistry:RegisterFrameEventAndCallbackWithHandle("ADDON_RESTRICTION_STATE_CHANGED", function(_, _, state)
+		if state ~= Enum.AddOnRestrictionState.Inactive then return end
+		if ApplyBlizzCvars() then
+			retryHandle:Unregister()
+			retryHandle = nil
+		end
+	end)
 end
 
--- 进入游戏时：先恢复已有存档，再把缺失的 CVar 补存（若在战斗中则脱战后执行）
+-- 进入游戏时：恢复存档（存档里没有的 CVar 会顺手补录）
 ns.event("PLAYER_ENTERING_WORLD", function()
-	local saved = PlateColorDB.BlizzCvar
-	if not saved then return end
-	RunAfterCombat(function()
-		ApplyBlizzCvars()  -- 先恢复已存储的 CVar
-		SaveBlizzCvars()   -- 再补存缺失的 CVar（同时把已存在的刷新为当前值）
-	end)
+	ApplyBlizzCvarsSafely()
 end)
