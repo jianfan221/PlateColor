@@ -8,20 +8,18 @@ function ns.AddAbsorbText(event,unit)
 	local unitFrame = namePlate.UnitFrame
 	if not PlateColorDB.absorbText then return end
 	if not unitFrame.unit then return end
-	if not unitFrame.ArrowLeft then return end
-	
+
 	if not unitFrame.abs then
 		unitFrame.abs = unitFrame.healthBar:CreateFontString(nil, "OVERLAY")
 		unitFrame.abs:SetFontObject("PC_FontOutline")
 		unitFrame.abs:SetFontHeight(21)
 		unitFrame.abs:SetSmoothScaling(false)
+		if not unitFrame.ArrowLeft then
+			pcall(ns.UpdateHpTexture, unitFrame)
+		end
+		unitFrame.abs:SetPoint("RIGHT", unitFrame.ArrowLeft or unitFrame.healthBar, "LEFT", 6, -1)
 	end
-	local anchor = unitFrame.ArrowLeft or unitFrame.healthBar
 
-	unitFrame.abs:ClearAllPoints()
-	unitFrame.abs:SetPoint("RIGHT", anchor, "LEFT", 6, -1)
-	
-	unitFrame.abs:SetText("")
 	local number = UnitGetTotalAbsorbs(unitFrame.unit)
 	unitFrame.abs:SetText(ns.value(number))
 	if number == nil then
