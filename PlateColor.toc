@@ -28,11 +28,11 @@ Name.lua
 NameColor.lua
 NameOnly.lua
 NpcColor.lua
+PlateAbsorb.lua
 PlateAuras.lua
 PlateAurasWindow.lua
 PlateAurasList.lua
 Personal.lua
-PlateAbsorb.lua
 PlateColor.lua
 PlateDotList.lua
 PlateDotSetColor.lua
