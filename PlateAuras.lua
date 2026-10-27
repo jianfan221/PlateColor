@@ -72,21 +72,31 @@ end
 if DoesTemplateExist("CustomAuraContainerTemplate") then
 
 	-- 光环按钮样式初始化：图标/冷却/层数/边框
-	-- size: 基础尺寸(不含缩放); tooltip: true=保留鼠标提示(不填则完全鼠标穿透，二者互斥)
-	-- reverse: 冷却是否反向; needBorder: 是否加驱散边框(含驱散类型染色，不填则不加)
+	-- size: 基础尺寸(不含缩放); reverse: 冷却是否反向; needBorder: 是否加驱散边框(含驱散类型染色，不填则不加)
+	-- 鼠标提示统一由设置「隐藏光环鼠标提示」(hideAuraTooltip) 控制，不再逐组传参
 	-- 缩放不烘进按钮尺寸（AuraButton 是 forbidden 对象、创建后改不了它的尺寸），改由容器 SetScale 施加 → 可实时调整
 	local cooldownTextEntries = {}
+	local auraButtons = {}--已创建的光环按钮，供「隐藏光环鼠标提示」实时套用
+	local auraContainers = {}--{c = 容器, db = 缩放 DB 键}，已创建的全部容器（含池中空闲），设置变更时统一刷
 
-	local function InitAuraButton(btn, size, tooltip, reverse, needBorder)
+	local function InitAuraButton(btn, size, reverse, needBorder)
 		btn:SetSize(size, size)
-		if tooltip then
-			btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
-		else
-			btn:EnableMouse(false)--完全鼠标穿透，不阻挡点击
-		end
+		auraButtons[#auraButtons + 1] = btn
+		--先设提示锚点，再按 DB 决定是否完全鼠标穿透（顺序不能反：穿透后再写鼠标相关会破坏穿透）
+		btn:SetTooltipAnchorPoint("ANCHOR_TOPRIGHT")
+		btn:EnableMouse(not PlateColorDB.hideAuraTooltip)
 		local icon = btn:CreateTexture(nil, "ARTWORK")
-		icon:SetAllPoints(btn)--图标不裁剪，显示完整贴图
+		icon:SetAllPoints(btn)
+		if PlateColorDB.auraIconEdge ~= false then
+			icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)--光环图标裁剪：裁掉图标自带的白边圆角铺满
+			--光环图标描边：黑色底向外扩 1px
+			local bg = btn:CreateTexture(nil, "BACKGROUND")
+			bg:SetColorTexture(0, 0, 0, 1)
+			bg:SetPoint("TOPLEFT", icon, "TOPLEFT", -1, 1)
+			bg:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", 1, -1)
+		end
 		btn:SetIcon(icon)
+		
 		local cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
 		cooldown:SetAllPoints(btn)
 		cooldown:SetHideCountdownNumbers(false)
@@ -125,9 +135,10 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		end
 	end
 
-	-- ═══ 光环尺寸（实时应用）═══
+	-- ═══ 光环尺寸 / 鼠标提示（实时应用）═══
 	-- 缩放施加在“容器”上：AuraButton 本体是 forbidden 对象(创建后不可改尺寸)，而 AuraContainer
 	-- 只带 EventRegistrations，SetScale 不受限 → 图标/冷却/字号/间距随容器整体缩放，可实时改。
+	-- 鼠标提示（hideAuraTooltip）也在这里一起套用，复用同一套受限重试。
 	-- 受限环境（战斗/M+）改不了就挂起，解除后自动重试、成功才注销（见 wow-restriction-retry skill）。
 	local scaleRetryHandle
 
@@ -138,32 +149,44 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		return ok
 	end
 
-	-- 实时套用当前光环尺寸到某姓名板（unitFrame=nil 则全部）；返回 true=全部成功
-	function ns.ApplyAuraScale(unitFrame)
-		local failed = false
-		if not unitFrame then
-			for _, entry in ipairs(cooldownTextEntries) do
-				local ok = pcall(entry.fontString.SetFontHeight, entry.fontString, entry.size / 1.6 * PlateColorDB.auraText1)
-				if not ok then failed = true end
-			end
+	-- 新建容器：登记到统一套用表（含池中空闲的），并当场套一次当前尺寸
+	local function TrackContainer(c, db)
+		auraContainers[#auraContainers + 1] = { c = c, db = db }
+		if not SetContainerScale(c, PlateColorDB[db]) then
+			ns.ApplyAura()--创建时受限（战斗/副本），走统一重试
 		end
-		local function one(uf)
-			if not SetContainerScale(uf.PC_DispelAuras, PlateColorDB.auraLScale) then failed = true end
-			if not SetContainerScale(uf.PC_TopDebuffAuras, PlateColorDB.auraTopScale) then failed = true end
-			if not SetContainerScale(uf.PC_ControlAuras, PlateColorDB.auraRScale) then failed = true end
-			pcall(ns.CrowdControlListFrameScale, uf)--暴雪原生光环位（未被接管时仍显示），尽力而为
-		end
+	end
+
+	-- 套用光环设置（容器尺寸/冷却字号/按钮鼠标提示）：unitFrame=nil 时全量套用，
+	-- 传入 unitFrame 时（pc 的 ApplyChange 会先无参调一次、再逐姓名板调一次）只补该姓名板的暴雪原生位，
+	-- 容器/按钮/字号在无参那次已统一刷过，不必逐姓名板重复跑全量。
+	function ns.ApplyAura(unitFrame)
 		if unitFrame then
-			one(unitFrame)
-		else
-			for _, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-				if namePlate.UnitFrame then one(namePlate.UnitFrame) end
-			end
+			pcall(ns.CrowdControlListFrameScale, unitFrame)--暴雪原生光环位（未被接管时仍显示），尽力而为
+			return true
+		end
+		local failed = false
+		-- 鼠标提示（hideAuraTooltip）合并在此套用：按钮直接全量刷一遍，受限失败则交给下方脱限重试
+		local mouseEnabled = not PlateColorDB.hideAuraTooltip
+		for _, btn in ipairs(auraButtons) do
+			if not pcall(btn.EnableMouse, btn, mouseEnabled) then failed = true end
+		end
+		-- 冷却倒数字号
+		for _, entry in ipairs(cooldownTextEntries) do
+			if not pcall(entry.fontString.SetFontHeight, entry.fontString, entry.size / 1.6 * PlateColorDB.auraText1) then failed = true end
+		end
+		-- 容器缩放：统一刷全部已创建容器（新建时已套过，取用时不再设置）
+		for _, entry in ipairs(auraContainers) do
+			if not SetContainerScale(entry.c, PlateColorDB[entry.db]) then failed = true end
+		end
+		-- 暴雪原生光环位（未被接管时仍显示）只能按姓名板走，尽力而为
+		for _, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+			if namePlate.UnitFrame then pcall(ns.CrowdControlListFrameScale, namePlate.UnitFrame) end
 		end
 		if failed and not scaleRetryHandle then
 			scaleRetryHandle = EventRegistry:RegisterFrameEventAndCallbackWithHandle("ADDON_RESTRICTION_STATE_CHANGED", function(_, _, state)
 				if state ~= Enum.AddOnRestrictionState.Inactive then return end
-				if ns.ApplyAuraScale(nil) then
+				if ns.ApplyAura(nil) then
 					scaleRetryHandle:Unregister()
 					scaleRetryHandle = nil
 				end
@@ -173,22 +196,24 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	end
 
 	-- 关闭自带的左侧增益光环/上方减益的 cvar，因为我们接下来自己创建(仅在功能开启时接管)
-	EventUtil.ContinueOnPlayerLogin(function()
-		-- 左侧增益光环：关闭敌方 NPC 与敌方玩家自带的增益显示（由我们的 PC_DispelAuras 接管）
-		if PlateColorDB.auraLEnable then
-			ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
-			ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
-		end
-		-- 上方减益专属：关闭敌方 NPC 与敌方玩家的减益显示位（由我们的 PC_TopDebuffAuras 接管，避免重复）
-		if PlateColorDB.auraTopEnable then
-			ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Debuffs, false)
-			ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs, false)
-		end
-		-- 右侧控制专属：关闭敌方 NPC 的控制显示位与敌方玩家的失控显示位（由我们的 PC_ControlAuras 接管，避免重复）
-		if PlateColorDB.auraREnable then
-			ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl, false)
-			ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl, false)
-		end
+	ns.event("PLAYER_ENTERING_WORLD", function()
+		C_Timer.After(0.1, function()
+			-- 左侧增益光环：关闭敌方 NPC 与敌方玩家自带的增益显示（由我们的 PC_DispelAuras 接管）
+			if PlateColorDB.auraLEnable then
+				ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Buffs, false)
+				ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, false)
+			end
+			-- 上方减益专属：关闭敌方 NPC 与敌方玩家的减益显示位（由我们的 PC_TopDebuffAuras 接管，避免重复）
+			if PlateColorDB.auraTopEnable then
+				ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.Debuffs, false)
+				ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs, false)
+			end
+			-- 右侧控制专属：关闭敌方 NPC 的控制显示位与敌方玩家的失控显示位（由我们的 PC_ControlAuras 接管，避免重复）
+			if PlateColorDB.auraREnable then
+				ns.SetCVar("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl, false)
+				ns.SetCVar("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl, false)
+			end
+		end)
 	end)
 
 	-- 计算 disBuff 组当前应使用的过滤字符串（支持"仅显示队伍可驱散"选项）
@@ -215,12 +240,13 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 尺寸基准 25 = NamePlateConstants.AURA_ITEM_HEIGHT
 	local function NewDispelContainer()
 		local c = CreateFrame("AuraContainer", nil, UIParent, "CustomAuraContainerTemplate")
+		TrackContainer(c, "auraLScale")
 		-- 组1：可驱散光环；勾选"仅显示队伍可驱散"时只显示队伍/团队可驱散的光环（激怒、魔法等）
 		c:AddAuraGroup("disBuff", GetDispelFilter(), {
 			maxFrameCount = 2,
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 25, true, true, true)--NamePlateConstants.AURA_ITEM_HEIGHT == 25
+				InitAuraButton(btn, 25, true, true)--NamePlateConstants.AURA_ITEM_HEIGHT == 25
 			end,
 		})
 		-- 组2：重要但不可驱散的增益
@@ -228,7 +254,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			maxFrameCount = 2,
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 25, true, false)
+				InitAuraButton(btn, 25, false)
 			end,
 		})
 		c:Hide()
@@ -244,7 +270,6 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		pcall(c.SetAuraGroupFilterString, c, "disBuff", GetDispelFilter())--池中容器按当前设置刷新过滤
 		c:SetParent(unitFrame.healthBar)
 		unitFrame.PC_DispelAuras = c
-		SetContainerScale(c, PlateColorDB.auraLScale)--套用当前尺寸（容器池复用时同步）
 		return c
 	end
 
@@ -260,17 +285,10 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		dispelFree[#dispelFree + 1] = c
 	end
 
-	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+	-- 姓名板出现/消失：左侧可驱散光环（事件在文件末尾统一注册；unitFrame 由调度函数传入）
+	local function OnLeftPlateAdded(unit, unitFrame)
 		-- 左侧增益光环开关关闭时直接跳过
 		if not PlateColorDB.auraLEnable then return end
-
-		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
-		if not namePlate then return end
-		local unitFrame = namePlate.UnitFrame
-		if not unitFrame then return end
-
-		-- 只对敌对单位建容器（显示什么由光环组过滤决定）
-		if unitFrame:IsFriend() then return end
 
 		-- 从池取容器（池空则新建），作为 healthBar 子级，随血条显示/隐藏、继承框架层级
 		local container = AcquireDispel(unitFrame)
@@ -280,28 +298,21 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		dispelOwner[unit] = unitFrame
 		container:SetUnit(unit)
 		container:Show()
-		C_Timer.After(0.5, function()
-			local c = unitFrame.PC_DispelAuras
-			if not c then return end--期间已归还
-			-- abs 可能在创建时因 ArrowLeft 尚未建好而缺失（AddAbsorbText 只在事件里跑一次、不重试），
-			-- 这里补一次；此时 ArrowLeft 通常已就位，abs 能补建出来，容器也就能正确锚定
-			if not unitFrame.abs and ns.AddAbsorbText then
-				ns.AddAbsorbText(nil, unit)
-			end
-			local anchor = unitFrame.abs or unitFrame.healthBar
-			if not anchor or not anchor:IsShown() then return end
-			c:ClearAllPoints()
-			c:SetPoint("RIGHT", anchor, "LEFT", -2, 0)
-		end)
-	end)
+		-- abs 正常由 PlateAbsorb 在同一事件里先建好（toc 在前），万一还没有就安全补建一次，仍没有退回血条
+		if not unitFrame.abs then
+			pcall(ns.AddAbsorbText, nil, unit)
+		end
+		local anchor = unitFrame.abs or unitFrame.healthBar
+		container:SetPoint("RIGHT", anchor, "LEFT", -2, 0)
+	end
 
-	ns.event("NAME_PLATE_UNIT_REMOVED", function(event, unit)
+	local function OnLeftPlateRemoved(unit)
 		local unitFrame = dispelOwner[unit]
 		dispelOwner[unit] = nil
 		if unitFrame then
 			ReleaseDispel(unitFrame)
 		end
-	end)
+	end
 
 	-- ═══ 姓名板上方自定义减益容器（三组）═══
 
@@ -370,7 +381,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 数量无限（不设 maxFrameCount，默认即 math.huge）；组内元素间距 elementSpacing；组间间距 groupSpacing
 	local function NewTopContainer()
 		local c = CreateFrame("AuraContainer", nil, UIParent, "CustomAuraContainerTemplate")
-		c:EnableMouse(false)--完全鼠标穿透，不阻挡点击血条
+		TrackContainer(c, "auraTopScale")
 		-- 组1：我释放的 + 应显示在姓名板 + 排除控制 + 仅监控指定法术，且只显示剩余时间最长的1个
 		c:AddAuraGroup("topSingle", "HARMFUL|PLAYER|!INCLUDE_NAME_PLATE_ONLY|!CROWD_CONTROL", {
 			maxFrameCount = 1,
@@ -380,7 +391,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			-- 开关关闭时传空表 => topSingle 一个都不显示（血之疫病回归普通减益显示）
 			candidateFilters = { includeSpellIDs = PlateColorDB.auraTopSingle ~= false and CopyTable(TOP_SINGLE_SPELLS) or {} },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 20, false, true)
+				InitAuraButton(btn, 20, true)
 			end,
 		})
 		-- 组2：应显示在姓名板（暴雪同款 INCLUDE_NAME_PLATE_ONLY + nameplateShowPersonal）+ 排除控制 + 排除隐藏的 dot
@@ -389,7 +400,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			layout = { elementSpacing = 1, groupSpacing = 1},
 			candidateFilters = { excludeSpellIDs = GetTopShownExcludeMap(), nameplateShowPersonal = true, nameplateShowAll = false },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 20, false, true)
+				InitAuraButton(btn, 20, true)
 			end,
 		})
 		-- 组3：我释放的 + 排除应显示在姓名板 + 排除控制 + 仅监控指定法术
@@ -397,7 +408,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			candidateFilters = { includeSpellIDs = GetTopMineSpellMap() }, -- 由 topDotList 生成，空则只显示勾选的法术
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 20, false, true)
+				InitAuraButton(btn, 20, true)
 			end,
 		})
 		c:Hide()
@@ -420,7 +431,6 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		RefreshTopFilters(c)
 		c:SetParent(unitFrame)
 		unitFrame.PC_TopDebuffAuras = c
-		SetContainerScale(c, PlateColorDB.auraTopScale)--套用当前尺寸（容器池复用时同步）
 		return c
 	end
 
@@ -436,48 +446,34 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		topFree[#topFree + 1] = c
 	end
 
-	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+	-- 姓名板出现/消失：上方减益容器（事件在文件末尾统一注册；unitFrame 由调度函数传入）
+	local function OnTopPlateAdded(unit, unitFrame)
 		-- 上方自定义减益容器开关关闭时跳过
 		if not PlateColorDB.auraTopEnable then return end
-
-		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
-		if not namePlate then return end
-		local unitFrame = namePlate.UnitFrame
-		if not unitFrame then return end
-
-		-- 只对敌对单位建容器（显示什么由光环组过滤决定）
-		if unitFrame:IsFriend() then return end
 
 		-- 从池取容器（池空则新建），作为 unitFrame 子级，锚定到血条左上
 		local container = AcquireTop(unitFrame)
 		topOwner[unit] = unitFrame
 		container:SetUnit(unit)
 		container:Show()
-		-- 左下始终锚定在血条左上，名字在血条上方(1/2)时额外加上名字高度避免重叠
-		C_Timer.After(0.5, function()
-			if not unitFrame or not unitFrame:IsShown() then return end
-			local healthBar = unitFrame.HealthBarsContainer.healthBar
-			if not healthBar then return end--只要血条存在就锚定；不要求 IsShown（血条隐藏/名字模式时也要挂上去）
-			local c = unitFrame.PC_TopDebuffAuras
-			if not c then return end--期间已归还
-			local debuffPadding = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.DEBUFF_PADDING_CVAR)
-			local nameHeight = 0
-			if PlateColorDB.namePoint == 1 or PlateColorDB.namePoint == 2 then
-				-- 直接用设置的名字尺寸，避免读取 GetHeight 返回秘密值
-				nameHeight = PlateColorDB.nameScale + PlateColorDB.nameVoffset + 2
-			end
-			c:ClearAllPoints()
-			PixelUtil.SetPoint(c, "BOTTOMLEFT", healthBar, "TOPLEFT", 0, debuffPadding + nameHeight)
-		end)
-	end)
+		-- 名字在血条上方(1/2)时额外加上名字高度避免重叠
+		local healthBar = unitFrame.HealthBarsContainer.healthBar
+		local debuffPadding = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.DEBUFF_PADDING_CVAR)
+		local nameHeight = 0
+		if PlateColorDB.namePoint == 1 or PlateColorDB.namePoint == 2 then
+			-- 直接用设置的名字尺寸，避免读取 GetHeight 返回秘密值
+			nameHeight = PlateColorDB.nameScale + PlateColorDB.nameVoffset + 2
+		end
+		PixelUtil.SetPoint(container, "BOTTOMLEFT", healthBar, "TOPLEFT", 0, debuffPadding + nameHeight)
+	end
 
-	ns.event("NAME_PLATE_UNIT_REMOVED", function(event, unit)
+	local function OnTopPlateRemoved(unit)
 		local unitFrame = topOwner[unit]
 		topOwner[unit] = nil
 		if unitFrame then
 			ReleaseTop(unitFrame)
 		end
-	end)
+	end
 
 	-- ═══ 姓名板右侧自定义控制/减益容器（三组）═══
 
@@ -540,6 +536,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 尺寸基准 25 = NamePlateConstants.AURA_ITEM_HEIGHT（与左侧一致），缩放走 auraRScale
 	local function NewControlContainer()
 		local c = CreateFrame("AuraContainer", nil, UIParent, "CustomAuraContainerTemplate")
+		TrackContainer(c, "auraRScale")
 		-- 组1：控制类光环（昏迷/恐惧等），对应暴雪原生的右侧控制显示位；可在设置窗口里按法术ID排除
 		-- 暴雪判定 = C_Spell.IsSpellCrowdControl OR aura.nameplateShowAll（Blizzard_NamePlateAuras.lua:IsAuraCrowdControl）
 		-- 本组负责所有 CROWD_CONTROL；nameplateShowAll 里「非 CROWD_CONTROL」的那部分交给下面的 controlAll 组
@@ -547,7 +544,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			candidateFilters = { excludeSpellIDs = GetControlExcludeMap() },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 25, true, true)
+				InitAuraButton(btn, 25, true)
 			end,
 		})
 		-- 组1b：暴雪控制区判定的后半段 —— aura.nameplateShowAll（filterString 表达不了该字段，只能另开一组做并集）
@@ -556,7 +553,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			candidateFilters = { nameplateShowAll = true, excludeSpellIDs = GetControlExcludeMap() },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 25, true, true)
+				InitAuraButton(btn, 25, true)
 			end,
 		})
 		-- 组2：内置的额外监控减益（不限施放者，仅显示表内的法术）
@@ -564,7 +561,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			candidateFilters = { includeSpellIDs = GetRightExtraSpellMap() },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 25, true, true)
+				InitAuraButton(btn, 25, true)
 			end,
 		})
 		-- 组3：设置窗口「右侧减益过滤器」里 show=true 的额外监控减益（只显示自己施放的）
@@ -572,7 +569,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			layout = { elementSpacing = 1, groupSpacing = 1 },
 			candidateFilters = { includeSpellIDs = GetRightMineSpellMap() },
 			initializeFrame = function(btn)
-				InitAuraButton(btn, 25, true, true)
+				InitAuraButton(btn, 25, true)
 			end,
 		})
 		c:Hide()
@@ -596,7 +593,6 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		RefreshControlFilters(c)
 		c:SetParent(unitFrame)
 		unitFrame.PC_ControlAuras = c
-		SetContainerScale(c, PlateColorDB.auraRScale)--套用当前尺寸（容器池复用时同步）
 		return c
 	end
 
@@ -612,45 +608,50 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		controlFree[#controlFree + 1] = c
 	end
 
-	ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
+	-- 姓名板出现/消失：右侧控制/额外减益容器（事件在文件末尾统一注册；unitFrame 由调度函数传入）
+	local function OnRightPlateAdded(unit, unitFrame)
 		-- 右侧控制光环开关关闭时跳过
 		if not PlateColorDB.auraREnable then return end
 
-		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
-		if not namePlate then return end
-		local unitFrame = namePlate.UnitFrame
-		if not unitFrame then return end
-
-		-- 只对敌对单位建容器（显示什么由光环组过滤决定）
-		if unitFrame:IsFriend() then return end
 		local container = AcquireControl(unitFrame)
 		controlOwner[unit] = unitFrame
 		container:SetUnit(unit)
 		container:Show()
-		-- 直接锚定到血条右侧；延迟 0.5 秒等血条就位
-		C_Timer.After(0.5, function()
-			if not unitFrame or not unitFrame:IsShown() then return end
-			local c = unitFrame.PC_ControlAuras
-			if not c then return end--期间已归还
-			local healthBar = unitFrame.healthBar
-			if not healthBar then return end
-			c:ClearAllPoints()
-			PixelUtil.SetPoint(c, "LEFT", healthBar, "RIGHT", 15, 0)
-		end)
-	end)
+		-- 直接锚定到血条右侧（相对锚定，事件触发时血条已就位）
+		PixelUtil.SetPoint(container, "LEFT", unitFrame.healthBar, "RIGHT", 15, 0)
+	end
 
-	ns.event("NAME_PLATE_UNIT_REMOVED", function(event, unit)
+	local function OnRightPlateRemoved(unit)
 		local unitFrame = controlOwner[unit]
 		controlOwner[unit] = nil
 		if unitFrame then
 			ReleaseControl(unitFrame)
 		end
-	end)
+	end
 
-	-- 脱战后补一次尺寸（战斗中拖动滑块不会即时应用）——受限环境重试的兜底
-	ns.event("PLAYER_REGEN_ENABLED", function()
-		if ns.ApplyAuraScale then ns.ApplyAuraScale(nil) end
-	end)
+	-- ═══ 姓名板事件统一注册（进/出各注册一次，按 左 → 上 → 右 顺序执行）═══
+	-- ns.event 的回调第一个参数是事件名，故调度函数签名写 (_, unit)
+	local function OnPlateAdded(_, unit)
+		local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
+		if not namePlate then return end
+		local unitFrame = namePlate.UnitFrame
+		if not unitFrame then return end
+		-- 只对敌对单位建容器（显示什么由光环组过滤决定）
+		if unitFrame:IsFriend() then return end
+
+		OnLeftPlateAdded(unit, unitFrame)
+		OnTopPlateAdded(unit, unitFrame)
+		OnRightPlateAdded(unit, unitFrame)
+	end
+
+	local function OnPlateRemoved(_, unit)
+		OnLeftPlateRemoved(unit)
+		OnTopPlateRemoved(unit)
+		OnRightPlateRemoved(unit)
+	end
+
+	ns.event("NAME_PLATE_UNIT_ADDED", OnPlateAdded)
+	ns.event("NAME_PLATE_UNIT_REMOVED", OnPlateRemoved)
 
 	-- ═══ 进游戏预创建对象池（避免战斗中临时创建造成掉帧）═══
 	ns.event("PLAYER_LOGIN", function()
