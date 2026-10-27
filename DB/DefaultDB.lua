@@ -49,6 +49,7 @@ ns.Defaults = {
 	HpTextScale1 = 13,			--生命值文本尺寸
 
 	auraText1 = 1,				--光环冷却时间文本尺寸
+	auraIconEdge = true,		--光环图标裁剪描边（裁掉图标自带的白边圆角铺满 + 1px 黑描边，改后需重载）
 	hideAuraTooltip = true,		--隐藏光环鼠标提示
 	auraTopScale = 1,			--上方减益光环尺寸
 	auraTopEnable = true,		--姓名板上方自定义减益容器

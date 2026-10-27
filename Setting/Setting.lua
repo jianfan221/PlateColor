@@ -266,10 +266,11 @@ ns.AddTab(AURAS, function()
 
 	ns.AddSection(AURAS)
 	ns.AddCVarCheck(L["光环鼠标提示显示法术ID"], L["光环鼠标提示显示法术ID鼠标提示"], "tooltipShowAuraSpellIDs")
-	ns.AddCheck(L["隐藏光环鼠标提示"], L["隐藏光环鼠标提示"], "hideAuraTooltip")
-	ns.AddSlider(L["光环冷却时间文本尺寸"], L["光环冷却时间文本尺寸"], 0.5, 1.5, 0.1, "%.1f", "auraText1", function(unitFrame)
-		if ns.ApplyAuraScale then ns.ApplyAuraScale(unitFrame) end
-	end)
+	ns.AddCheck(L["隐藏光环鼠标提示"], L["隐藏光环鼠标提示"], "hideAuraTooltip", ns.ApplyAura)
+	ns.AddSlider(L["光环冷却时间文本尺寸"], L["光环冷却时间文本尺寸"], 0.5, 1.5, 0.1, "%.1f", "auraText1", ns.ApplyAura)
+	if DoesTemplateExist("CustomAuraContainerTemplate") then
+		ns.AddCheck(L["光环图标裁剪描边"], "|cffFF69B4"..L["修改后需要重载界面"].."|r", "auraIconEdge")
+	end
 	ns.AddSection(L["上方减益光环"])
 	if DoesTemplateExist("CustomAuraContainerTemplate") then
 		-- auraBtn 在 AddCheck 之后创建，故先声明；勾选状态变化时同步启用/禁用该按钮
@@ -287,14 +288,14 @@ ns.AddTab(AURAS, function()
 		ns.AddCheck(L["血之疫病仅显示一个"], "|cffFF69B4"..L["修改后需要重载界面"].."|r", "auraTopSingle")
 		ns.AddDep("auraTopEnable", {"auraTopSingle"})
 	end
-	ns.AddSlider(L["上方减益光环尺寸"], L["上方减益光环尺寸"], 0.5, 3, 0.1, "%.1f", "auraTopScale", ns.ApplyAuraScale)
+	ns.AddSlider(L["上方减益光环尺寸"], L["上方减益光环尺寸"], 0.5, 3, 0.1, "%.1f", "auraTopScale", ns.ApplyAura)
 	ns.AddSection(L["左侧增益光环"])
 	if DoesTemplateExist("CustomAuraContainerTemplate") then
 		ns.AddCheck(L["左侧增益光环"], "|cffFF69B4"..L["自建光环容器鼠标提示"].."|r", "auraLEnable")
 		ns.AddCheck(L["仅显示队伍可驱散"], L["仅显示队伍可驱散鼠标提示"], "auraLDispelOnly", ns.RebuildDispelFilter)
 		ns.AddDep("auraLEnable",{"auraLDispelOnly"})
 	end
-	ns.AddSlider(L["左侧增益光环尺寸"], L["左侧增益光环尺寸"], 0.5, 3, 0.1, "%.1f", "auraLScale", ns.ApplyAuraScale)
+	ns.AddSlider(L["左侧增益光环尺寸"], L["左侧增益光环尺寸"], 0.5, 3, 0.1, "%.1f", "auraLScale", ns.ApplyAura)
 	ns.AddSection(L["右侧控制光环"])
 	if DoesTemplateExist("CustomAuraContainerTemplate") then
 		-- auraBtn 在 AddCheck 之后创建，故先声明；勾选状态变化时同步启用/禁用该按钮
@@ -310,7 +311,7 @@ ns.AddTab(AURAS, function()
 			if ns.OpenRightDebuffList then ns.OpenRightDebuffList() end
 		end)
 	end
-	ns.AddSlider(L["右侧控制光环尺寸"], L["右侧控制光环尺寸"], 0.5, 3, 0.1, "%.1f", "auraRScale", ns.ApplyAuraScale)
+	ns.AddSlider(L["右侧控制光环尺寸"], L["右侧控制光环尺寸"], 0.5, 3, 0.1, "%.1f", "auraRScale", ns.ApplyAura)
 
 end)
 -- 光环染色分类标题 + 设置按钮（仅 12.1 有光环容器模板时显示）

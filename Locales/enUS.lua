@@ -93,6 +93,7 @@ ns.enUS = {
 ["生命值文本水平偏移"] = "Health Text Horizontal Offset",
 
 ["光环冷却时间文本尺寸"] = "Aura Cooldown Text Size",
+["光环图标裁剪描边"] = "Crop and Border Aura Icons",
 ["隐藏光环鼠标提示"] = "Hide Aura Tooltip",
 ["上方减益光环"] = "Top Debuff Aura",
 ["自建光环容器鼠标提示"] = "Using custom aura container. To use Blizzard defaults, disable this\nThen re-enable the relevant options under Options-Nameplates\n"..UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY.."\n"..UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY,
