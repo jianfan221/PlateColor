@@ -477,17 +477,26 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 
 	-- ═══ 姓名板右侧自定义控制/减益容器（三组）═══
 
-	-- ══ 组2 内置的额外监控减益（不限施放者，取值 true；原左侧 myDebuff 组迁来）══
-	-- 在此添加 [法术ID] = true 即可，自动排除出控制组；
-	-- 设置窗口「右侧减益过滤器」里增删的法术另存于 PlateColorDB.rightDotList，走组3（只显示自己施放的）
-	local RIGHT_EXTRA_SPELLS = {
-		[1217960] = true, -- 装弹手枪｜流血期间易伤20%｜密谋小径
-		[1250023] = true, -- 受保护｜充满保护欲的乌龟｜虚空之痕竞技场
-	}
-
-	-- 组2 应包含的法术：文件内置表（不限来源）
+	-- ══ 组2 内置的额外监控减益（不限施放者；原左侧 myDebuff 组迁来）══
+	-- 组2 应包含的法术：每次现读开关构造（表若写成静态 local，会在加载期求值——那时 SavedVariables
+	-- 还没进来，而且开关变化后表不会重建，无法实时生效）
+	-- 嘲讽类取值为「显示嘲讽」开关 auraRTaunt，关掉即为 false（includeSpellIDs 按值判定，false = 不显示）
 	local function GetRightExtraSpellMap()
-		return CopyTable(RIGHT_EXTRA_SPELLS)
+		local taunt = PlateColorDB.auraRTaunt ~= false
+		return {
+			[474515] = true, -- 断心药膏｜中毒｜最大生命降低30%，每秒自然伤害
+			[1217960] = true, -- 装弹手枪｜流血期间易伤20%｜密谋小径
+			[1250023] = true, -- 受保护｜充满保护欲的乌龟｜虚空之痕竞技场
+			[355] = taunt, -- 嘲讽｜战士（玩家嘲讽怪物时目标身上的 Apply Aura: Taunt 光环）
+			[1161] = taunt, -- 挑战怒吼｜战士（群嘲）
+			[6795] = taunt, -- 低吼｜守护德
+			[56222] = taunt, -- 黑暗命令｜鲜血DK
+			[51399] = taunt, -- 死亡之握｜鲜血DK（49576 那版是服务端脚本、无光环）
+			[62124] = taunt, -- 清算之手｜防护骑
+			[116189] = taunt, -- 嚎镇八方｜酒仙武僧
+			[185245] = taunt, -- 折磨｜复仇DH
+			[2649] = taunt, -- 低吼｜猎人宠物
+		}
 	end
 
 	-- 组3 应包含的法术：设置窗口列表里 show=true 的（只显示自己施放的）
@@ -501,10 +510,10 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 		return spellMap
 	end
 
-	-- 控制组应排除的法术：内置表 + 设置窗口列表里配置过的（show/hide 都算），
+	-- 控制组应排除的法术：内置表（跟随嘲讽开关）+ 设置窗口列表配置过的
 	-- 避免同一法术在控制组与组2/组3里重复显示
 	local function GetControlExcludeMap()
-		local excludeMap = CopyTable(RIGHT_EXTRA_SPELLS)
+		local excludeMap = GetRightExtraSpellMap()
 		for spellID, info in pairs(PlateColorDB.rightDotList or {}) do
 			if info then
 				excludeMap[spellID] = true
@@ -654,7 +663,8 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	ns.event("NAME_PLATE_UNIT_REMOVED", OnPlateRemoved)
 
 	-- ═══ 进游戏预创建对象池（避免战斗中临时创建造成掉帧）═══
-	ns.event("PLAYER_LOGIN", function()
+	-- ns.event 对 PLAYER_ENTERING_WORLD 自带一次性注销（API.lua 的 onceEvents），不会重复创建
+	ns.event("PLAYER_ENTERING_WORLD", function()
 		for i = 1, POOL_SIZE do
 			dispelFree[i] = NewDispelContainer()
 			topFree[i] = NewTopContainer()
