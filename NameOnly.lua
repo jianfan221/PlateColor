@@ -21,11 +21,14 @@ ns.hook(NamePlateUnitFrameMixin, "OnUnitSet", function(self)
 	SetOnlyNameScale(self)
 end)
 
+--血条显隐变化后重排名字：SetPoints 依赖 healthBar:IsShown()，
+--而我们自己隐藏/恢复血条不会触发暴雪 UpdateAnchors，需要手动补一次
 local function TrySetOnlyName(self)
 	if not self then return end
 	if not self.unit then return end
 	if not PlateColorDB.onlyNameNpc then return end
 	local castBar = ns.GetCastBar(self)
+	local hidden  -- 本次处理后血条应有状态：true=隐藏 / false=显示 / nil=不处理
 	if UnitCanAttack("player", self.unit) then
 		TextureLoadingGroupMixin.RemoveTexture({ textures = self }, "showOnlyName")
 		if castBar then
@@ -45,6 +48,7 @@ local function TrySetOnlyName(self)
 				castBar:Show()
 			end)
 		end
+		hidden = false
 	elseif not self:IsPlayer() and (self:IsForbidden() or not UnitCanAttack("player", self.unit)) then
 		TableUtil.TrySet(self, "showOnlyName")
 		if castBar then
@@ -60,6 +64,13 @@ local function TrySetOnlyName(self)
 				self.healthBar:Hide()
 			end)
 		end
+		hidden = true
+	end
+
+	--血条显隐真的变了才重排，避免每次 UpdateShowOnlyName 都跑一遍 SetPoints
+	if hidden ~= nil and self.PC_BarHidden ~= hidden then
+		self.PC_BarHidden = hidden
+		ns.SetPoints(self)
 	end
 end
 
