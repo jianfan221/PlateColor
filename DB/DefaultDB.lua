@@ -59,6 +59,7 @@ ns.Defaults = {
 	auraLDispelOnly = false,	--仅显示队伍可驱散（仅显示队伍/团队可驱散的光环）
 	auraLScale = 1.5,			--左侧增益光环尺寸
 	auraREnable = true,			--右侧控制光环
+	auraRTaunt = true,			--右侧控制光环显示嘲讽（玩家嘲讽怪物后目标身上的 Taunt 光环）
 	auraRScale = 1.5,			--右侧控制光环尺寸
 	rightDotList = {},			--右侧额外监控/隐藏的减益列表（{ [法术ID] = { name=..., show=true, hide=false } }）
 
