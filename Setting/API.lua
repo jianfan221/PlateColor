@@ -449,3 +449,63 @@ ns.event("CHAT_MSG_ADDON", function(event, prefix, text, channel, sender)
 		end
 	end
 end)
+
+-- 队伍骗子提醒 ──────────────────────────────
+-- 格式 "名字-服务器"，同服时服务器可省略
+local scamList = {
+	["逍遥游太虚-影之哀伤"] = "是个骗钱给家人买棺材的骗子",
+}
+local scamInterval = 3 -- 秒，人还在队伍里就每隔这么久再提醒一次
+local scamTicker
+
+-- 扫描队伍，命中就打印一次，返回是否命中
+local function ScamScan()
+	if not IsInGroup() then return false end
+	local prefix = IsInRaid() and "raid" or "party"
+	local hit = false
+	for i = 1, GetNumGroupMembers() do
+		local unit = prefix..i
+		if UnitExists(unit) then
+			local name, realm = UnitFullName(unit)
+			if name and not ns.MM(name) and not ns.MM(realm) then
+				local full = name.."-"..(realm or GetRealmName())
+				local reason = scamList[full] or scamList[name]
+				if reason then
+					local msg = "[PC 提醒] "..full.." "..reason.."！"
+					print("|cffff0000"..msg.."|r")
+					-- 屏幕中间的红色错误提醒（暴雪专门给插件留的入口）
+					if UIErrorsFrame then
+						if UIErrorsFrame.AddExternalErrorMessage then
+							UIErrorsFrame:AddExternalErrorMessage(msg)
+						else
+							UIErrorsFrame:AddMessage(msg, 1, 0, 0, 1)
+						end
+					end
+					hit = true
+				end
+			end
+		end
+	end
+	return hit
+end
+
+local function ScamStop()
+	if scamTicker then
+		scamTicker:Cancel()
+		scamTicker = nil
+	end
+end
+
+-- 队伍变动/进出世界时触发：命中就开循环提醒，不命中就停
+local function ScamCheck()
+	if not ScamScan() then
+		ScamStop()
+		return
+	end
+	if not scamTicker then
+		scamTicker = C_Timer.NewTicker(scamInterval, ScamCheck)
+	end
+end
+
+ns.event("GROUP_ROSTER_UPDATE", ScamCheck)
+ns.event("PLAYER_ENTERING_WORLD", ScamCheck)
