@@ -481,8 +481,9 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 	-- 组2 应包含的法术：每次现读开关构造（表若写成静态 local，会在加载期求值——那时 SavedVariables
 	-- 还没进来，而且开关变化后表不会重建，无法实时生效）
 	-- 嘲讽类取值为「显示嘲讽」开关 auraRTaunt，关掉即为 false（includeSpellIDs 按值判定，false = 不显示）
+	-- 且只在副本内生效（野外嘲讽意义不大，避免误显示）
 	local function GetRightExtraSpellMap()
-		local taunt = PlateColorDB.auraRTaunt ~= false
+		local taunt = PlateColorDB.auraRTaunt ~= false and IsInInstance()
 		return {
 			[474515] = true, -- 断心药膏｜中毒｜最大生命降低30%，每秒自然伤害
 			[1217960] = true, -- 装弹手枪｜流血期间易伤20%｜密谋小径
@@ -491,7 +492,7 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			[1161] = taunt, -- 挑战怒吼｜战士（群嘲）
 			[6795] = taunt, -- 低吼｜守护德
 			[56222] = taunt, -- 黑暗命令｜鲜血DK
-			[51399] = taunt, -- 死亡之握｜鲜血DK（49576 那版是服务端脚本、无光环）
+			[51399] = taunt, -- 死亡之握｜鲜血DK
 			[62124] = taunt, -- 清算之手｜防护骑
 			[116189] = taunt, -- 嚎镇八方｜酒仙武僧
 			[185245] = taunt, -- 折磨｜复仇DH
@@ -671,5 +672,18 @@ if DoesTemplateExist("CustomAuraContainerTemplate") then
 			controlFree[i] = NewControlContainer()
 		end
 	end)
+
+	-- ═══ 进出副本时重算右侧过滤 ═══
+	-- GetRightExtraSpellMap 里「嘲讽」按 IsInInstance() 判定，进/出副本要重建已存在姓名板的过滤
+	local prevInInstance = IsInInstance()
+	local function OnZoneChanged()
+		local inInstance = IsInInstance()
+		if inInstance == prevInInstance then return end
+		prevInInstance = inInstance
+		ns.RebuildControlFilters()
+	end
+	-- 用 EventRegistry 直连：PEW 走 ns.event 会一次性注销，这里需要每次都执行
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", OnZoneChanged)
+	ns.event("ZONE_CHANGED_NEW_AREA", OnZoneChanged)
 end
 

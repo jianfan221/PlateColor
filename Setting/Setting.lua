@@ -310,7 +310,7 @@ ns.AddTab(AURAS, function()
 		auraBtn:SetScript("OnClick", function()
 			if ns.OpenRightDebuffList then ns.OpenRightDebuffList() end
 		end)
-		ns.AddCheck(L["显示嘲讽"], L["显示嘲讽鼠标提示"], "auraRTaunt", ns.RebuildControlFilters)
+		ns.AddCheck(L["副本内显示嘲讽"], L["显示嘲讽鼠标提示"], "auraRTaunt", ns.RebuildControlFilters)
 		ns.AddDep("auraREnable",{"auraRTaunt"})
 	end
 	ns.AddSlider(L["右侧控制光环尺寸"], L["右侧控制光环尺寸"], 0.5, 3, 0.1, "%.1f", "auraRScale", ns.ApplyAura)
