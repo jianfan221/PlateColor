@@ -4,6 +4,10 @@
 function ns.CteatLevelText(unitFrame)
 	if not PlateColorDB.levelText then return end
 	if not unitFrame then return end
+	--无限服姓名板多出的"玩家等级差"图标，有就隐藏
+	if unitFrame.PlayerLevelDiffFrame then
+		pcall(unitFrame.PlayerLevelDiffFrame.Hide, unitFrame.PlayerLevelDiffFrame)
+	end
 	if not unitFrame.LevelText then
 		unitFrame.LevelText = unitFrame.healthBar:CreateFontString(nil, "ARTWORK")
 		unitFrame.LevelText:SetFontObject("PC_FontOutline")
