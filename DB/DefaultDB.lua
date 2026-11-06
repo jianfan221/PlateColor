@@ -23,6 +23,7 @@ ns.Defaults = {
 	
 	castTexture = "PC-White",	--施法条材质选择
 	castIconBig = false,		--施法图标大型
+	castIconEdge = true,		--施法图标裁剪描边
 	castBarHeight = 18,			--施法条高度
 	castPoint = 2,				--施法名称位置
 	castTime = true,			--施法剩余时间

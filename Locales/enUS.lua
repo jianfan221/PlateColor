@@ -64,6 +64,7 @@ ns.enUS = {
 
 ["施法条"] = "Cast Bar",
 ["施法条材质选择"] = "Cast Bar Texture Selection",
+["施法图标裁剪描边"] = "Crop and Border Cast Icons",
 ["施法图标放大"] = "Enlarge Cast Icon",
 ["仅放大敌方施法图标"] = "Only enlarge enemy cast icons, friendly units keep the normal size",
 ["施法条高度"] = "Cast Bar Height",

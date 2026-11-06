@@ -130,6 +130,7 @@ ns.AddTab(L["施法条"], function()
 	ns.AddSection(L["施法条"])
 	ns.AddTexture(L["施法条材质选择"], L["施法条材质选择"], "castTexture", ns.HpTextures)
 	ns.AddSlider(L["施法条高度"], L["施法条高度鼠标提示"], 5, 30, 1, "%d", "castBarHeight", ns.SetPoints)
+	ns.AddCheck(L["施法图标裁剪描边"], L["施法图标裁剪描边"], "castIconEdge", ns.SetPoints)
 	ns.AddCheck(L["施法图标放大"], L["仅放大敌方施法图标"], "castIconBig", ns.SetPoints)
 	local casttable = {{L["左"],1},{L["中"],2}}
 	ns.AddDropdown(L["施法名称位置"], L["施法名称位置"], casttable, "castPoint", ns.SetPoints)

@@ -5,6 +5,32 @@ local trueColor = CreateColor(0.6,0.6,0.6)--不可打断
 local colorYellow = CreateColor(0.9,0.9,0) -- 施法中
 local colorGreen = CreateColor(0, 1, 0)  -- 引导中
 local colorRed = CreateColor(1, 0, 0, 1)    -- 失败/打断
+--按施法条缓存边框，避免重复创建
+local castIconBorders = setmetatable({}, {__mode = "k"})
+
+--裁切姓名板施法图标并添加细边框
+local function ModernizeCastIcon(castBar)
+	local icon = castBar.Icon
+	if not icon then return end
+	local border = castIconBorders[castBar]
+	if not PlateColorDB.castIconEdge then
+		icon:SetTexCoord(0, 1, 0, 1)
+		if border then border:Hide() end
+		return
+	end
+	icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	if not border then
+		border = castBar:CreateTexture(nil, "OVERLAY", nil, 0)
+		border:SetColorTexture(0, 0, 0, 1)
+		border:SetPoint("TOPLEFT", icon, -1, 1)
+		border:SetPoint("BOTTOMRIGHT", icon, 1, -1)
+		castIconBorders[castBar] = border
+		icon:HookScript("OnShow", function() border:SetShown(PlateColorDB.castIconEdge) end)
+		icon:HookScript("OnHide", function() border:Hide() end)
+	end
+	border:SetShown(icon:IsShown())
+end
+ns.UpdateCastIconStyle = ModernizeCastIcon
 
 --设置施法条颜色
 function ns.SetCastBarInitColor()
@@ -17,6 +43,7 @@ ns.event("PLAYER_ENTERING_WORLD", ns.SetCastBarInitColor)
 local function SetPlateCastBar(self, event)
     if event == "PLAYER_ENTERING_WORLD" then return end
     if self:IsForbidden() or not self.unit then return end
+	ModernizeCastIcon(self)
 
     --选择了原版材质就用默认的
     if PlateColorDB.castTexture == "Blizzard-default" then return end

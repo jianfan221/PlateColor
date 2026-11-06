@@ -216,6 +216,7 @@ function ns.SetPoints(self)
 		end
 		PixelUtil.SetPoint(castBar.Icon,"BOTTOMRIGHT", castBar, "BOTTOMLEFT", -1, 0);	--施法图标位置
 		PixelUtil.SetPoint(castBar.BorderShield,"BOTTOMRIGHT", castBar, "BOTTOMLEFT", -1, 0);--不可打断的盾牌
+		if ns.UpdateCastIconStyle then ns.UpdateCastIconStyle(castBar) end
 
 		castBar.Text:SetFontObject("PC_FontOutline");--施法文本尺寸
 		castBar.Text:SetFontHeight(castTextScales)
