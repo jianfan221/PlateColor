@@ -5,14 +5,12 @@ local trueColor = CreateColor(0.6,0.6,0.6)--不可打断
 local colorYellow = CreateColor(0.9,0.9,0) -- 施法中
 local colorGreen = CreateColor(0, 1, 0)  -- 引导中
 local colorRed = CreateColor(1, 0, 0, 1)    -- 失败/打断
---按施法条缓存边框，避免重复创建
-local castIconBorders = setmetatable({}, {__mode = "k"})
 
 --裁切姓名板施法图标并添加细边框
 local function ModernizeCastIcon(castBar)
 	local icon = castBar.Icon
 	if not icon then return end
-	local border = castIconBorders[castBar]
+	local border = castBar.IconBorder
 	if not PlateColorDB.castIconEdge then
 		icon:SetTexCoord(0, 1, 0, 1)
 		if border then border:Hide() end
@@ -24,7 +22,7 @@ local function ModernizeCastIcon(castBar)
 		border:SetColorTexture(0, 0, 0, 1)
 		border:SetPoint("TOPLEFT", icon, -1, 1)
 		border:SetPoint("BOTTOMRIGHT", icon, 1, -1)
-		castIconBorders[castBar] = border
+		castBar.IconBorder = border
 		icon:HookScript("OnShow", function() border:SetShown(PlateColorDB.castIconEdge) end)
 		icon:HookScript("OnHide", function() border:Hide() end)
 	end
