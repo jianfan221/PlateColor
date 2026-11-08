@@ -4,10 +4,6 @@
 function ns.CteatLevelText(unitFrame)
 	if not PlateColorDB.levelText then return end
 	if not unitFrame then return end
-	--无限服姓名板多出的"玩家等级差"图标，有就隐藏
-	if unitFrame.PlayerLevelDiffFrame then
-		pcall(unitFrame.PlayerLevelDiffFrame.Hide, unitFrame.PlayerLevelDiffFrame)
-	end
 	if not unitFrame.LevelText then
 		unitFrame.LevelText = unitFrame.healthBar:CreateFontString(nil, "ARTWORK")
 		unitFrame.LevelText:SetFontObject("PC_FontOutline")
@@ -51,3 +47,14 @@ ns.event("NAME_PLATE_UNIT_ADDED", function(event, unit)
 	local unitFrame = namePlate.UnitFrame
 	ns.CteatLevelText(unitFrame)
 end)
+
+-- 无限服（Camelot）专属：暴雪每次更新玩家等级差图标后都会重新判定显隐，在更新后隐藏它
+if WOW_PROJECT_ID == WOW_PROJECT_CAMELOT and CompactUnitFrame_UpdatePlayerLevelDiff then
+	ns.hook("CompactUnitFrame_UpdatePlayerLevelDiff", function(unitFrame)
+		pcall(function()
+			if unitFrame.PlayerLevelDiffFrame then
+				unitFrame.PlayerLevelDiffFrame:Hide()
+			end
+		end)
+	end)
+end
