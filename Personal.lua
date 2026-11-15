@@ -30,6 +30,9 @@ function ns.StripPersonalResourceBorders()
 	stripBarBorder(PersonalResourceDisplayFrame.AlternatePowerBar)
 end
 
+-- 无限服（Camelot）血条/法力条直接显示数值，其他客户端显示百分比
+local isCamelot = WOW_PROJECT_ID == WOW_PROJECT_CAMELOT
+
 function ns.SetPersonalTexture()
 	if not PlateColorDB.myHPSetup then return end
 	if GetCVar("nameplateShowSelf") == "0" then  return end
@@ -76,15 +79,23 @@ function ns.SetPersonalTexture()
 		HB.Text:SetSmoothScaling(false)
 		HB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
-			local HPPer = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
-			self.Text:SetText(string.format("%d", HPPer))
+			if isCamelot then
+				self.Text:SetText(ns.value(UnitHealth("player")))
+			else
+				local HPPer = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+				self.Text:SetText(string.format("%d", HPPer))
+			end
 		end)
 	end
 	HB.Text:SetShown(true)
 	HB.Text:SetFontObject("PC_FontOutline")
 	HB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
-	local HPPer = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
-	HB.Text:SetText(string.format("%d", HPPer))
+	if isCamelot then
+		HB.Text:SetText(ns.value(UnitHealth("player")))
+	else
+		local HPPer = UnitHealthPercent("player", true, CurveConstants.ScaleTo100)
+		HB.Text:SetText(string.format("%d", HPPer))
+	end
 
 	local PB = PersonalResourceDisplayFrame.PowerBar
 	if not PB.Text then
@@ -95,7 +106,7 @@ function ns.SetPersonalTexture()
 		PB.Text:SetSmoothScaling(false)
 		PB:HookScript("OnValueChanged", function(self)
 			if not self:IsShown() then return end
-			if UnitPowerType("player") ~= 0 then
+			if isCamelot or UnitPowerType("player") ~= 0 then
 				self.Text:SetText(ns.value(self:GetValue()))
 			else
 				local powerPer = UnitPowerPercent("player", 0, true, CurveConstants.ScaleTo100)
@@ -106,7 +117,7 @@ function ns.SetPersonalTexture()
 	PB.Text:SetShown(true)
 	PB.Text:SetFontObject("PC_FontOutline")
 	PB.Text:SetFontHeight(PlateColorDB.myHPheight*1.2)
-	if UnitPowerType("player") ~= 0 then
+	if isCamelot or UnitPowerType("player") ~= 0 then
 		PB.Text:SetText(ns.value(PB:GetValue()))
 	else
 		local powerPer = UnitPowerPercent("player", 0, true, CurveConstants.ScaleTo100)
