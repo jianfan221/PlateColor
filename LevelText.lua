@@ -13,7 +13,12 @@ function ns.CteatLevelText(unitFrame)
 	if not unitFrame.unit then return end
 	local NpLevel = UnitLevel(unitFrame.unit)
 	local PlayerLevel = UnitLevel("player")
-	local unitLevelText = (NpLevel > 0 and (NpLevel < PlayerLevel or NpLevel > PlayerLevel + 2)) and NpLevel or ""
+	-- 副本内隐藏「玩家等级及高 2 级以内」的等级文本；野外全部显示
+	local inInstance = IsInInstance()
+	local unitLevelText = ""
+	if NpLevel > 0 and (not inInstance or NpLevel < PlayerLevel or NpLevel > PlayerLevel + 2) then
+		unitLevelText = NpLevel
+	end
 	unitFrame.LevelText:SetText(unitLevelText)
 
 	if C_PlayerInfo and C_PlayerInfo.GetContentDifficultyCreatureForPlayer then
