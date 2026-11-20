@@ -254,7 +254,7 @@ ns.AddTab(L["指示器"], function()
 	ns.AddCheck(L["焦点斜线材质"], L["焦点斜线材质鼠标提示"], "focusTexture")
 
 	ns.AddSection(L["其他"])
-	ns.AddCheck(L["任务标志"], L["任务标志"], "questMark", ns.CreateNameQuest)
+	ns.AddCheck(L["任务标志"], L["任务标志"], "questMark", ns.RefreshNameQuest)
 	ns.AddCheck(L["等级文本"], L["等级文本鼠标提示"], "levelText")
 	ns.AddCheck(L["吸收盾数值"], L["吸收盾数值鼠标提示"], "absorbText")
 
